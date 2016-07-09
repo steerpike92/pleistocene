@@ -185,6 +185,12 @@ namespace climate {
 }
 
 namespace my {
+
+	const double FakeDouble = -6666.0;
+	const int FakeInt = -6666;
+	const int FakeIndex = -6666;
+
+
 	enum Direction {
 		NORTH_EAST,
 		EAST,
@@ -415,7 +421,7 @@ namespace my {
 
 				 //default constructor
 		Address() {
-			r = -100; c = -100; exists = false; i = -1;
+			r = FakeInt; c = FakeInt; exists = false; i = -FakeIndex;
 		}
 
 		//Normal constructor
@@ -423,10 +429,10 @@ namespace my {
 
 			//guard against 
 			if (R<0 || R >= globals::TILE_ROWS) {
-				r = -100;
-				c = -100;
+				r = FakeInt;
+				c = FakeInt;
 				exists = false;
-				i = -1;
+				i = FakeIndex;
 				return;
 			}
 
@@ -456,7 +462,7 @@ namespace my {
 			r = R;
 			odd = (r % 2 != 0);
 			c = C;
-			i = -1;
+			i = FakeIndex;
 		}
 
 		//gets game position at an Address
@@ -515,7 +521,7 @@ namespace my {
 			else {
 				LOG("NOT A VALID DIRECTION");
 				throw (2);
-				return Address(-1, -1, true);
+				return Address(FakeInt, FakeInt, true);
 			}
 		}
 	};

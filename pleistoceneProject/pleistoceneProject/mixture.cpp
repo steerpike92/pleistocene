@@ -12,7 +12,7 @@ Mixture::~Mixture() {}
 Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed):
 	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume, volumeIsFixed){}
 
-Mixture::Mixture(std::vector<Element> theElements, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed) :
+Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed) :
 	_temperature(temperature),
 	_state(state),
 	_volumeIsFixed(volumeIsFixed),
@@ -22,7 +22,7 @@ Mixture::Mixture(std::vector<Element> theElements, double temperature, elements:
 
 	_elements.clear();
 
-	for (Element &element : theElements) {
+	for (Element &element : compositionElements) {
 		pushSpecific(element);
 	}
 	calculateParameters();

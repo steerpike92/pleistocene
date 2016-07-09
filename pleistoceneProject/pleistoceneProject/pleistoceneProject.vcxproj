@@ -125,6 +125,7 @@
     <ClCompile Include="land.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="materialLayer.cpp" />
     <ClCompile Include="mixture.cpp" />
     <ClCompile Include="noise.cpp" />
     <ClCompile Include="solarRadiation.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="land.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="materialLayer.h" />
     <ClInclude Include="mixture.h" />
     <ClInclude Include="noise.h" />
     <ClInclude Include="solarRadiation.h" />

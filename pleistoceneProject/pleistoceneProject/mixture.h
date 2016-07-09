@@ -36,7 +36,7 @@ public:
 	Mixture();
 	~Mixture();
 	Mixture(Element element, double temperature, elements::State state, double fixedVolume=0.0, bool volumeIsFixed=false);
-	Mixture(std::vector<Element> theElements, double temperature, elements::State state, double fixedVolume = 0.0, bool volumeIsFixed = false);
+	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = 0.0, bool volumeIsFixed = false);
 
 	//PARAMETER CALCULATIONS
 	//=====================================================================================================================
