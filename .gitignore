@@ -285,3 +285,5 @@ paket-files/
 *.exe
 *.out
 *.app
+*.ttf
+*.png
