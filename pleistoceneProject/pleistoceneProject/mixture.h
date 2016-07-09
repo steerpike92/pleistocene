@@ -3,8 +3,6 @@
 #include "element.h"
 
 class Mixture;
-class AuxMixture;
-
 
 //======================================================================================
 //MIXTURE
@@ -35,8 +33,8 @@ protected:
 public:
 	Mixture();
 	~Mixture();
-	Mixture(Element element, double temperature, elements::State state, double fixedVolume=0.0, bool volumeIsFixed=false);
-	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = 0.0, bool volumeIsFixed = false);
+	Mixture(Element element, double temperature, elements::State state, double fixedVolume=my::FakeDouble);
+	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble);
 
 	//PARAMETER CALCULATIONS
 	//=====================================================================================================================
@@ -65,17 +63,15 @@ protected:
 	double pullSpecific(Element subtractedSpecificElement);
 
 public:
-
 	double filterSolarRadiation(double incidentSolarEnergyKJ);
 	double emitInfrared();
 	double filterInfrared(double infraredEnergyKJ);
 	static void conduction(Mixture &mixture1, Mixture &mixture2);
 
-protected:
 	//=======================================
 	//GETTERS
 	//=======================================
-public:
+
 	std::vector<std::string> getMessages()const;
 	double getTemperature()const;
 	double getHeight()const;

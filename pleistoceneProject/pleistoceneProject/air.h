@@ -14,6 +14,8 @@ class Air {
 	GaseousMixture _stratosphere;
 	int _layerCount;
 
+	double _localInitialTemperature;
+
 	//up/down radiation
 	//radiation incident upon layer
 	//0 corresponds to surface, 1 to boundary layer, ... n-1 to stratosphere, n to space. 
@@ -30,7 +32,7 @@ class Air {
 public:
 	Air();
 	~Air();
-	Air(double surfaceElevation, double surfaceTemperature);
+	Air(double surfaceElevation, double localInitialTemperature);
 private:
 	void buildTroposphere(double bottomElevation, double topElevation);
 	void initializePressureAtElevation(double bottomElevation, double topElevation, GaseousMixture &stubMixture, climate::air::airType type);

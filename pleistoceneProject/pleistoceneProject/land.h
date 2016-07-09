@@ -19,7 +19,7 @@ class Land {
 public:
 	Land();
 	~Land();
-	Land(double elevation);
+	Land(double elevation, double localInitialTemperature);
 
 	void bond(const LandNeighbor &neighbor);
 

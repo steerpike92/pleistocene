@@ -9,12 +9,10 @@
 Land::Land() {}
 Land::~Land() {}
 
-Land::Land(double elevation) {
+Land::Land(double elevation, double localInitialTemperature) {
 
 	_elevation = elevation;
 	determineElevationType();
-
-	double surfaceTemperature = climate::earth::initialTemperatureK;
 
 	using namespace elements;
 	std::vector<Element> composition;
@@ -24,7 +22,7 @@ Land::Land(double elevation) {
 	composition.push_back(clay);
 	composition.push_back(sand);
 	composition.push_back(silt);
-	_topSoil = SolidMixture(composition, surfaceTemperature);
+	_topSoil = SolidMixture(composition, localInitialTemperature);
 
 }
 

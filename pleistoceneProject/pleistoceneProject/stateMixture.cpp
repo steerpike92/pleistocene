@@ -33,6 +33,7 @@ void SolidMixture::calcualtePorosity() {
 		_voidSpace += elementPair.second.getVoidSpace();
 	}
 }
+
 void SolidMixture::calculatePermeability() {
 	using namespace elements;
 	double totalPermeability = 0;
@@ -56,6 +57,11 @@ ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double 
 	Mixture(theElements,temperature,elements::PARTICULATE)
 {
 
+}
+
+Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity)
+{
+	return Mixture();
 }
 
 
@@ -90,13 +96,15 @@ DropletMixture::DropletMixture(Element element, double temperature) :
 GaseousMixture::GaseousMixture() {}
 GaseousMixture::~GaseousMixture(){}
 
-GaseousMixture::GaseousMixture(Element element, double temperature, double volume, double bottomElevation, double topElevation) :
-	Mixture(element, temperature, elements::GAS, volume, true),
+GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) :
+	Mixture(element, temperature, elements::GAS, topElevation-bottomElevation),
 	_bottomElevation(bottomElevation),
 	_topElevation(topElevation)
 {
 	calculateParameters();
 }
+
+
 
 
 //GaseousMixture::GaseousMixture(std::vector<Element> theElements, double temperature, double volume) :
@@ -109,6 +117,16 @@ GaseousMixture::GaseousMixture(Element element, double temperature, double volum
 //
 //	GaseousMixture::calculateParameters();
 //}
+
+void GaseousMixture::simulateCondensation()
+{
+
+}
+
+DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation)
+{
+	return upperPrecipitation;
+}
 
 void GaseousMixture::calculateParameters() {
 	//_clouds.calculateParameters();

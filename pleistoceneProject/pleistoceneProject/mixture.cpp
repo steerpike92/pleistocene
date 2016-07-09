@@ -9,16 +9,18 @@
 Mixture::Mixture() {}
 Mixture::~Mixture() {}
 
-Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed):
-	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume, volumeIsFixed){}
+Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume):
+	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume){}
 
-Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed) :
+Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume) :
 	_temperature(temperature),
 	_state(state),
-	_volumeIsFixed(volumeIsFixed),
 	_fixedVolume(fixedVolume)
 {
 	if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin): "); LOG(temperature); throw(2); }
+
+	if (_fixedVolume == my::FakeDouble) {_volumeIsFixed = false;}
+	else { _volumeIsFixed = true; }
 
 	_elements.clear();
 
@@ -41,7 +43,6 @@ void Mixture::calculateParameters() {
 	calculateAlbedoIndex();
 	calculateSolarAbsorptionIndex();
 	calculateInfraredAbsorptionIndex();
-
 }
 
 void Mixture::calculateMass() {

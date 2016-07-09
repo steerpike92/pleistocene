@@ -13,24 +13,29 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 	_longitude_deg = latLonDeg.y;
 	_solarRadiation = SolarRadiation(_latitude_deg, _longitude_deg);
 
-	_land = Land(landElevation);
+	_surfaceTemperature= calculateLocalInitialtemperature();
+
+	_land = Land(landElevation, _surfaceTemperature);
 
 	_submerged = _land.isSubmerged();
 
 	if (_submerged) {//water surface
-		_water = Water(climate::water::DEEP, landElevation, 0);
+		_water = Water(climate::water::DEEP, landElevation, 0, _surfaceTemperature);
 		_surfaceElevation = _water.getSurfaceElevation();
-		_surfaceTemperature = _water.getSurfaceTemperature();
 	}
 	else {//land surface
-		_water = Water(climate::water::TRANSIENT, landElevation, landElevation);
+		_water = Water(climate::water::TRANSIENT, landElevation, landElevation, _surfaceTemperature);
 		_surfaceElevation = _land.getLandElevation();
-		_land.getSurfaceTemperature();
 	}
 
-	_air = Air(_surfaceElevation,_surfaceTemperature);
+	_air = Air(_surfaceElevation, _surfaceTemperature);
 }
 
+double TileClimate::calculateLocalInitialtemperature() {
+	double localInitialTemperature = climate::earth::initialTemperatureK;
+	localInitialTemperature -= pow((_latitude_deg / 90.0), 2) * 40;
+	return localInitialTemperature;
+}
 
 void TileClimate::updateClimate(int elapsedTime){
 }
@@ -72,10 +77,11 @@ bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScree
 
 bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
 	using namespace climate;
-	double colorIntensity = std::min(abs(_surfaceTemperature - earth::initialTemperatureK) / 40.0, 1.0);
+	const double landFudge = 10;
+	double colorIntensity = std::min(abs(landFudge+_surfaceTemperature - earth::initialTemperatureK) / 40.0, 1.0);
 	double filter = 1.0 - colorIntensity;
 
-	if (_surfaceTemperature < earth::initialTemperatureK) {//Cold
+	if (landFudge+_surfaceTemperature < earth::initialTemperatureK) {//Cold
 		graphics.colorFilter(_climateDrawTextures["whiteTile"], filter, filter, 1.0);
 	}
 	else {//Hot
@@ -89,11 +95,12 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 	using namespace climate;
 
 	double temperature = _air.getSurfaceAirTemperature();
+	const double airFudge = 20;
 
-	double colorIntensity = std::min(abs(temperature - earth::initialTemperatureK) / 40.0, 1.0);
+	double colorIntensity = std::min(abs(airFudge+temperature - earth::initialTemperatureK) / 20.0, 1.0);
 	double filter = 1.0 - colorIntensity;
 
-	if (temperature < earth::initialTemperatureK) {//Cold
+	if (airFudge+temperature < earth::initialTemperatureK) {//Cold
 		graphics.colorFilter(_climateDrawTextures["whiteTile"], filter, filter, 1.0);
 	}
 	else {//Hot

@@ -20,7 +20,7 @@ class Water {
 public:
 	Water();
 	~Water();
-	Water(climate::water::BodyType, double landElevation, double surfaceElevevation);
+	Water(climate::water::BodyType, double landElevation, double surfaceElevevation, double localInitialTemperature);
 
 	void bond(const WaterNeighbor &neighbor);
 

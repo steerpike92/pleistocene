@@ -5,7 +5,7 @@
 Water::Water() {}
 Water::~Water() {}
 
-Water::Water(climate::water::BodyType waterType, double landElevation, double surfaceElevation) :
+Water::Water(climate::water::BodyType waterType, double landElevation, double surfaceElevation, double localInitialTemperature) :
 	_bodyType(waterType),
 	_landElevation(landElevation),
 	_surfaceElevation(surfaceElevation)
@@ -13,13 +13,11 @@ Water::Water(climate::water::BodyType waterType, double landElevation, double su
 
 	_elevationShader = abs(double(_landElevation + 6 * climate::land::gaps)) / double(6 * climate::land::gaps);	
 
-	double surfaceTemperature = climate::earth::initialTemperatureK;
-
 	using namespace elements;
 
 	Element water = Element(VOLUME, WATER, 20);
 
-	_waterSurface = LiquidMixture(water, surfaceTemperature);
+	_waterSurface = LiquidMixture(water, localInitialTemperature);
 
 }
 

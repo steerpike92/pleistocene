@@ -5,6 +5,7 @@
 #include "water.h"
 #include "land.h"
 #include "mixture.h"
+#include "materialLayer.h"
 
 class Tile;
 class Graphics;
@@ -13,6 +14,7 @@ class TileClimate {
 	my::Address _Address;
 	double _longitude_deg;
 	double _latitude_deg;
+	double calculateLocalInitialtemperature();
 	double _surfaceTemperature;
 	double _surfaceElevation;
 	bool _submerged;
@@ -21,6 +23,7 @@ class TileClimate {
 	double _backRadiation = 0.0;
 
 	SolarRadiation _solarRadiation;//local incident radiation
+	MaterialColumn _materialColumn;
 	Air _air;//atmosphere
 	Water _water;//oceans, seas, lakes, ponds, rivers, marshes, swamps. You name it
 	Land _land;//terrestrial or submerged earth, along with rooted plant life

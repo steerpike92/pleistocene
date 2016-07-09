@@ -6,8 +6,9 @@
 Air::Air() {}
 Air::~Air() {}
 
-Air::Air(double surfaceElevation, double surfaceTemperature) :
-	_surfaceElevation(surfaceElevation)
+Air::Air(double surfaceElevation, double localInitialTemperature) :
+	_surfaceElevation(surfaceElevation),
+	_localInitialTemperature(localInitialTemperature)
 {
 	using namespace elements;
 	using namespace climate::air;
@@ -55,8 +56,7 @@ void Air::initializePressureAtElevation(double bottomElevation, double topElevat
 
 	double height = topElevation - bottomElevation;
 
-
-	double bottomTemperature = initialTemperatureK - bottomElevation*approximateLapseRate;
+	double bottomTemperature = _localInitialTemperature - bottomElevation*approximateLapseRate;
 	double bottomPressure = seaLevelAveragePressure* exp(-Md*g*bottomElevation / (bottomTemperature*R));
 
 	double topTemperature = bottomTemperature - height*lapseRate;
@@ -66,7 +66,7 @@ void Air::initializePressureAtElevation(double bottomElevation, double topElevat
 	double mass = pressureDifference / g;
 
 	Element air = Element(MASS, DRY_AIR, mass);
-	stubMixture = GaseousMixture(air, bottomTemperature, height, bottomElevation, topElevation);
+	stubMixture = GaseousMixture(air, bottomTemperature, bottomElevation, topElevation);
 }
 
 void Air::bond(const AirNeighbor &neighbor) {

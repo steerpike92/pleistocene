@@ -25,10 +25,6 @@ private:
 	void calculatePermeability();
 	void calculateGroundWaterFlow();
 
-public:
-	//GETTERS
-	//===========================
-
 };
 
 //===============================================================
@@ -36,13 +32,12 @@ public:
 //===============================================================
 
 class ParticulateMixture : public Mixture {
-	
 public:
 	ParticulateMixture();
 	~ParticulateMixture();
 	ParticulateMixture(std::vector<Element> theElements, double temperature);
-	//GETTERS
-	//===========================
+	
+	Mixture settle(double fluidViscosity, double fluidVelocity);
 };
 
 
@@ -74,8 +69,9 @@ public:
 	DropletMixture();
 	~DropletMixture();
 	DropletMixture(Element element, double temperature);
-	//GETTERS
-	//===========================
+	
+	
+
 };
 
 //===============================================================
@@ -84,7 +80,7 @@ public:
 
 class GaseousMixture : public Mixture {
 	//ParticulateMixture _suspendedSolid; //snow/ice crystals/aerosals (maybe) (someday)
-	//DropletMixture _clouds;//clouds
+	DropletMixture _clouds;//clouds
 
 	double _bottomElevation;
 	double _topElevation;
@@ -106,8 +102,11 @@ class GaseousMixture : public Mixture {
 public:
 	GaseousMixture();
 	~GaseousMixture();
-	GaseousMixture(Element element, double temperature, double volume, double bottomElevation, double topElevation);
-	//GaseousMixture(std::vector<Element> theElements, double temperature, double volume);
+	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation);
+	//GaseousMixture(std::vector<Element> theElements, double temperature, double volume, double bottomElevation, double topElevation);
+
+	void simulateCondensation();
+	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation);
 
 	void calculateParameters();
 	double calculateBottomPressure(double downPressure);
@@ -117,8 +116,8 @@ private:
 	void calculateLapseRate();
 	void calculateSaturationDensity();
 
-	//Eigen::Vector3d _momentum;
-	//Eigen::Vector3d _velocity;
+	Eigen::Vector3d _momentum;
+	Eigen::Vector3d _velocity;
 public:
 	//GETTERS
 	//===========================

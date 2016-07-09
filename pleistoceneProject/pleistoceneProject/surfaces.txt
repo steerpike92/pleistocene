@@ -8,7 +8,8 @@ Add elevations to mixtures
 Actually, it might be easier to just keep all of the mixture functionality intact and inherit
 
 
-Say a new class "MaterialLayer" which inherits from mixture and includes auxiliary mixture fuctionality
+Say a new class "MaterialLayer" which owns a mixture includes auxiliary mixture fuctionality
+
 
 
 creating a material layer...
@@ -35,6 +36,3 @@ It's a bidirectional linked list
 
 
 
-
-(unrelated)
-add a "screenMovement" flag so that onScreenPositions gets recycled if the screen hasn't moved.
