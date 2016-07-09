@@ -263,7 +263,7 @@ double Mixture::emitInfrared() {
 	}
 
 	_totalInfraredEmitted += emissionEnergy;
-			  
+	
 	//TEMPERATURE CHANGE!!!!
 	_temperature -= emissionEnergy / _totalHeatCapacity; //emmision cooling
 
