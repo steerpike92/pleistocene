@@ -7,7 +7,7 @@ class Graphics;
 class Bios;
 
 //Tiles are hexagons
-//organized into horizontal rows and vertical columns in MyVector2 _tileAddress(row,column)
+//organized into horizontal rows and vertical columns in my::Vector2 _tileAddress(row,column)
 //Holds terrain features->
 //determins thegraphics of the tile, 
 
@@ -16,7 +16,7 @@ class Tile {
 public:
 	Tile();
 	~Tile();
-	Tile(Address tileAddress, int elevation, Graphics &graphics);
+	Tile(my::Address tileAddress, int elevation, Graphics &graphics);
 
 	//=====================================================================
 	//SETUP
@@ -32,9 +32,9 @@ private:
 
 	static void setupTextures(Graphics &graphics);
 
-	static std::vector<Address> _Addresses;
+	static std::vector<my::Address> _Addresses;
 
-	//Rectangle with ingame tile dimensions
+	//my::Rectangle with ingame tile dimensions
 	SDL_Rect _gameRectangle; 
 
 public:
@@ -51,9 +51,10 @@ private:
 
 	//Draw to renderer
 public:
-	static void drawTiles(Graphics &graphics, climate::DrawType drawType);//all
+	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//all
 private: 
-	void draw(Graphics &graphics, climate::DrawType drawType);//one
+	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//one
+	std::vector<SDL_Rect> _onScreenPositions;
 
 	//update animations
 public:
@@ -78,12 +79,12 @@ private:
 
 private:
 	//(row,column)
-	Address _address;
+	my::Address _Address;
 
 public:
 	//GETTERS
 	//===================
-	Address getAddress() const;
+	my::Address getAddress() const;
 	SDL_Rect getGameRect() const;
 	std::vector<std::string> sendMessages() const;//communicates with bios
 
@@ -94,9 +95,9 @@ protected:
 
 	//GEOGRAPHY
 	//==============================
-	//vector of neighboring tile addresses. Better to store addresses than pointers as pointers miiiight change
-	//std::vector<Address> _neighbors;
-	std::map<Direction, Address> _directionalNeighbors;
+	//vector of neighboring tile my::Addresses. Better to store my::Addresses than pointers as pointers miiiight change
+	//std::vector<my::Address> _neighbors;
+	std::map<my::Direction, my::Address> _directionalNeighbors;
 
 	//Latitude in degrees from equator
 	double _latitude_deg;

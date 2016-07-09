@@ -21,8 +21,8 @@ class Air {
 	double _downRadiation[climate::air::maxLayers+2];
 	
 
-	typedef std::pair<Direction, Air*> AirNeighbor;
-	std::map<Direction, Air*> _airNeighbors;
+	typedef std::pair<my::Direction, Air*> AirNeighbor;
+	std::map<my::Direction, Air*> _airNeighbors;
 
 	//===============================================
 	//INITIALIZATION

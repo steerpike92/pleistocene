@@ -11,8 +11,8 @@ class Land {
 	double _solarFraction;
 	climate::land::elevationType _elevationType;
 
-	typedef std::pair<Direction, Land*> LandNeighbor;
-	std::map<Direction, Land*> _landNeighbors;
+	typedef std::pair<my::Direction, Land*> LandNeighbor;
+	std::map<my::Direction, Land*> _landNeighbors;
 
 	SolidMixture _topSoil;
 	static std::map<climate::land::elevationType, std::string> _elevationTextures;

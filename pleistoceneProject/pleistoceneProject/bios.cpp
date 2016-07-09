@@ -54,8 +54,8 @@ void Bios::draw(Graphics &graphics) {
 
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);//background
 
-	MyVector2 textPos(_displayRect.x + _textMargin, _displayRect.y + _textMargin);
-	MyVector2 textDimensions;
+	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y + _textMargin);
+	my::Vector2 textDimensions;
 
 	textDimensions=graphics.blitText("Bios:", textPos, graphics.White, true);
 
@@ -100,15 +100,15 @@ InfoBar::InfoBar(Graphics &graphics) {
 
 void InfoBar::update(){
 	_messages.clear();
-	_messages = SimulationTime::readGlobalTime();
+	_messages = my::SimulationTime::readGlobalTime();
 }
 
 void InfoBar::draw(Graphics &graphics) {
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
 	
-	MyVector2 textPos(_displayRect.x + _textMargin, _displayRect.y);
+	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y);
 
-	MyVector2 textDimensions;
+	my::Vector2 textDimensions;
 
 	for (std::string &message : _messages) {
 		textDimensions=graphics.blitText(message, textPos, graphics.White, true);

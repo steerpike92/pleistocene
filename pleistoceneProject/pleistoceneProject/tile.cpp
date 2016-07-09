@@ -7,17 +7,17 @@
 Tile::Tile() {}
 Tile::~Tile() {}
 
-Tile::Tile(Address tileAddress, int elevation, Graphics &graphics) {
+Tile::Tile(my::Address tileAddress, int elevation, Graphics &graphics) {
 
-	_address = tileAddress;
+	_Address = tileAddress;
 
-	_gameRectangle.x = _address.getGamePos().x;
-	_gameRectangle.y = _address.getGamePos().y;
+	_gameRectangle.x = _Address.getGamePos().x;
+	_gameRectangle.y = _Address.getGamePos().y;
 	_gameRectangle.w = globals::TILE_WIDTH;
 	_gameRectangle.h = globals::TILE_HEIGHT;
 
 
-	MyVector2d latLonDeg = _address.getLatLonDeg();
+	my::Vector2d latLonDeg = _Address.getLatLonDeg();
 
 	_latitude_deg = latLonDeg.x;
 	_longitude_deg = latLonDeg.y;
@@ -26,7 +26,7 @@ Tile::Tile(Address tileAddress, int elevation, Graphics &graphics) {
 
 std::vector<Tile> Tile::_tiles;
 
-std::vector<Address> Tile::_Addresses;
+std::vector<my::Address> Tile::_Addresses;
 
 void Tile::setupTiles(Graphics &graphics) {
 	buildTileVector(graphics);
@@ -38,10 +38,10 @@ void Tile::buildTileVector(Graphics &graphics) {
 	//Tile constructor
 	for (int row = 0; row < globals::TILE_ROWS; row++) {
 		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
-			_tiles.emplace_back(Address(row, col), climate::land::defaultDepth, graphics);
+			_tiles.emplace_back(my::Address(row, col), climate::land::defaultDepth, graphics);
 			_Addresses.emplace_back(row, col);
 			if (_Addresses.back().i == -1) {
-				LOG("NOT A VALID ADDRESS");
+				LOG("NOT A VALID Address");
 			}
 		}
 	}
@@ -64,14 +64,14 @@ std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persista
 	double X;//x position noise variable
 	double Y;//y position noise variable
 
-	Address A;//spurious address
+	my::Address A;//spurious my::Address
 
 	//Build noise table
 	for (int row = 0; row<Rows; row++) {
 		for (int col = 0; col<Cols; col++) {
 
 			bool spurious = true;
-			A = Address(row, col, spurious);
+			A = my::Address(row, col, spurious);
 			double getNoise = 0;
 
 			//loop through octaves
@@ -175,7 +175,7 @@ void Tile::generateTileElevation(int seed) {
 
 	double landPower = 2;
 
-	Address A;
+	my::Address A;
 	double noiseValue;
 
 	for (int row = 0; row < globals::TILE_ROWS; row++) {
@@ -197,7 +197,7 @@ void Tile::generateTileElevation(int seed) {
 			}
 
 			//Final elevation set
-			A = Address(row, col);
+			A = my::Address(row, col);
 			if (A.i == -1) {
 				LOG("waht happened?");
 				throw (2);
@@ -211,7 +211,7 @@ void Tile::generateTileElevation(int seed) {
 
 void Tile::alterElevations(int deltaM) {
 	//
-	//	for (Address A : _Addresses) {
+	//	for (my::Address A : _Addresses) {
 	//		_tiles[A.i].alterElevation(deltaM);
 	//	}
 	//
@@ -259,32 +259,34 @@ void Tile::simulateTiles() {
 
 void Tile::simulate() { _tileClimate.simulateClimate(); }
 
-void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType) {
+void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
 	for (Tile &tile : _tiles) {
-		tile.draw(graphics, drawType);
+		tile.draw(graphics, drawType, cameraMovementFlag);
 	}
 }
 
-void Tile::draw(Graphics &graphics, climate::DrawType drawType) {
-	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_address.r % 2) + globals::TILE_WIDTH * _address.c;
+void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
+	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_Address.r % 2) + globals::TILE_WIDTH * _Address.c;
 	_gameRectangle.w = globals::TILE_WIDTH;
-	_gameRectangle.y = _address.r * globals::EFFECTIVE_HEIGHT;
+	_gameRectangle.y = _Address.r * globals::EFFECTIVE_HEIGHT;
 	_gameRectangle.h = globals::TILE_WIDTH;
 
 	bool selectionValue = false;//selection flag
 
-	std::vector<SDL_Rect> onScreenPositions = graphics.getOnScreenPositions(&_gameRectangle);
+	if (cameraMovementFlag) {//only update positions if camera has moved
+		_onScreenPositions = graphics.getOnScreenPositions(&_gameRectangle);
+	}
 
-	if (onScreenPositions.empty()) {
+	if (_onScreenPositions.empty()) {
 		return;
 	}
 
 	//draw and check selection
-	selectionValue=_tileClimate.drawClimate(graphics, onScreenPositions, drawType);
+	selectionValue=_tileClimate.drawClimate(graphics, _onScreenPositions, drawType);
 	if (selectionValue) {_biosPtr->selectTile(this);}
 }
 
-Address Tile::getAddress()const {return _address;}
+my::Address Tile::getAddress()const {return _Address;}
 
 SDL_Rect Tile::getGameRect() const {return _gameRectangle;}
 
@@ -309,11 +311,11 @@ std::vector<std::string> Tile::sendMessages() const {
 
 
 void Tile::buildNeighborhood() {
-	Address neighborAddress;
+	my::Address neighborAddress;
 	for (int j = 0; j < 6; j++) {
-		neighborAddress = this->_address.adjacent(j);
+		neighborAddress = this->_Address.adjacent(j);
 		if (neighborAddress.i != -1) {
-			this->_directionalNeighbors[static_cast<Direction>(j)] = neighborAddress;
+			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
 		}
 	}
 }

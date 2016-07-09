@@ -54,6 +54,6 @@ climate::DrawType Map::getDrawType() {
 	return _drawType;
 }
 
-void Map::draw(Graphics &graphics) {
-	Tile::drawTiles(graphics, _drawType);
+void Map::draw(Graphics &graphics, bool cameraMovementFlag) {
+	Tile::drawTiles(graphics, _drawType, cameraMovementFlag);
 }

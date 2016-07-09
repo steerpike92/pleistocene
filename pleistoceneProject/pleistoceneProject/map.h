@@ -14,7 +14,7 @@ public:
 
 	void generateMap(int seed);
 
-	void draw(Graphics &graphics);
+	void draw(Graphics &graphics, bool cameraMovementFlag);
 	void update(int elapsedTime);
 
 	void simulate();

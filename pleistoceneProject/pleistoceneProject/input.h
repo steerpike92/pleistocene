@@ -26,7 +26,7 @@ public:
 	bool wasButtonReleased(int buttonIndex) const;
 
 	//report mouse location in game position
-	MyVector2 getMouseLocation() const;
+	my::Vector2 getMouseLocation() const;
 
 	//Report mouse location in screen position
 	SDL_Point getMousePoint() const;
@@ -72,7 +72,7 @@ private:
 	std::map<int, bool> _releasedButtons;
 
 	//MOUSE LOCATION DATA
-	MyVector2 _mouseLocation;
+	my::Vector2 _mouseLocation;
 	SDL_Point _mousePoint;
 
 	//Drag rect start and end points

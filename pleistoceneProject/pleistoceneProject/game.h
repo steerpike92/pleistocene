@@ -21,6 +21,7 @@ private:
 
 	void processInput(int elapsedTime);
 	bool _quitFlag = false;
+	bool _cameraMovementFlag = true;
 
 	//update for screen/animations. called each frame
 	void update(int elapsedTime);

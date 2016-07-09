@@ -10,7 +10,7 @@ class Tile;
 class Graphics;
 
 class TileClimate {
-	Address _address;
+	my::Address _Address;
 	double _longitude_deg;
 	double _latitude_deg;
 	double _surfaceTemperature;
@@ -24,7 +24,7 @@ class TileClimate {
 	Air _air;//atmosphere
 	Water _water;//oceans, seas, lakes, ponds, rivers, marshes, swamps. You name it
 	Land _land;//terrestrial or submerged earth, along with rooted plant life
-	std::map<Direction, TileClimate> _adjacientTileClimates;
+	std::map<my::Direction, TileClimate> _adjacientTileClimates;
 
 public:
 	//INIITIALIZATION
@@ -32,9 +32,9 @@ public:
 
 	TileClimate();
 	~TileClimate();
-	TileClimate(Address A, double landElevation);
+	TileClimate(my::Address A, double landElevation);
 
-	void buildAdjacency(std::map<Direction, TileClimate> adjacientTileClimates);
+	void buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates);
 	
 
 	//=================================================

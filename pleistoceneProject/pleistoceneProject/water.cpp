@@ -62,7 +62,7 @@ void Water::setupTextures(Graphics &graphics) {
 
 
 void Water::clearFlow() {
-	_inputTileAddresses.clear();
+	_inputtileAddresses.clear();
 }
 
 void Water::calculateFlow() {
@@ -75,21 +75,21 @@ void Water::calculateFlow() {
 	//int minElevation = 10000;// i.e. + inf
 
 	//if (_elevationType == climate::land::SUBMERGED) {//flow not meaningful to sea until currents are added if ever
-	//	_outputTileAddress = this->_address;
+	//	_outputtileAddress = this->_Address;
 	//	//_coast = false;
 	//	_basin = false;
 	//	_feature = climate::land::feature::NONE;
 	//	return;
 	//}
 
-	//for (std::pair<Direction, Address> pair : _directionalNeighbors) {
+	//for (std::pair<my::Direction, my::Address> pair : _directionalNeighbors) {
 	//	if (_tiles[pair.second.i]._elevation < minElevation) {
 	//		minElevation = _tiles[pair.second.i]._elevation;
-	//		_outputTileAddress = pair.second;
+	//		_outputtileAddress = pair.second;
 	//	}
 	//}
 
-	//_tiles[_outputTileAddress.i]._inputTileAddresses.push_back(_address);
+	//_tiles[_outputtileAddress.i]._inputtileAddresses.push_back(_Address);
 
 
 	//if (minElevation > _elevation) {
@@ -106,7 +106,7 @@ void Water::calculateFlow() {
 	//	//_basinDepth = 0;
 	//}
 	/*
-	if (_tiles[_outputTileAddress.i]._elevationType == climate::land::SUBMERGED) {
+	if (_tiles[_outputtileAddress.i]._elevationType == climate::land::SUBMERGED) {
 	_coast = true;
 	}
 	else {

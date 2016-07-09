@@ -4,13 +4,13 @@
 Camera::Camera() {}
 Camera::~Camera() {}
 
-Camera::Camera(MyVector2 startingPosition, double startingZoom) {
+Camera::Camera(my::Vector2 startingPosition, double startingZoom) {
 	_cameraPosition = startingPosition;
 	_zoomScale = startingZoom;
 }
 
 
-MyVector2 Camera::getCameraPosition() const {
+my::Vector2 Camera::getCameraPosition() const {
 	return _cameraPosition;
 }
 
@@ -18,15 +18,16 @@ double Camera::getZoomScale() const {
 	return _zoomScale;
 }
 
-void Camera::processCommands(const Input &input, int elapsedTime) {
+bool Camera::processCommands(const Input &input, int elapsedTime) {
 
+	bool movementflag = false;
 
 	//Zoom in
 	//==========================================================================================================================
 	if (input.wasKeyReleased(SDL_SCANCODE_EQUALS)) {
 
 		//Move _cameraPosition to center of view
-		_cameraPosition = _cameraPosition + (MyVector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
+		_cameraPosition = _cameraPosition + (my::Vector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
 
 		//Change rendering _zoomScale (also scales rendering position) 
 		_zoomScale = _zoomScale * 1.25f;
@@ -35,7 +36,9 @@ void Camera::processCommands(const Input &input, int elapsedTime) {
 		_cameraPosition = _cameraPosition * (1.25f);
 
 		//move _cameraPosition back to top left corner
-		_cameraPosition = _cameraPosition - (MyVector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
+		_cameraPosition = _cameraPosition - (my::Vector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
+
+		movementflag = true;
 	}
 
 	//Zoom out
@@ -49,7 +52,7 @@ void Camera::processCommands(const Input &input, int elapsedTime) {
 				|| (RESTRICT_CAMERA == 0)) {
 
 				//Move _cameraPosition to center of view
-				_cameraPosition = _cameraPosition + (MyVector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
+				_cameraPosition = _cameraPosition + (my::Vector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
 
 				//Change rendering _zoomScale (also scales rendering position) 
 				_zoomScale = _zoomScale *  0.8;
@@ -58,19 +61,10 @@ void Camera::processCommands(const Input &input, int elapsedTime) {
 				_cameraPosition = _cameraPosition*(0.8);
 
 				//move _cameraPosition back to top left corner
-				_cameraPosition = _cameraPosition - (MyVector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
+				_cameraPosition = _cameraPosition - (my::Vector2(globals::SCREEN_WIDTH / 2, globals::SCREEN_HEIGHT / 2));
 
 
-				//zoom out camera guard
-
-				//if (_cameraPosition.x < 0) _cameraPosition.x = 0;
-				//if (_cameraPosition.y < 0)_cameraPosition.y = 0;
-				/*if (_cameraPosition.x >(globals::TILE_WIDTH*globals::MAP_WIDTH *_zoomScale - globals::SCREEN_WIDTH)) {
-				_cameraPosition.x = int(globals::TILE_WIDTH*globals::MAP_WIDTH *_zoomScale - globals::SCREEN_WIDTH);
-				}
-				if (_cameraPosition.y >(globals::TILE_HEIGHT*globals::MAP_HEIGHT *_zoomScale - globals::SCREEN_HEIGHT)) {
-				_cameraPosition.y = int(globals::TILE_HEIGHT*globals::MAP_HEIGHT *  _zoomScale - globals::SCREEN_HEIGHT);
-				}*/
+				movementflag = true;
 			}
 		}
 
@@ -85,6 +79,7 @@ void Camera::processCommands(const Input &input, int elapsedTime) {
 		if (_cameraPosition.x < -globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS / 2 && LOOP) {
 			_cameraPosition.x = int(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS / 2);
 		}
+		movementflag = true;
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_D)) {
@@ -92,26 +87,29 @@ void Camera::processCommands(const Input &input, int elapsedTime) {
 		if (_cameraPosition.x >(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS*1.5 - globals::SCREEN_WIDTH) && LOOP) {
 			_cameraPosition.x -= int(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS);
 		}
+		movementflag = true;
+
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_W)) {
 		if (_cameraPosition.y > -(globals::EFFECTIVE_HEIGHT*3) * _zoomScale) {
 			_cameraPosition.y -= elapsedTime / 2;
+			movementflag = true;
 		}
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_S)) {
 		if (_cameraPosition.y < ((globals::GAME_HEIGHT_PIXELS) * _zoomScale - globals::SCREEN_HEIGHT)) {
 			_cameraPosition.y += elapsedTime / 2;
+			movementflag = true;
 		}
 	}
 
-
-
+	return movementflag;
 }
 
-MyVector2 Camera::screenPosToGamePos(MyVector2 screenPos) const {
-	MyVector2 gamePos;
+my::Vector2 Camera::screenPosToGamePos(my::Vector2 screenPos) const {
+	my::Vector2 gamePos;
 	gamePos = (screenPos + _cameraPosition) * (1 / _zoomScale);
 	return gamePos;
 }

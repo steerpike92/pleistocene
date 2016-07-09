@@ -12,7 +12,7 @@ public:
 	SDL_Renderer *getRenderer() const;
 
 	void loadImage(const std::string pathName);
-	MyVector2 imageDimensions(const std::string pathName);
+	my::Vector2 imageDimensions(const std::string pathName);
 				
 	void freeImage(const std::string pathName);
 	void freeAll();
@@ -40,9 +40,9 @@ public:
 	bool blitSurface(std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions, 
 		double degreesRotated=0.0, bool mirrorH=false, bool mirrorV=false);
 
-	void blitRectangle(const SDL_Rect *const rectangle, const SDL_Color color, bool screenLocked = false);
+	void blitRectangle(const SDL_Rect *const Rect, const SDL_Color color, bool screenLocked = false);
 
-	MyVector2 blitText(std::string text, MyVector2 messageLoc, SDL_Color color, bool screenLocked = true);
+	my::Vector2 blitText(std::string text, my::Vector2 messageLoc, SDL_Color color, bool screenLocked = true);
 
 	//Colors
 	SDL_Color Black = { 0,0,0,255 };
@@ -52,7 +52,7 @@ public:
 	//renders to screen
 	void flip();
 
-	MyVector2 getSurfaceSize(std::string pathName) const;
+	my::Vector2 getSurfaceSize(std::string pathName) const;
 
 private:
 	SDL_Window *_window;

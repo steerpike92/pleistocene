@@ -14,8 +14,8 @@ class Water {
 	double _elevationShader;
 	LiquidMixture _waterSurface;
 
-	typedef std::pair<Direction, Water*> WaterNeighbor;
-	std::map<Direction, Water*> _waterNeighbors;
+	typedef std::pair<my::Direction, Water*> WaterNeighbor;
+	std::map<my::Direction, Water*> _waterNeighbors;
 
 public:
 	Water();
@@ -36,8 +36,8 @@ private:
 	void calculateFlow();
 
 	//fresh water flows to neighbor tile with least elevation (watershed)
-	Address _outputTileAddress;
-	std::vector<Address> _inputTileAddresses;//Tiles feeding this tile
+	my::Address _outputtileAddress;
+	std::vector<my::Address> _inputtileAddresses;//Tiles feeding this tile
 
 	//GETTERS
 	//===========================================

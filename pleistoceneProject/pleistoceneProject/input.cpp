@@ -62,7 +62,7 @@ void Input::storeMousePositionData(const SDL_Event &event) {
 	_mousePoint.x = event.button.x;
 	_mousePoint.y = event.button.y;
 
-	_mouseLocation = _cameraPtr->screenPosToGamePos(MyVector2(_mousePoint));
+	_mouseLocation = _cameraPtr->screenPosToGamePos(my::Vector2(_mousePoint));
 }
 
 //Called when button pressed
@@ -127,7 +127,7 @@ bool Input::wasButtonReleased(int buttonIndex) const {
 	return checkBoolMap(buttonIndex, _releasedButtons);
 }
 
-MyVector2 Input::getMouseLocation() const {
+my::Vector2 Input::getMouseLocation() const {
 	return _mouseLocation;
 }
 SDL_Point Input::getMousePoint() const {

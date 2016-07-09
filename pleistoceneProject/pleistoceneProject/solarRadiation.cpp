@@ -7,8 +7,8 @@ SolarRadiation::~SolarRadiation() {}
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
 	using namespace climate::earth;
 
-	_latitude_rad=(degToRad(latitude_deg));
-	_longitude_rad = (degToRad(longitude_deg));
+	_latitude_rad=(my::degToRad(latitude_deg));
+	_longitude_rad = (my::degToRad(longitude_deg));
 
 	//Longitude=0 normalVector setup
 	_normalVector(0) = cos(_latitude_rad + tilt_rad);
@@ -60,7 +60,7 @@ void SolarRadiation::setupSolarRadiation() {
 
 	//Setup Rotation Matrix
 	//take total hours in this year and divide it by the length of a sidereal day (hours)
-	double sDays = (SimulationTime::_globalTime.getHour() + SimulationTime::_globalTime.getDay()*solarDay_h) / siderealDay_h;
+	double sDays = (my::SimulationTime::_globalTime.getHour() + my::SimulationTime::_globalTime.getDay()*solarDay_h) / siderealDay_h;
 
 	//take the floor of the number of sidereal days to determine our progress through the current siderial day
 	double sDayFloor = floor(sDays);
@@ -72,8 +72,8 @@ void SolarRadiation::setupSolarRadiation() {
 
 	//Setup Sun Ray Vector
 	//sun vector rotates in circle once per solar year
-	angle_rad = 2 * M_PI*(double(SimulationTime::_globalTime.getDay()+
-		double(SimulationTime::_globalTime.getHour())/double(solarDay_h)) /(double)solarYear_d);
+	angle_rad = 2 * M_PI*(double(my::SimulationTime::_globalTime.getDay()+
+		double(my::SimulationTime::_globalTime.getHour())/double(solarDay_h)) /(double)solarYear_d);
 
 	_sunRayVector(0) = cos(angle_rad);
 	_sunRayVector(1) = sin(angle_rad);

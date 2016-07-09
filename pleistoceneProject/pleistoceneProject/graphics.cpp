@@ -65,8 +65,8 @@ void Graphics::loadImage(const std::string pathName) {
 	}
 }
 
-MyVector2 Graphics::imageDimensions(const std::string pathName) {
-	return MyVector2(_spriteSheets[pathName]->w, _spriteSheets[pathName]->h);
+my::Vector2 Graphics::imageDimensions(const std::string pathName) {
+	return my::Vector2(_spriteSheets[pathName]->w, _spriteSheets[pathName]->h);
 }
 
 void  Graphics::freeImage(const std::string pathName) {
@@ -132,14 +132,14 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 
 	for (int i = loopStart; i <= loopEnd; i++) {
 
-		//destinationRectangle comes in game position
+		//destinationmy::Rectangle comes in game position
 		localDestRect = *gameRectangle;
 
 		//add world looping shift
 		localDestRect.x += i * globals::TILE_WIDTH * globals::TILE_COLUMNS;
 
 		//Adjust for camera position
-		Rectangle dest(localDestRect);
+		my::Rectangle dest(localDestRect);
 		localDestRect = dest.cameraTransform(_cameraPtr->getZoomScale(), _cameraPtr->getCameraPosition());
 
 		//Within view rendering guard
@@ -151,7 +151,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 	return onScreenPositions;
 }
 
-bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRectangle, std::vector<SDL_Rect> onScreenPositions, 
+bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions, 
 	double degreesRotated, bool mirrorH, bool mirrorV) {
 
 	bool selectionFlag = false;
@@ -163,7 +163,7 @@ bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const so
 	else if (mirrorV) mirror = SDL_FLIP_VERTICAL;
 
 	for (SDL_Rect localDestRect : onScreenPositions) {
-		if (SDL_RenderCopyEx(_renderer, _textures[pathName], sourceRectangle, &localDestRect, degreesRotated, NULL, mirror)) {
+		if (SDL_RenderCopyEx(_renderer, _textures[pathName], sourceRect, &localDestRect, degreesRotated, NULL, mirror)) {
 			LOG("Error rendering: "); LOG(pathName); throw(1);
 		}
 		if (_selecting) {
@@ -176,12 +176,12 @@ bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const so
 	return selectionFlag;
 }
 
-void Graphics::blitRectangle(const SDL_Rect * const rectangle, const SDL_Color color, bool screenLocked) {
-	SDL_Rect localDestRect = *rectangle;
+void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color color, bool screenLocked) {
+	SDL_Rect localDestRect = *Rectangle;
 
 	//zoom/camera position transform
 	if (!screenLocked) {
-		Rectangle dest(localDestRect);
+		my::Rectangle dest(localDestRect);
 		localDestRect = dest.cameraTransform(_cameraPtr->getZoomScale(), _cameraPtr->getCameraPosition());
 	}
 
@@ -194,27 +194,27 @@ void Graphics::blitRectangle(const SDL_Rect * const rectangle, const SDL_Color c
 	if (onScreen) {
 
 		if(SDL_RenderFillRect(_renderer, &localDestRect)){
-			LOG("Error rendering rectangle");
+			LOG("Error rendering my::Rectangle");
 			throw(1);
 		}
 	}
 }
 
-MyVector2 Graphics::blitText(std::string text, MyVector2 Message_loc, SDL_Color color, bool screenLocked) {
+my::Vector2 Graphics::blitText(std::string text, my::Vector2 Message_loc, SDL_Color color, bool screenLocked) {
 	
 	SDL_Rect localDestRect;
 	SDL_Texture *tempTexture;
-	MyVector2 textDimensions = MyVector2(0, 0);
+	my::Vector2 textDimensions = my::Vector2(0, 0);
 	if(text=="") { return textDimensions; }
 
 	SDL_Surface* textSurface = TTF_RenderText_Solid(_font, text.c_str(), color);
-	textDimensions = MyVector2(textSurface->w, textSurface->h);
+	textDimensions = my::Vector2(textSurface->w, textSurface->h);
 	tempTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
 	localDestRect = { Message_loc.x,Message_loc.y,textDimensions.x,textDimensions.y };
 	SDL_FreeSurface(textSurface);
 	
 	if (!screenLocked) {
-		Rectangle dest(localDestRect);
+		my::Rectangle dest(localDestRect);
 		localDestRect = dest.cameraTransform(_cameraPtr->getZoomScale(), _cameraPtr->getCameraPosition());
 	}
 
@@ -240,9 +240,9 @@ SDL_Renderer* Graphics::getRenderer() const {
 
 
 
-MyVector2 Graphics::getSurfaceSize( std::string pathName) const {
+my::Vector2 Graphics::getSurfaceSize( std::string pathName) const {
 	SDL_Surface temp;
-	MyVector2 dimensions;
+	my::Vector2 dimensions;
 	temp=*_spriteSheets.at(pathName);
 	dimensions.x = temp.w;
 	dimensions.y = temp.h;

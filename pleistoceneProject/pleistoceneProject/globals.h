@@ -22,8 +22,8 @@
 #define RESTRICT_CAMERA 1
 #define COAST_DRAW 0
 #define DELAY 0
-#define DAILY_DRAW 1
-#define SOLAR_SHADE 0
+#define DAILY_DRAW 0
+#define SOLAR_SHADE 1
 
 
 #if DEBUG
@@ -71,13 +71,13 @@ namespace climate {
 		const double tileArea = 100000000.0; //m^2
 
 		const double g = 9.81;		//acceleration of gravity (m/s/s)
-		const int maxLatitude = 60;
-		const int solarYear_d = 300;	//Length of a solar year in days
+		const int maxLatitude = 70;
+		const int solarYear_d = 60;	//Length of a solar year in days
 		const int solarDay_h = 24;	//length of a solar day in hours
 		const int hour_s = 3600;
 		const double siderealDay_h = double(solarDay_h*solarYear_d) / double(solarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
 		const double tilt_rad = 0.4101524;//radians of axial tilt
-						  //const double tilt_rad = (M_PI / 2)*.6;
+		//const double tilt_rad = (M_PI / 2)*.6;
 
 		const double solarIntensity = 1.360;//kilo-watts per m2
 		const double solarEnergyPerHour = solarIntensity * hour_s;// Kilo-Joules per hour per m2
@@ -184,373 +184,374 @@ namespace climate {
 	}
 }
 
+namespace my {
+	enum Direction {
+		NORTH_EAST,
+		EAST,
+		SOUTH_EAST,
+		SOUTH_WEST,
+		WEST,
+		NORTH_WEST
+	};
 
 
-enum Direction {
-	NORTH_EAST,
-	EAST,
-	SOUTH_EAST,
-	SOUTH_WEST,
-	WEST,
-	NORTH_WEST
-};
+	class Vector2d;
+
+	class Vector2 {
+	public:
+		int x; int y;
+		Vector2() { x = 0; y = 0; }
+		Vector2(int X, int Y) { x = X; y = Y; }
+		Vector2(Vector2d v2);
+		Vector2(SDL_Point P) { x = P.x; y = P.y; }
 
 
-class MyVector2d;
+		//Addition overload
+		Vector2 operator + (Vector2 v2) {
+			Vector2 v3;
+			v3.x = this->x + v2.x;
+			v3.y = this->y + v2.y;
+			return v3;
+		}
+		void operator +=(Vector2 v2) {
+			x += v2.x;
+			y += v2.y;
+		}
 
-class MyVector2 {
-public:
-	int x; int y;
-	MyVector2() {x = 0; y = 0;}
-	MyVector2(int X, int Y) { x = X; y = Y; }
-	MyVector2(MyVector2d v2);
-	MyVector2(SDL_Point P) { x = P.x; y = P.y; }
+		//Subtraction overload
+		Vector2 operator - (Vector2 v2) {
+			Vector2 v3;
+			v3.x = this->x - v2.x;
+			v3.y = this->y - v2.y;
+			return v3;
+		}
+		void operator -=(Vector2 v2) {
+			x -= v2.x;
+			y -= v2.y;
+		}
 
+		Vector2 operator * (int a) {
+			Vector2 v2;
+			v2.x = x*a;
+			v2.y = y*a;
+			return v2;
+		}
+		Vector2 operator * (double a) {
+			Vector2 v2;
+			v2.x = int(x*a);
+			v2.y = int(y*a);
+			return v2;
+		}
 
-	//Addition overload
-	MyVector2 operator + (MyVector2 v2) {
-		MyVector2 v3; 
-		v3.x = this->x + v2.x; 
-		v3.y = this->y + v2.y;
-		return v3;
-	}
-	void operator +=(MyVector2 v2) {
-		x += v2.x;
-		y += v2.y;
-	}
+		double size() {
+			return double(pow(pow(x, 2) + pow(y, 2), .5));
+		}
 
-	//Subtraction overload
-	MyVector2 operator - (MyVector2 v2) {
-		MyVector2 v3;
-		v3.x = this->x - v2.x;
-		v3.y = this->y - v2.y;
-		return v3;
-	}
-	void operator -=(MyVector2 v2) {
-		x -= v2.x;
-		y -= v2.y;
-	}
+		void print() {
+			std::cout << "(" << x << "," << y << ")" << std::endl;
+		}
 
-	MyVector2 operator * (int a) {
-		MyVector2 v2;
-		v2.x = x*a;
-		v2.y = y*a;
-		return v2;
-	}
-	MyVector2 operator * (double a) {
-		MyVector2 v2;
-		v2.x = int(x*a);
-		v2.y = int(y*a);
-		return v2;
-	}
-
-	double size() {
-		return double(pow(pow(x, 2) + pow(y, 2), .5));
-	}
-
-	void print() {
-		std::cout << "(" << x << "," << y << ")" << std::endl;
-	}
-
-};
+	};
 
 
-class MyVector2d {
-public:
-	double x; double y;
+	class Vector2d {
+	public:
+		double x; double y;
 
-	//Default constructor
-	MyVector2d() { x = 0.0; y = 0.0; }
+		//Default constructor
+		Vector2d() { x = 0.0; y = 0.0; }
 
-	//Specified constructor
-	MyVector2d(double X, double Y) { x = X; y = Y; }
+		//Specified constructor
+		Vector2d(double X, double Y) { x = X; y = Y; }
 
-	//Translator constructor
-	MyVector2d(MyVector2 v2) { x = double(v2.x); y = double(v2.y); }
+		//Translator constructor
+		Vector2d(Vector2 v2) { x = double(v2.x); y = double(v2.y); }
 
-	//Addition overload
-	MyVector2d operator + (MyVector2d v2) {
-		MyVector2d v3;
-		v3.x = this->x + v2.x;
-		v3.y = this->y + v2.y;
-		return v3;
-	}
-	void operator +=(MyVector2d v2) {
-		x += v2.x;
-		y += v2.y;
-	}
-	//Subtraction overload
-	MyVector2d operator - (MyVector2d v2) {
-		MyVector2d v3;
-		v3.x = this->x - v2.x;
-		v3.y = this->y - v2.y;
-		return v3;
-	}
-	void operator -=(MyVector2d v2) {
-		x -= v2.x;
-		y -= v2.y;
-	}
-	MyVector2d operator * (int a) {
-		MyVector2d v2;
-		v2.x = x*double(a);
-		v2.y = y*double(a);
-		return v2;
-	}
+		//Addition overload
+		Vector2d operator + (Vector2d v2) {
+			Vector2d v3;
+			v3.x = this->x + v2.x;
+			v3.y = this->y + v2.y;
+			return v3;
+		}
+		void operator +=(Vector2d v2) {
+			x += v2.x;
+			y += v2.y;
+		}
+		//Subtraction overload
+		Vector2d operator - (Vector2d v2) {
+			Vector2d v3;
+			v3.x = this->x - v2.x;
+			v3.y = this->y - v2.y;
+			return v3;
+		}
+		void operator -=(Vector2d v2) {
+			x -= v2.x;
+			y -= v2.y;
+		}
+		Vector2d operator * (int a) {
+			Vector2d v2;
+			v2.x = x*double(a);
+			v2.y = y*double(a);
+			return v2;
+		}
 
-	MyVector2d operator * (double a) {
-		MyVector2d v2;
-		v2.x = x*a;
-		v2.y = y*a;
-		return v2;
-	}
+		Vector2d operator * (double a) {
+			Vector2d v2;
+			v2.x = x*a;
+			v2.y = y*a;
+			return v2;
+		}
 
-	double size() {
-		return double(pow(pow(x, 2) + pow(y, 2), .5));
-	}
+		double size() {
+			return double(pow(pow(x, 2) + pow(y, 2), .5));
+		}
 
-	void print() {
-		std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
-	}
+		void print() {
+			std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
+		}
 
-};
+	};
 
-class MyVector3d {
-public:
-	double x; double y; double z;
+	class MyVector3d {
+	public:
+		double x; double y; double z;
 
-	//Default constructor
-	MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
+		//Default constructor
+		MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
 
-	//Specified constructor
-	MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
+		//Specified constructor
+		MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
 
-	//Addition overload
-	MyVector3d operator + (MyVector3d v2) {
-		MyVector3d v3;
-		v3.x = this->x + v2.x;
-		v3.y = this->y + v2.y;
-		v3.z = this->z + v2.z;
-		return v3;
-	}
-	void operator +=(MyVector3d v2) {
-		x += v2.x;
-		y += v2.y;
-		z += v2.z;
-	}
-	//Subtraction overload
-	MyVector3d operator - (MyVector3d v2) {
-		MyVector3d v3;
-		v3.x = this->x - v2.x;
-		v3.y = this->y - v2.y;
-		v3.z = this->z - v2.z;
-		return v3;
-	}
-	void operator -=(MyVector3d v2) {
-		x -= v2.x;
-		y -= v2.y;
-		z -= v2.z;
-	}
-	MyVector3d operator * (int a) {
-		MyVector3d v2;
-		v2.x = x*double(a);
-		v2.y = y*double(a);
-		v2.z = z*double(a);
-		return v2;
-	}
+		//Addition overload
+		MyVector3d operator + (MyVector3d v2) {
+			MyVector3d v3;
+			v3.x = this->x + v2.x;
+			v3.y = this->y + v2.y;
+			v3.z = this->z + v2.z;
+			return v3;
+		}
+		void operator +=(MyVector3d v2) {
+			x += v2.x;
+			y += v2.y;
+			z += v2.z;
+		}
+		//Subtraction overload
+		MyVector3d operator - (MyVector3d v2) {
+			MyVector3d v3;
+			v3.x = this->x - v2.x;
+			v3.y = this->y - v2.y;
+			v3.z = this->z - v2.z;
+			return v3;
+		}
+		void operator -=(MyVector3d v2) {
+			x -= v2.x;
+			y -= v2.y;
+			z -= v2.z;
+		}
+		MyVector3d operator * (int a) {
+			MyVector3d v2;
+			v2.x = x*double(a);
+			v2.y = y*double(a);
+			v2.z = z*double(a);
+			return v2;
+		}
 
-	MyVector3d operator * (double a) {
-		MyVector3d v2;
-		v2.x = x*a;
-		v2.y = y*a;
-		v2.z = z*a;
-		return v2;
-	}
+		MyVector3d operator * (double a) {
+			MyVector3d v2;
+			v2.x = x*a;
+			v2.y = y*a;
+			v2.z = z*a;
+			return v2;
+		}
 
-	double size() {
-		return double(pow(pow(x, 2) + pow(y, 2)+ pow(z,2), .5));
-	}
+		double size() {
+			return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
+		}
 
-	void print() {
-		std::cout << "(" << int(x) << "," << int(y) << ","<< int (z) <<")" << std::endl;
-	}
+		void print() {
+			std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
+		}
 
-};
+	};
 
-class Rectangle {
-public:
-	Rectangle();
-	~Rectangle();
-	Rectangle(int x, int y, int w, int h);
-	Rectangle(SDL_Rect rect);
+	class Rectangle {
+	public:
+		Rectangle();
+		~Rectangle();
+		Rectangle(int x, int y, int w, int h);
+		Rectangle(SDL_Rect rect);
 
-	const SDL_Rect cameraTransform(const double SCALE,const MyVector2 _C) const;
+		const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const;
 
-	const MyVector2 getCenter() const;
+		const Vector2 getCenter() const;
 
-	//takes new position
-	void moveRect(const MyVector2 &S);
+		//takes new position
+		void moveRect(const Vector2 &S);
 
-	const int getLeft() const;
-	const int getRight() const;
-	const int getTop() const;
-	const int getBottom() const;
+		const int getLeft() const;
+		const int getRight() const;
+		const int getTop() const;
+		const int getBottom() const;
 
-	const int getWidth() const;
-	const int getHeight() const;
+		const int getWidth() const;
+		const int getHeight() const;
 
-	void print() const;
+		void print() const;
 
-	int x, y, w, h;
-
-
-};
+		int x, y, w, h;
 
 
-class Address {
-public:
-	int r;//row
-	int c;//column
-	int i;//tile index (-1 if doesn't exist)
-	bool exists = false;//existance or validity flag
-	bool odd = false;//odd row flag
+	};
 
-	//default constructor
-	Address(){
-		r = -100; c = -100; exists = false; i = -1;
-	}
 
-	//Normal constructor
-	Address(int R, int C) {
+	class Address {
+	public:
+		int r;//row
+		int c;//column
+		int i;//tile index (-1 if doesn't exist)
+		bool exists = false;//existance or validity flag
+		bool odd = false;//odd row flag
 
-		//guard against 
-		if (R<0 || R>=globals::TILE_ROWS) {
-			r = -100;
-			c = -100; 
+				 //default constructor
+		Address() {
+			r = -100; c = -100; exists = false; i = -1;
+		}
+
+		//Normal constructor
+		Address(int R, int C) {
+
+			//guard against 
+			if (R<0 || R >= globals::TILE_ROWS) {
+				r = -100;
+				c = -100;
+				exists = false;
+				i = -1;
+				return;
+			}
+
+			exists = true;
+
+			r = R;
+
+			odd = (r % 2 != 0);
+
+			if (C < 0) {
+				c = C + globals::TILE_COLUMNS;
+			}
+			else if (C >= globals::TILE_COLUMNS) {
+				c = C - globals::TILE_COLUMNS;
+			}
+			else c = C;
+
+			i = r*globals::TILE_COLUMNS + c;
+		}
+
+		//call normal constructor
+		Address(Vector2 v) : Address(v.x, v.y) {}
+
+		//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
+		Address(int R, int C, bool Spurious) {
 			exists = false;
+			r = R;
+			odd = (r % 2 != 0);
+			c = C;
 			i = -1;
-			return;
 		}
 
-		exists = true;
-
-		r = R;
-
-		odd = (r % 2 != 0);
-
-		if (C < 0) {
-			c = C + globals::TILE_COLUMNS;
-		}
-		else if (C >= globals::TILE_COLUMNS) {
-			c = C - globals::TILE_COLUMNS;
-		}
-		else c = C;
-
-		i = r*globals::TILE_COLUMNS + c;
-	}
-
-	//call normal constructor
-	Address(MyVector2 v) : Address(v.x, v.y) {}
-
-	//call spurious constructor, for sort of made up address positions that don't correspond to a tile
-	Address(int R, int C, bool Spurious) {
-		exists = false;
-		r = R;
-		odd = (r % 2 != 0);
-		c = C;
-		i = -1;
-	}
-
-	//gets game position at an address
-	MyVector2 getGamePos() const {
-		MyVector2 v;
-		v.x = (globals::TILE_WIDTH/2) * (r % 2) + globals::TILE_WIDTH * c;
-		v.y = globals::EFFECTIVE_HEIGHT*r;
-		return v;
-	}
-
-	MyVector2d getLatLonDeg() const {
-		MyVector2 v = this->getGamePos();
-
-		double _latitude_deg = ((-(double)v.y / 
-			(globals::EFFECTIVE_HEIGHT*(globals::TILE_ROWS) / 2)) + 1)*climate::earth::maxLatitude;
-		double _longitude_deg = 360 * v.x / 
-			(globals::TILE_COLUMNS*globals::TILE_WIDTH);
-
-		return MyVector2d(_latitude_deg, _longitude_deg);
-	}
-
-	Address adjacent(Direction direction) const {
-
-		//even/odd changes vertical column shift
-		int colMod = 0;
-
-		if (odd) {
-			colMod = 1;
+		//gets game position at an Address
+		Vector2 getGamePos() const {
+			Vector2 v;
+			v.x = (globals::TILE_WIDTH / 2) * (r % 2) + globals::TILE_WIDTH * c;
+			v.y = globals::EFFECTIVE_HEIGHT*r;
+			return v;
 		}
 
-		switch (direction) {
+		Vector2d getLatLonDeg() const {
+			Vector2 v = this->getGamePos();
 
-		case(NORTH_EAST) :
-			return Address(r - 1, c + colMod);
-		case(EAST) :
-			return Address(r, c + 1);
-		case(SOUTH_EAST) :
-			return Address(r + 1, c + colMod);
-		case(SOUTH_WEST) :
-			return Address(r + 1, c + colMod - 1);
-		case(WEST) :
-			return Address(r, c - 1);
-		case(NORTH_WEST) :
-			return Address(r - 1, c + colMod - 1);
-		default:
-			LOG("NOT A VALID DIRECTION");
-			throw(2);
-			return Address(r, c);
+			double _latitude_deg = ((-(double)v.y /
+				(globals::EFFECTIVE_HEIGHT*(globals::TILE_ROWS) / 2)) + 1)*climate::earth::maxLatitude;
+			double _longitude_deg = 360 * v.x /
+				(globals::TILE_COLUMNS*globals::TILE_WIDTH);
+
+			return Vector2d(_latitude_deg, _longitude_deg);
 		}
-	}
 
-	Address adjacent(int i) const {
-		if (i >= 0 && i < 6) {
-			return adjacent(static_cast<Direction>(i));
+		Address adjacent(Direction direction) const {
+
+			//even/odd changes vertical column shift
+			int colMod = 0;
+
+			if (odd) {
+				colMod = 1;
+			}
+
+			switch (direction) {
+
+			case(NORTH_EAST) :
+				return Address(r - 1, c + colMod);
+			case(EAST) :
+				return Address(r, c + 1);
+			case(SOUTH_EAST) :
+				return Address(r + 1, c + colMod);
+			case(SOUTH_WEST) :
+				return Address(r + 1, c + colMod - 1);
+			case(WEST) :
+				return Address(r, c - 1);
+			case(NORTH_WEST) :
+				return Address(r - 1, c + colMod - 1);
+			default:
+				LOG("NOT A VALID DIRECTION");
+				throw(2);
+				return Address(r, c);
+			}
 		}
-		else {
-			LOG("NOT A VALID DIRECTION");
-			throw (2);
-			return Address(-1, -1, true);
+
+		Address adjacent(int i) const {
+			if (i >= 0 && i < 6) {
+				return adjacent(static_cast<my::Direction>(i));
+			}
+			else {
+				LOG("NOT A VALID DIRECTION");
+				throw (2);
+				return Address(-1, -1, true);
+			}
 		}
-	}
-};
+	};
 
 
-class SimulationTime {
-public:
-	//default constructor for 
-	SimulationTime();
-	~SimulationTime();
+	class SimulationTime {
+	public:
+		//default constructor for 
+		SimulationTime();
+		~SimulationTime();
 
-	static SimulationTime _globalTime;
+		static SimulationTime _globalTime;
 
-	static void updateGlobalTime();
+		static void updateGlobalTime();
 
-	static std::vector<std::string> readGlobalTime();
+		static std::vector<std::string> readGlobalTime();
 
-	double getTotalYears() const;
-	double getTotalDays() const;
-	double getTotalHours() const;
+		double getTotalYears() const;
+		double getTotalDays() const;
+		double getTotalHours() const;
 
-	int getYear() const;
-	int getDay() const;
-	int getHour() const;
+		int getYear() const;
+		int getDay() const;
+		int getHour() const;
 
-private:
-	int _year;
-	int _day;
-	int _hour;
+	private:
+		int _year;
+		int _day;
+		int _hour;
 
-	static bool _globalTimeExists;
+		static bool _globalTimeExists;
 
-};
+	};
 
 
-double degToRad(double deg);
-double radToDeg(double rad);
+	double degToRad(double deg);
+	double radToDeg(double rad);
+}
+

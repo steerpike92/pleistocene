@@ -152,6 +152,9 @@
     <ClInclude Include="tileClimate.h" />
     <ClInclude Include="water.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="surfaces.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

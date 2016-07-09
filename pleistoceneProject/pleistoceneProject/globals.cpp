@@ -2,26 +2,26 @@
 
 
 
-MyVector2::MyVector2(MyVector2d v2) {
+my::Vector2::Vector2(my::Vector2d v2) {
 	x = int(v2.x);
 	y = int(v2.y);
 }
 
 
-Rectangle::Rectangle() :x(-1), y(-1), w(0), h(0) {}
-Rectangle::~Rectangle() {}
+my::Rectangle::Rectangle() :x(-1), y(-1), w(0), h(0) {}
+my::Rectangle::~Rectangle() {}
 
-Rectangle::Rectangle(int x, int y, int w, int h) :
+my::Rectangle::Rectangle(int x, int y, int w, int h) :
 	x(x), y(y), w(w), h(h)
 {}
 
-Rectangle::Rectangle(SDL_Rect rect) :
+my::Rectangle::Rectangle(SDL_Rect rect) :
 	x(rect.x), y(rect.y), w(rect.w), h(rect.h)
 {}
 
 
 
-const SDL_Rect Rectangle::cameraTransform(const double SCALE, const MyVector2 C) const {
+const SDL_Rect my::Rectangle::cameraTransform(const double SCALE, const my::Vector2 C) const {
 
 	SDL_Rect GameRect;
 
@@ -36,33 +36,33 @@ const SDL_Rect Rectangle::cameraTransform(const double SCALE, const MyVector2 C)
 }
 
 
-void Rectangle::moveRect(const MyVector2 &S) {
+void my::Rectangle::moveRect(const my::Vector2 &S) {
 	this->x = S.x;
 	this->y = S.y;
 }
 
-const MyVector2 Rectangle::getCenter() const {
-	return MyVector2(x + w / 2, y + h / 2);
+const my::Vector2 my::Rectangle::getCenter() const {
+	return my::Vector2(x + w / 2, y + h / 2);
 }
 
-const int Rectangle::getLeft() const { return x; }
-const int Rectangle::getRight() const { return x + w; }
-const int Rectangle::getTop() const { return y; }
-const int Rectangle::getBottom() const { return y + h; }
+const int my::Rectangle::getLeft() const { return x; }
+const int my::Rectangle::getRight() const { return x + w; }
+const int my::Rectangle::getTop() const { return y; }
+const int my::Rectangle::getBottom() const { return y + h; }
 
-const int Rectangle::getWidth() const { return w; }
-const int Rectangle::getHeight() const { return h; }
+const int my::Rectangle::getWidth() const { return w; }
+const int my::Rectangle::getHeight() const { return h; }
 
 
-void Rectangle::print() const {
+void my::Rectangle::print() const {
 
 	std::cout << "(" << x << "," << y << "," << w << "," << h << ")\n";
 
 }
 
-bool SimulationTime::_globalTimeExists = false;
+bool my::SimulationTime::_globalTimeExists = false;
 
-SimulationTime::SimulationTime() {
+my::SimulationTime::SimulationTime() {
 
 	if (_globalTimeExists) {//set time equal to current global time
 		this->_year = _globalTime._year;
@@ -78,11 +78,11 @@ SimulationTime::SimulationTime() {
 
 }
 
-SimulationTime::~SimulationTime() {}
+my::SimulationTime::~SimulationTime() {}
 
-SimulationTime SimulationTime::_globalTime = SimulationTime();
+my::SimulationTime my::SimulationTime::_globalTime = my::SimulationTime();
 
-void SimulationTime::updateGlobalTime() {
+void my::SimulationTime::updateGlobalTime() {
 
 	_globalTime._hour++;
 
@@ -96,7 +96,7 @@ void SimulationTime::updateGlobalTime() {
 	}
 }
 
-std::vector<std::string> SimulationTime::readGlobalTime() {
+std::vector<std::string> my::SimulationTime::readGlobalTime() {
 
 	std::stringstream stream;
 	std::vector<std::string> messages;
@@ -117,7 +117,7 @@ std::vector<std::string> SimulationTime::readGlobalTime() {
 }
 
 
-double SimulationTime::getTotalHours() const {
+double my::SimulationTime::getTotalHours() const {
 	double hours = 0.0;
 	if (this == &_globalTime) {
 		hours += _globalTime._hour;
@@ -134,7 +134,7 @@ double SimulationTime::getTotalHours() const {
 	}
 }
 
-double SimulationTime::getTotalDays() const{
+double my::SimulationTime::getTotalDays() const{
 	double days = 0.0;
 	if (this == &_globalTime) {
 		days += (_globalTime._hour) / climate::earth::solarDay_h;
@@ -148,7 +148,7 @@ double SimulationTime::getTotalDays() const{
 	return days;
 }
 
-double SimulationTime::getTotalYears() const{
+double my::SimulationTime::getTotalYears() const{
 	double years = 0.0;
 	if (this == &_globalTime) {
 		years += ((_globalTime._hour) / climate::earth::solarDay_h) / climate::earth::solarYear_d;
@@ -163,19 +163,19 @@ double SimulationTime::getTotalYears() const{
 	return years;
 }
 
-int SimulationTime::getYear()const {
+int my::SimulationTime::getYear()const {
 	if (this == &_globalTime) {
 		return _globalTime._year;
 	}
 	return _globalTime._year - this->_year;
 }
-int SimulationTime::getDay()const {
+int my::SimulationTime::getDay()const {
 	if (this == &_globalTime) {
 		return _globalTime._day;
 	}
 	return _globalTime._day - this->_day;
 }
-int SimulationTime::getHour()const {
+int my::SimulationTime::getHour()const {
 	if (this == &_globalTime) {
 		return _globalTime._hour;
 	}
@@ -183,10 +183,10 @@ int SimulationTime::getHour()const {
 }
 
 
-double degToRad(double deg) {
+double my::degToRad(double deg) {
 	return deg*M_PI / 180.0;
 }
 
-double radToDeg(double rad) {
+double my::radToDeg(double rad) {
 	return rad*180.0 / M_PI;
 }

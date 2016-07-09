@@ -4,11 +4,11 @@
 TileClimate::TileClimate() {}
 TileClimate::~TileClimate() {}
 
-TileClimate::TileClimate(Address A, double landElevation){
+TileClimate::TileClimate(my::Address A, double landElevation){
 	
-	_address = A;
+	_Address = A;
 
-	MyVector2d latLonDeg = _address.getLatLonDeg();
+	my::Vector2d latLonDeg = _Address.getLatLonDeg();
 	_latitude_deg = latLonDeg.x;
 	_longitude_deg = latLonDeg.y;
 	_solarRadiation = SolarRadiation(_latitude_deg, _longitude_deg);
@@ -104,7 +104,7 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 }
 
 
-void TileClimate::buildAdjacency(std::map<Direction, TileClimate> adjacientTileClimates){
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates){
 
 	//give air land and water references(pointers) to neighboring respective climate elements so tile climate doesn't have
 	//to care about intra air actions. (or land or water)
@@ -112,13 +112,13 @@ void TileClimate::buildAdjacency(std::map<Direction, TileClimate> adjacientTileC
 	//deliberately don't give them inter type pointers to preserve encapsulation
 
 	for (auto &climatePair : adjacientTileClimates) {
-		std::pair<Direction, Air*>  airPair(climatePair.first, &(climatePair.second._air));
+		std::pair<my::Direction, Air*>  airPair(climatePair.first, &(climatePair.second._air));
 		_air.bond(airPair);
 
-		std::pair<Direction, Water*>  waterPair(climatePair.first, &(climatePair.second._water));
+		std::pair<my::Direction, Water*>  waterPair(climatePair.first, &(climatePair.second._water));
 		_water.bond(waterPair);
 
-		std::pair<Direction, Land*>  landPair(climatePair.first, &(climatePair.second._land));
+		std::pair<my::Direction, Land*>  landPair(climatePair.first, &(climatePair.second._land));
 		_land.bond(landPair);
 	}
 

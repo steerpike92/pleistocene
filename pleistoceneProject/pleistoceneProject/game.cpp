@@ -1,11 +1,11 @@
 #include "game.h"
 
 Game::Game() {
-	//try
-	//{
+	try
+	{
 	initialize();
 	gameLoop();
-	/*}
+	}
 	catch (int exception_num)
 	{
 		LOG("Handled Error");
@@ -22,7 +22,7 @@ Game::Game() {
 		LOG("Unhandled Error");
 		system("pause");
 		return;
-	}*/
+	}
 }
 
 
@@ -30,14 +30,19 @@ void Game::initialize() {
 	_infoBar = InfoBar(_graphics);
 	_bios = Bios(_graphics);
 	_map = Map(_graphics, &_bios);
-	_camera = Camera(MyVector2(0, 0), pow(.8, 10));
+	
+
+	_camera = Camera(my::Vector2(0, 0), pow(.8, 10));
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
 	_input.setCamera(_camera);
 
 	_map.simulate();//one initial call to simulate for graphical setup
+	_map.draw(_graphics, true);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
+
+
 }
 
 void Game::gameLoop() {
@@ -65,7 +70,7 @@ void Game::determineElapsedTime() {
 }
 
 void Game::processInput(int elapsedTime) {
-	_camera.processCommands(_input, elapsedTime);
+	_cameraMovementFlag=_camera.processCommands(_input, elapsedTime);
 
 	//Quit
 	if (_input._quitFlag || _input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
@@ -113,18 +118,18 @@ void Game::update(int elapsedTime) {
 }
 
 void Game::updateSimulation() {
-	SimulationTime::updateGlobalTime();
+	my::SimulationTime::updateGlobalTime();
 	_map.simulate();
 }
 
 void Game::draw() {
 	if (!DAILY_DRAW) {
 		_graphics.clear();
-		_map.draw(_graphics);
+		_map.draw(_graphics, _cameraMovementFlag);
 	}
-	else if (SimulationTime::_globalTime.getHour() == 0) {
+	else if (my::SimulationTime::_globalTime.getHour() == 0) {
 		_graphics.clear();
-		_map.draw(_graphics);
+		_map.draw(_graphics,_cameraMovementFlag);
 	}
 
 	_infoBar.draw(_graphics);

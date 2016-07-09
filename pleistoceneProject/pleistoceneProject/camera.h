@@ -8,16 +8,17 @@ public:
 	Camera();
 	~Camera();
 
-	Camera(MyVector2 startingPosition, double startingZoom);
+	Camera(my::Vector2 startingPosition, double startingZoom);
 
-	MyVector2 getCameraPosition() const;
+	my::Vector2 getCameraPosition() const;
 	double getZoomScale() const;
 
-	void processCommands(const Input &input, int elapsedTime);
+	//returns true iff camera moved
+	bool processCommands(const Input &input, int elapsedTime);
 
-	MyVector2 screenPosToGamePos(MyVector2 screenPosition) const;
+	my::Vector2 screenPosToGamePos(my::Vector2 screenPosition) const;
 
 private:
-	MyVector2 _cameraPosition;
+	my::Vector2 _cameraPosition;
 	double _zoomScale;
 };
