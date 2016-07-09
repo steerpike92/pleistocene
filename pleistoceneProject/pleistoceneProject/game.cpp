@@ -73,7 +73,7 @@ void Game::processInput(int elapsedTime) {
 		return;
 	}
 
-	//New map
+	//New map (resets all simulation data and generates new tile elevations with a random seed
 	if (_input.wasKeyPressed(SDL_SCANCODE_G)) {
 		_map.generateMap(rand());
 		_map.simulate();
