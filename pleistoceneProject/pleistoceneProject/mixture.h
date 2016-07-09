@@ -6,8 +6,6 @@ class Mixture;
 class AuxMixture;
 
 
-
-
 //======================================================================================
 //MIXTURE
 //======================================================================================
@@ -16,8 +14,6 @@ class Mixture {
 protected:
 	std::map<elements::ElementType, Element> _elements;//main constituent elements
 	elements::State _state;
-
-	//AuxMixture _auxMixture;//mixture along for the ride (groundwater, particulates, droplets)
 
 
 	double _temperature = 0;//Kelvin
@@ -87,30 +83,4 @@ public:
 	double getVolume()const;
 	double getMass()const;
 };
-
-
-
-//=====================================================================================================================
-//AUXILIARY MIXTURE
-//=====================================================================================================================
-
-
-//class AuxMixture {
-//	std::map<elements::ElementType, Element> _elements;
-//	elements::State _ownerState;
-//
-//	double _temperature = 0;//Kelvin
-//	double _totalVolume = 0;//m3
-//
-//	double _totalMass = 0;//kg
-//	double _totalHeatCapacity = 0;//kJ/(kg K)
-//	double _totalMols = 0;
-//
-//
-//	double _albedo = 0;//reflective index
-//	bool _translucent = true;//solids are opaque. Everthing else is a shade of trans
-//
-//	double _solarAbsorptionRate = 0;//proportion absorbed per vertical meter of this material
-//	double _infraredAbsorptionRate = 0;//proportion absorbed per vertical meter of this material
-//};
 
