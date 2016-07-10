@@ -15,6 +15,8 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 
 	_surfaceTemperature= calculateLocalInitialtemperature();
 
+	_materialColumn = MaterialColumn();
+
 	_land = Land(landElevation, _surfaceTemperature);
 
 	_submerged = _land.isSubmerged();

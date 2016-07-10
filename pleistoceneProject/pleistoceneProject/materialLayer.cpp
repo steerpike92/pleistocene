@@ -66,6 +66,7 @@ MaterialColumn::MaterialColumn(double landElevation)
 {
 	_elevationTop = landElevation;
 
+	while (buildMaterialLayer());
 }
 
 void MaterialColumn::filterSolarRadiation(double incidentSolarRadiation)
@@ -82,16 +83,16 @@ void MaterialColumn::simulateEvaporation()
 
 void MaterialColumn::simulateCondensation()
 {
+
 }
 
 void MaterialColumn::simulatePrecipitation()
 {
+
 }
 
 bool MaterialColumn::buildMaterialLayer()
 {
 	//returns true while it needs to be called again
-	//returns false after creating the stratosphere
-
 
 }
