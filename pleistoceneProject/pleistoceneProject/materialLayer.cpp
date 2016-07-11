@@ -1,15 +1,12 @@
 #include "materialLayer.h"
 
 MaterialLayer::MaterialLayer(){}
-MaterialLayer::~MaterialLayer(){
-	/*if (_stateMixture != nullptr) {
-		delete _stateMixture;
-	}*/
-}
+MaterialLayer::~MaterialLayer(){}
 
 MaterialLayer::MaterialLayer(double earthSurfaceElevation, MaterialLayer *layerBelow, double bottomElevation) :
 	_earthSurfaceElevation(earthSurfaceElevation),
-	_below(layerBelow)
+	_below(layerBelow),
+	_stateMixture(new Mixture)
 {
 	if (bottomElevation == my::FakeDouble) {
 		_bottomElevation = _below->getTopElevation();
@@ -25,6 +22,9 @@ MaterialLayer* MaterialLayer::getAbove()const { return _above; }
 MaterialLayer* MaterialLayer::getBelow()const { return _below; }
 
 double MaterialLayer::getBottomElevation()const { return _bottomElevation; }
+
+
+
 double MaterialLayer::getTopElevation()const { return _topElevation; }
 
 
@@ -43,7 +43,10 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double 
 	
 	Element bedrock = Element(VOLUME, BEDROCK, layerHeight, SOLID);
 
-	_stateMixture = new SolidMixture(bedrock, temperature);
+	std::unique_ptr<SolidMixture> localMixture(new SolidMixture(bedrock, temperature));
+	_stateMixture = std::move(localMixture);
+
+
 	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
@@ -61,7 +64,8 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, Materia
 	
 	elementVector = generateSoil(-_bottomRelativeElevation, layerHeight);//-_bottomRelativeElevation is depth below surface
 	
-	_stateMixture = new SolidMixture(elementVector, temperature);
+	std::unique_ptr<SolidMixture> localMixture(new SolidMixture(elementVector, temperature));
+	_stateMixture = std::move(localMixture);
 	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
@@ -151,10 +155,6 @@ HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, Mat
 	using namespace layers;
 
 	_layerType = HORIZON;//overwrite
-
-	_height = _stateMixture->getHeight();
-	_topElevation = _bottomElevation + _height;
-	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
 
 
@@ -171,11 +171,14 @@ SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, MaterialLay
 	_topElevation = fixedTopElevation;
 	_height = _topElevation - _bottomElevation;
 
+	
 	Element water = Element(VOLUME, WATER, _height, LIQUID);
 	
 	std::vector<Element> elementVector{ water };
 
-	_stateMixture = new LiquidMixture(elementVector, temperature);
+	std::unique_ptr<LiquidMixture> localMixture(new LiquidMixture(elementVector, temperature));
+	_stateMixture = std::move(localMixture);
+
 	_height = _stateMixture->getHeight();
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
@@ -197,7 +200,9 @@ AirLayer::AirLayer(double earthSurfaceElevation, double temperature, MaterialLay
 
 	std::vector<Element> air = generateAirElements(_bottomElevation, _topElevation);
 
-	_stateMixture = new GaseousMixture(air, temperature, _bottomElevation, _topElevation);
+	std::unique_ptr<GaseousMixture> localMixture(new GaseousMixture(air, temperature, _bottomElevation, _topElevation));
+	_stateMixture = std::move(localMixture);
+
 	_height = _topElevation - _bottomElevation;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
@@ -211,8 +216,7 @@ std::vector<Element> AirLayer::generateAirElements(double bottomElevation, doubl
 
 	Element air = Element(MOLAR, DRY_AIR, mols, GAS);
 
-	std::vector<Element> elementVector;
-	elementVector.push_back(air);
+	std::vector<Element> elementVector{ air };
 
 	return elementVector;
 }

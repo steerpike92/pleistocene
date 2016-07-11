@@ -58,7 +58,7 @@ namespace layers {
 	
 	namespace sea {
 
-		const double seaLayerDepths[] = { 2,20,200,2000,20000 };
+		const double seaLayerElevations[] = { 0,-2,-20,-200,-2000,-20000 };
 
 	}
 
@@ -93,6 +93,7 @@ namespace layers {
 
 }
 
+
 //==================================
 //MATERIAL LAYER
 //==================================
@@ -100,7 +101,7 @@ namespace layers {
 class MaterialLayer {
 protected:
 	
-	Mixture *_stateMixture;
+	std::unique_ptr<Mixture> _stateMixture;//owned mixture
 
 	double _bottomElevation;//Elevation above sea level (of bottom of layer)
 	double _height;
@@ -111,12 +112,10 @@ protected:
 	double _bottomRelativeElevation;//Elevation relative to earth's surface (negative if below) (of bottom of layer)
 	double _topRelativeElevation;//Elevation relative to earth's surface (negative if below) (of top of layer)
 
-
 	layers::LayerType _layerType;
 
 	MaterialLayer* _above = nullptr;//i.e. next node
 	MaterialLayer* _below = nullptr;//i.e. previous node
-
 	std::vector<layers::SharedSurface> _sharedSurfaces;
 
 public:
@@ -128,7 +127,6 @@ public:
 
 	double getTopElevation()const;
 	double getBottomElevation()const;
-
 };
 
 //==================================
@@ -215,6 +213,7 @@ private:
 
 };
 
+
 //==================================
 //SEA
 //==================================
@@ -229,10 +228,10 @@ public:
 	SeaLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation = my::FakeDouble);
 };
 
+
 //==================================
 //AIR
 //==================================
-
 class AirLayer : public MaterialLayer {
 	//unique air member variables
 	Eigen::Vector3d inertialWindVector;

@@ -4,18 +4,23 @@
 #include "stateMixture.h"
 #include "element.h"
 
+
 class MaterialColumn {
 
-	MaterialLayer *_earthRoot = nullptr;//bottom Earth Layer (bottom overall layer
-	MaterialLayer *_horizonRoot = nullptr;//bottom Horizon Layer
-	MaterialLayer *_seaRoot = nullptr;//bottom sea Layer
-	MaterialLayer *_airRoot = nullptr;//bottom air layer
-	MaterialLayer *_airTail = nullptr;//top air layer (top overall layer)
+	MaterialLayer *_bedrock = nullptr;//bottom Earth Layer (bottom overall layer)
+	MaterialLayer *_horizon = nullptr;//Horizon Layer (sort of top earth layer
+	MaterialLayer *_seaBottom = nullptr;//bottom sea Layer
+	MaterialLayer *_seaSurface = nullptr;//top sea layer
+	MaterialLayer *_boundaryLayer = nullptr;//bottom air layer
+	MaterialLayer *_stratosphere = nullptr;//top air layer (top overall layer)
 
 	double _landElevation;
 	double _initialTemperature;
 
 	double _elevationMarker;
+
+
+	std::vector<std::unique_ptr<MaterialLayer>> ownedLayers;
 
 
 //initialization
@@ -30,9 +35,9 @@ public:
 
 private:
 	MaterialLayer* buildEarth();
-	MaterialLayer* buildHorizon(MaterialLayer* layerHead);
-	MaterialLayer* buildSea(MaterialLayer* layerHead);
-	void buildAir(MaterialLayer* layerHead);
+	MaterialLayer* buildHorizon(MaterialLayer* previousLayer);
+	MaterialLayer* buildSea(MaterialLayer* previousLayer, double seaSurfaceElevation);
+	void buildAir(MaterialLayer* previousLayer);
 
 
 public:

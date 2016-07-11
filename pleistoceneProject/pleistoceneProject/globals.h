@@ -15,10 +15,11 @@
 #include <fstream>
 #include <stdlib.h>
 #include <Eigen/Dense>//linear algebra
+#include <memory>
 
 #define DEBUG 1
 #define LOOP 1
-#define MAP_SIZE 0
+#define MAP_SIZE 1
 #define RESTRICT_CAMERA 1
 #define COAST_DRAW 0
 #define DELAY 0

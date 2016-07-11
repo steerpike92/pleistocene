@@ -3,29 +3,13 @@
 #include "globals.h"
 
 MaterialColumn::MaterialColumn() {}
-
-MaterialColumn::~MaterialColumn()
-{
-	if (_earthRoot != nullptr) {
-		MaterialLayer *head = _earthRoot;
-		MaterialLayer *temp = head->getAbove();
-		delete head;
-
-		while (temp != nullptr) {
-			head = temp;
-			temp = head->getAbove();
-			delete head;
-		}
-
-		//DELETE MATERIAL LAYERS
-	}
-}
+MaterialColumn::~MaterialColumn(){}
 
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_landElevation(landElevation),
-	_initialTemperature(initialTemperature)
-
+	_initialTemperature(initialTemperature),
+	_bedrock(new EarthLayer)
 {
 	MaterialLayer* currentLayer;
 
@@ -33,9 +17,9 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	currentLayer =buildHorizon(currentLayer);
 
 	if (_landElevation < 0) {
-		currentLayer = buildSea(currentLayer);
+		currentLayer = buildSea(currentLayer,0);
 	}
-	else { _seaRoot = nullptr; }
+	else { _seaBottom = nullptr; }
 
 	buildAir(currentLayer);
 }
@@ -43,59 +27,72 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 MaterialLayer* MaterialColumn::buildEarth()
 {
 	using namespace layers::earth;
-	EarthLayer *buildLayer, *oldLayer;
+	MaterialLayer *buildLayer;
 	//build bedrock layer
 	double bedrockElevation = _landElevation - bedrockDepth;
-	
-	buildLayer= new EarthLayer(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
-	_elevationMarker = buildLayer->getTopElevation();
 
-	_earthRoot = buildLayer;
-	
-	oldLayer = buildLayer;
+	//ownedLayers.emplace_back(new EarthLayer(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]));
+	//auto iterator = ownedLayers.rbegin();
+	//buildLayer=iterator->get();
+
+	//_bedrock = buildLayer;
 
 	for (int i = 1; i < earthLayers; i++){
 		double layerHeight = earthLayerHeights[i];
-		buildLayer = new EarthLayer(_landElevation, _initialTemperature, oldLayer,layerHeight);
-		_elevationMarker = buildLayer->getTopElevation();
-		oldLayer = buildLayer;
+		//ownedLayers.emplace_back(new EarthLayer(_landElevation, _initialTemperature, buildLayer,layerHeight));
+		//auto iterator = ownedLayers.rbegin();
+		//buildLayer = iterator->get();
 	}
-	
-	
 	//return pointer to last earth layer
-	return buildLayer;
+	//return buildLayer;
+	return nullptr;
 }
 
 
 MaterialLayer* MaterialColumn::buildHorizon(MaterialLayer* previousLayer)
 {
-	_horizonRoot = new HorizonLayer(_landElevation, _initialTemperature, previousLayer);
-	_elevationMarker = _horizonRoot->getTopElevation();
-	return _horizonRoot;
+	//ownedLayers.emplace_back(new HorizonLayer(_landElevation, _initialTemperature, previousLayer));
+	//auto iterator = ownedLayers.rbegin();
+	//_horizon = iterator->get();
+	_elevationMarker = _horizon->getTopElevation();
+	return _horizon;
 }
 
-MaterialLayer* MaterialColumn::buildSea(MaterialLayer* previousLayer)
+MaterialLayer* MaterialColumn::buildSea(MaterialLayer* previousLayer, double seaSurfaceElevation)
 {
+
+	using namespace layers::sea;
+	SeaLayer *buildLayer;
+
+	double seaBottomElevation = previousLayer->getTopElevation();
+
+	int i=0;//position in seaLayerElevations array
+	
+	while (seaBottomElevation < seaLayerElevations[i]+ seaSurfaceElevation) {
+		i++;
+	}
+	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return buildLayer; }
+
+	i--;
+
 	//build sea bottom layer
-
-	using namespace layers;
-	SeaLayer *buildLayer, *oldLayer;
-
-	//build sea bottom layer
-
-	buildLayer = new SeaLayer(_landElevation, _initialTemperature, previousLayer,0);
+	double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
+	buildLayer = new SeaLayer(_landElevation, _initialTemperature, previousLayer,topElevation);
 	_elevationMarker = buildLayer->getTopElevation();
-	_seaRoot = buildLayer;
-	oldLayer = buildLayer;
+	_seaBottom = buildLayer;
+	i--;
 
-	//while (_elevationMarker < 0) {//build up to sea level
-	//	buildLayer = new SeaLayer(_landElevation, _initialTemperature, oldLayer);
-	//	_elevationMarker = buildLayer->getTopElevation();
-	//	oldLayer = buildLayer;
-	//}
+	//build upper layers
+	while (i >= 0) {
+		double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
+		buildLayer = new SeaLayer(_landElevation, _initialTemperature, buildLayer, topElevation);
+		_elevationMarker = buildLayer->getTopElevation();
+		i--;
+	}
 
-	//return pointer to last sea layer
-	return buildLayer;
+	_seaSurface = buildLayer;
+
+	return _seaSurface;
 }
 
 void MaterialColumn::buildAir(MaterialLayer* previousLayer)
@@ -111,7 +108,7 @@ void MaterialColumn::buildAir(MaterialLayer* previousLayer)
 	double boundaryLayerTopElevation = _elevationMarker + boundaryLayerHeight;
 	buildLayer = new AirLayer(_landElevation, _initialTemperature,previousLayer, boundaryLayerTopElevation);
 	_elevationMarker = buildLayer->getTopElevation();
-	_airRoot = buildLayer;
+	_boundaryLayer = buildLayer;
 	oldLayer = buildLayer;
 
 	int i = 0;
@@ -121,7 +118,7 @@ void MaterialColumn::buildAir(MaterialLayer* previousLayer)
 		buildLayer = new AirLayer(_landElevation, _initialTemperature, oldLayer, airElevations[i]);
 		oldLayer = buildLayer;
 	}
-	_airTail = buildLayer;
+	_stratosphere = buildLayer;
 }
 
 

@@ -1,4 +1,5 @@
 #include "element.h"
+#include "materialLayer.h"
 //=====================================================================================================================
 //ELEMENT
 //=====================================================================================================================
@@ -241,14 +242,15 @@ const elements::ElementPropertyMap Element::_densityMap = Element::buildDensityM
 
 elements::ElementPropertyMap Element::buildMolarMassMap() {
 	using namespace elements;
+	using namespace layers::air;
 	ElementPropertyMap molarMass;
 
-	molarMass[DRY_AIR] = climate::air::Md;
-	molarMass[WATER_VAPOR] = climate::air::Mv;
-	molarMass[CLOUD] = climate::air::Mv;
-	molarMass[WATER] = climate::air::Mv;
-	molarMass[SNOW] = climate::air::Mv;
-	molarMass[ICE] = climate::air::Mv;
+	molarMass[DRY_AIR] =Md;
+	molarMass[WATER_VAPOR] = Mv;
+	molarMass[CLOUD] = Mv;
+	molarMass[WATER] = Mv;
+	molarMass[SNOW] = Mv;
+	molarMass[ICE] = Mv;
 
 	return molarMass;
 }
