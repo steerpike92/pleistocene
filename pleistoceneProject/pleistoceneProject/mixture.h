@@ -79,5 +79,6 @@ public:
 	double getAlbedo()const;
 	double getVolume()const;
 	double getMass()const;
+	double getMols()const;
 };
 

@@ -298,6 +298,7 @@ double Mixture::getHeight()const { return _totalVolume; }
 double Mixture::getAlbedo()const { return _albedo; }
 double Mixture::getVolume()const { return _totalVolume; }
 double Mixture::getMass()const { return _totalMass; }
+double Mixture::getMols()const { return _totalMols; }
 
 std::vector<std::string> Mixture::getMessages() const {
 	std::vector<std::string> messages;

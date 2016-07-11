@@ -18,7 +18,7 @@
 
 #define DEBUG 1
 #define LOOP 1
-#define MAP_SIZE 2
+#define MAP_SIZE 0
 #define RESTRICT_CAMERA 1
 #define COAST_DRAW 0
 #define DELAY 0
@@ -98,7 +98,8 @@ namespace climate {
 		SURFACE_AIR_TEMPERATURE_DRAW
 	};
 
-	namespace earth {
+	namespace land {
+		
 		enum elevationType {
 			SUBMERGED,
 			LOW_LAND,
@@ -121,54 +122,9 @@ namespace climate {
 	}
 
 
-	namespace sea {
-
-		enum BodyType {
-			DEEP,
-			SHALLOW,
-			TRANSIENT
-		};
-
-		enum DeepType {
-			OCEAN,
-			LAKE,
-			GLACIER
-		};
-
-		enum ShallowType {
-			SWAMP,
-			MARSH,
-			POND,
-			SNOWPACK
-		};
-
-		enum TransientType {
-			RIVER,
-			STREAM,
-			DRY
-		};
-
-	}
-
 	namespace air {
-		enum airType {
-			BOUNDARY_LAYER,
-			TROPOSPHERE,
-			STRATOSPHERE
-		};
+		
 
-		const double R = 8.314;	//universal gas constant (J/(k*mol))
-		const double boundaryLayerHeight = 200;
-		const double troposphereLayerHeight = 3000;//IF CHANGED UPDATE MAX LAYERS
-		const double tropopauseElevation = 12000;//IF CHANGED UPDATE MAX LAYERS
-		const double stratopauseElevation = 24000;
-		const int maxLayers = 6;
-
-		const double seaLevelAveragePressure = 101325;
-
-		const double Md = 0.029;
-		const double Mv = 0.018;
-		const double approximateLapseRate = 0.015;
 
 	}
 }

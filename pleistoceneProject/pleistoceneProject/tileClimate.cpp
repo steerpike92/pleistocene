@@ -17,7 +17,6 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 
 	_materialColumn = MaterialColumn(landElevation, initialTemperature);
 
-	
 }
 
 double TileClimate::calculateLocalInitialtemperature() {

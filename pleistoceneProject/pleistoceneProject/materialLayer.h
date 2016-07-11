@@ -43,11 +43,53 @@ namespace layers {
 		double heightGradient;
 	};
 
-	const double bedrockDepth = 200; //200 m of simulated subterranian activity
+	namespace earth {
+		const double bedrockDepth = 201; //201 m of simulated subterranian activity
 
-	const double initialEarthLayerHeight = 20;
+		const int earthLayers = 6;//if changed, update earthLayerHeights
+		const double earthLayerHeight = (bedrockDepth - 1) / (earthLayers - 1);
+		const double subSoilHeight = 0.8; //80 cm of subsoil
+		const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
 
-	const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
+		const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
+			earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight,topSoilHeight };
+	}
+
+	
+	namespace sea {
+
+		const double seaLayerDepths[] = { 2,20,200,2000,20000 };
+
+	}
+
+
+
+	namespace air {
+
+		const double boundaryLayerHeight = 200;
+		const double tropopauseElevation = 11000;
+
+		const double troposphereLayerHeight = tropopauseElevation/4.0;
+
+		const double stratopauseElevation = 32000;
+
+		const double airElevations[] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
+			3 * troposphereLayerHeight, 4 * troposphereLayerHeight, stratopauseElevation };
+
+
+		const double R = 8.31432;	//universal gas constant (J/(k*mol))
+		const double Md = 0.0289644;	//Molar mass of dry air
+		const double Mv = 0.0180153;	//Molar mass of water vapor
+		const double g = 9.80665;
+
+		const double StandardElevation[2] = { 0,11000 };
+		const double StandardPressure[2] = { 101325, 22632 };
+		const double StandardTemperature[2] = { 288.15, 216.65 };
+		const double StandardLapseRate[2] = { -0.0065, 0 };
+	}
+
+
+
 
 }
 
@@ -101,9 +143,8 @@ protected:
 public:
 	EarthLayer();
 	~EarthLayer();
-	EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation);//bedrockConstructor
-	EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow);
-	EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, bool horizonConstructor);//horizon constructor
+	EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation, double layerHeight);//bedrockConstructor
+	EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double layerHeight);
 protected:
 	//unique earth member functions
 
@@ -196,6 +237,9 @@ class AirLayer : public MaterialLayer {
 	//unique air member variables
 	Eigen::Vector3d inertialWindVector;
 
+	
+
+
 public:
 	AirLayer();
 	~AirLayer();
@@ -208,6 +252,8 @@ private:
 
 	static double expectedHydrostaticPressureCalculator(double elevation);
 	static double expectedMolsCalculator(double bottomElevation, double topElevation);
+	static double expectedTemperatureCalculator(double elevation);
 
-	double truePressureCalculator(double elevation);
+	double lapsedTemperatureCalculator(double elevation)const;
+	double truePressureCalculator(double elevation)const;
 };

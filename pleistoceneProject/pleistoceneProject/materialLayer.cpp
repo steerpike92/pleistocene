@@ -2,9 +2,9 @@
 
 MaterialLayer::MaterialLayer(){}
 MaterialLayer::~MaterialLayer(){
-	if (_stateMixture != nullptr) {
+	/*if (_stateMixture != nullptr) {
 		delete _stateMixture;
-	}
+	}*/
 }
 
 MaterialLayer::MaterialLayer(double earthSurfaceElevation, MaterialLayer *layerBelow, double bottomElevation) :
@@ -31,7 +31,7 @@ double MaterialLayer::getTopElevation()const { return _topElevation; }
 EarthLayer::EarthLayer(){}
 EarthLayer::~EarthLayer(){}
 
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation) :
+EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation, double layerHeight) :
 	MaterialLayer(earthSurfaceElevation,nullptr,bottomElevation)
 {//bedrockConstructor
 	using namespace elements;
@@ -41,15 +41,15 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double 
 
 	std::vector<Element> ElementVector;
 	
-	Element bedrock = Element(VOLUME, BEDROCK, initialEarthLayerHeight, SOLID);
+	Element bedrock = Element(VOLUME, BEDROCK, layerHeight, SOLID);
 
 	_stateMixture = new SolidMixture(bedrock, temperature);
-	_height = _stateMixture->getHeight();
+	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
 
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow) :
+EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double layerHeight) :
 	MaterialLayer(earthSurfaceElevation, layerBelow)
 {//normal constructor
 	using namespace elements;
@@ -58,44 +58,21 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, Materia
 	_layerType = EARTH;
 
 	std::vector<Element> elementVector;
-
 	
-	elementVector = generateSoil(-_bottomRelativeElevation, initialEarthLayerHeight);//-_bottomRelativeElevation is depth below surface
+	elementVector = generateSoil(-_bottomRelativeElevation, layerHeight);//-_bottomRelativeElevation is depth below surface
 	
 	_stateMixture = new SolidMixture(elementVector, temperature);
-	_height = _stateMixture->getHeight();
+	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
 
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, bool horizonConstructor) :
-	MaterialLayer(earthSurfaceElevation, layerBelow)
-{//horizon constructor
-	using namespace elements;
-	using namespace layers;
-
-	_layerType = EARTH;
-
-	std::vector<Element> elementVector;
-
-
-	elementVector = generateSoil(0,layers::topSoilHeight);//horizon depth is zero
-
-	_stateMixture = new SolidMixture(elementVector, temperature);
-	_height = _stateMixture->getHeight();
-
-
-
-	_topElevation = _bottomElevation + _height;
-	_topRelativeElevation = _bottomRelativeElevation + _height;
-}
 
 std::vector<Element> EarthLayer::generateSoil(double depth, double height)
 {
 	using namespace elements;
-	using namespace layers;
+	using namespace layers::earth;
 
-	int randomInt;
 	double depthIndex = depth / bedrockDepth;
 
 	Element element;
@@ -122,6 +99,8 @@ std::vector<Element> EarthLayer::generateSoil(double depth, double height)
 			elementVector.push_back(element);
 		}	
 		return elementVector;
+	default:
+		LOG("not a layer type"); throw(2); return elementVector;
 	}
 }
 
@@ -166,7 +145,7 @@ HorizonLayer::HorizonLayer(){}
 HorizonLayer::~HorizonLayer(){}
 
 HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow) :
-	EarthLayer(earthSurfaceElevation, temperature, layerBelow, true)//calls constructor specifically for horizon
+	EarthLayer(earthSurfaceElevation, temperature, layerBelow, layers::earth::topSoilHeight )//calls constructor specifically for horizon
 {
 	using namespace elements;
 	using namespace layers;
@@ -183,19 +162,24 @@ SeaLayer::SeaLayer(){}
 SeaLayer::~SeaLayer(){}
 
 SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation) :
-	MaterialLayer(earthSurfaceElevation,layerBelow)
+	MaterialLayer(earthSurfaceElevation, layerBelow)
 {
 	using namespace elements;
 	using namespace layers;
 
-	_layerType = SEA;
+	_layerType = layers::SEA;
+	_topElevation = fixedTopElevation;
+	_height = _topElevation - _bottomElevation;
 
-	std::vector<Element> elementVector;
+	Element water = Element(VOLUME, WATER, _height, LIQUID);
+	
+	std::vector<Element> elementVector{ water };
 
 	_stateMixture = new LiquidMixture(elementVector, temperature);
 	_height = _stateMixture->getHeight();
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
+
 }
 
 
@@ -214,20 +198,115 @@ AirLayer::AirLayer(double earthSurfaceElevation, double temperature, MaterialLay
 	std::vector<Element> air = generateAirElements(_bottomElevation, _topElevation);
 
 	_stateMixture = new GaseousMixture(air, temperature, _bottomElevation, _topElevation);
-	_height = _stateMixture->getHeight();
+	_height = _topElevation - _bottomElevation;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
 
 std::vector<Element> AirLayer::generateAirElements(double bottomElevation, double topElevation) 
 {
 	using namespace elements;
-	using namespace layers;
+	using namespace layers::air;
+
+	double mols = expectedMolsCalculator(bottomElevation, topElevation);
+
+	Element air = Element(MOLAR, DRY_AIR, mols, GAS);
 
 	std::vector<Element> elementVector;
-	
-	Element air = Element(MASS, DRY_AIR, 10, GAS);
-
-
+	elementVector.push_back(air);
 
 	return elementVector;
+}
+
+double AirLayer::expectedHydrostaticPressureCalculator(double elevation)
+{
+	using namespace layers::air;
+
+	//choose set of standard values based on elevation
+	int i;
+	if (elevation > StandardElevation[0]){i = 1;}
+	else { i = 0; }
+	
+	//set of parameters
+	double Po = StandardPressure[i];
+	double To = StandardTemperature[i];
+	double L = StandardLapseRate[i];
+	double h = elevation;
+	double ho = StandardElevation[i];
+	double M = Md;
+
+	//calculation
+	double exponent = (g*M) / (R*L);
+	double base = To / (To + L*(h - ho));
+
+	double Pressure = Po * pow(base, exponent);
+
+	return Pressure;
+}
+
+double AirLayer::expectedMolsCalculator(double bottomElevation, double topElevation)
+{
+	using namespace layers::air;
+	double BottomPressure = expectedHydrostaticPressureCalculator(bottomElevation);
+	double TopPressure = expectedHydrostaticPressureCalculator(topElevation);
+	double PressureDifference = BottomPressure - TopPressure;
+	double ExpectedMols = PressureDifference / (g*Md);
+
+	return ExpectedMols;
+}
+
+double AirLayer::expectedTemperatureCalculator(double elevation)
+{
+	using namespace layers::air;
+
+	//choose set of standard values based on elevation
+	int i;
+	if (elevation > StandardElevation[0]) { i = 1; }
+	else { i = 0; }
+
+	//parameters
+	double To = StandardTemperature[i];
+	double L = StandardLapseRate[i];
+	double h = elevation;
+	double ho = StandardElevation[i];
+
+	//calculation
+	double expectedTemperature = To + L*(h - ho);
+
+	return expectedTemperature;
+}
+
+double AirLayer::lapsedTemperatureCalculator(double elevation) const
+{
+	using namespace layers::air;
+
+	//choose set of standard values based on elevation
+	int i;
+	if (elevation > StandardElevation[0]) { i = 1; }
+	else { i = 0; }
+
+	//parameters
+	double To = _stateMixture->getTemperature();
+	double L = StandardLapseRate[i];//Alternatively we can calculate a moist adiabatic lapse rate
+	double h = elevation;
+	double ho = _bottomElevation;
+
+	double LapsedTemperature = To + L*(h - ho);
+
+	return LapsedTemperature;
+}
+
+double AirLayer::truePressureCalculator(double elevation) const
+{
+	double ExpectedMols = expectedMolsCalculator(_bottomElevation, _topElevation);
+	double ExpectedTemperature = expectedTemperatureCalculator(elevation);
+	double ExpectedPressure = expectedHydrostaticPressureCalculator(elevation);
+
+	double TrueMols = _stateMixture->getMols();
+	double TrueTemperature = lapsedTemperatureCalculator(elevation);
+
+	if (ExpectedMols <= 0 || ExpectedTemperature <= 0) {LOG("pressure calculator divide by zero"); throw(2); return 0;}
+
+	double TruePressure = (TrueMols / ExpectedMols) * (TrueTemperature / ExpectedTemperature) * ExpectedPressure;
+
+	return TruePressure;
 }

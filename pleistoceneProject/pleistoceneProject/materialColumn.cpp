@@ -27,58 +27,101 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_initialTemperature(initialTemperature)
 
 {
-	MaterialLayer* layerHead;
+	MaterialLayer* currentLayer;
 
-	layerHead=buildEarth();
-	layerHead=buildHorizon(layerHead);
-	layerHead=buildSea(layerHead);
-	buildAir(layerHead);
+	currentLayer =buildEarth();
+	currentLayer =buildHorizon(currentLayer);
+
+	if (_landElevation < 0) {
+		currentLayer = buildSea(currentLayer);
+	}
+	else { _seaRoot = nullptr; }
+
+	buildAir(currentLayer);
 }
 
 MaterialLayer* MaterialColumn::buildEarth()
 {
-	MaterialLayer* currentLayer;
-
+	using namespace layers::earth;
+	EarthLayer *buildLayer, *oldLayer;
 	//build bedrock layer
-	double bedrockElevation = _landElevation - layers::bedrockDepth;
-	_earthRoot = new EarthLayer(_landElevation, _initialTemperature, bedrockElevation);
-	_elevationMarker = _earthRoot->getTopElevation();
+	double bedrockElevation = _landElevation - bedrockDepth;
+	
+	buildLayer= new EarthLayer(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
+	_elevationMarker = buildLayer->getTopElevation();
 
-	currentLayer = _earthRoot;
+	_earthRoot = buildLayer;
+	
+	oldLayer = buildLayer;
 
-	//build up to land elevation
-
-
-
+	for (int i = 1; i < earthLayers; i++){
+		double layerHeight = earthLayerHeights[i];
+		buildLayer = new EarthLayer(_landElevation, _initialTemperature, oldLayer,layerHeight);
+		_elevationMarker = buildLayer->getTopElevation();
+		oldLayer = buildLayer;
+	}
+	
+	
 	//return pointer to last earth layer
-	return currentLayer;
+	return buildLayer;
 }
 
 
-MaterialLayer* MaterialColumn::buildHorizon(MaterialLayer* layerHead)
+MaterialLayer* MaterialColumn::buildHorizon(MaterialLayer* previousLayer)
 {
-
-
-
-	return layerHead;
+	_horizonRoot = new HorizonLayer(_landElevation, _initialTemperature, previousLayer);
+	_elevationMarker = _horizonRoot->getTopElevation();
+	return _horizonRoot;
 }
 
-MaterialLayer* MaterialColumn::buildSea(MaterialLayer* layerHead)
+MaterialLayer* MaterialColumn::buildSea(MaterialLayer* previousLayer)
 {
 	//build sea bottom layer
 
+	using namespace layers;
+	SeaLayer *buildLayer, *oldLayer;
 
-	//build up to sea surface elevation
+	//build sea bottom layer
+
+	buildLayer = new SeaLayer(_landElevation, _initialTemperature, previousLayer,0);
+	_elevationMarker = buildLayer->getTopElevation();
+	_seaRoot = buildLayer;
+	oldLayer = buildLayer;
+
+	//while (_elevationMarker < 0) {//build up to sea level
+	//	buildLayer = new SeaLayer(_landElevation, _initialTemperature, oldLayer);
+	//	_elevationMarker = buildLayer->getTopElevation();
+	//	oldLayer = buildLayer;
+	//}
 
 	//return pointer to last sea layer
-	return layerHead;
+	return buildLayer;
 }
 
-void MaterialColumn::buildAir(MaterialLayer* layerHead)
+void MaterialColumn::buildAir(MaterialLayer* previousLayer)
 {
-	//build boundary layer
+	using namespace layers::air;
 	//build troposphere
 	//build up to stratosphere
+
+	using namespace layers;
+	AirLayer *buildLayer, *oldLayer;
+
+	//build boundary layer
+	double boundaryLayerTopElevation = _elevationMarker + boundaryLayerHeight;
+	buildLayer = new AirLayer(_landElevation, _initialTemperature,previousLayer, boundaryLayerTopElevation);
+	_elevationMarker = buildLayer->getTopElevation();
+	_airRoot = buildLayer;
+	oldLayer = buildLayer;
+
+	int i = 0;
+	for (; _elevationMarker > airElevations[i]; i++);//adjusts to find first troposphere top height
+
+	for (; i < 6; i++) {
+		buildLayer = new AirLayer(_landElevation, _initialTemperature, oldLayer, airElevations[i]);
+		oldLayer = buildLayer;
+	}
+	_airTail = buildLayer;
 }
 
 

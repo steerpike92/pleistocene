@@ -16,7 +16,7 @@ class Tile {
 public:
 	Tile();
 	~Tile();
-	Tile(my::Address tileAddress, int elevation, Graphics &graphics);
+	Tile(my::Address tileAddress, double elevation, Graphics &graphics);
 
 	//=====================================================================
 	//SETUP

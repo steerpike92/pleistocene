@@ -8,7 +8,7 @@ class MaterialColumn {
 
 	MaterialLayer *_earthRoot = nullptr;//bottom Earth Layer (bottom overall layer
 	MaterialLayer *_horizonRoot = nullptr;//bottom Horizon Layer
-	MaterialLayer *_seaBottomRoot = nullptr;//bottom sea Layer
+	MaterialLayer *_seaRoot = nullptr;//bottom sea Layer
 	MaterialLayer *_airRoot = nullptr;//bottom air layer
 	MaterialLayer *_airTail = nullptr;//top air layer (top overall layer)
 
