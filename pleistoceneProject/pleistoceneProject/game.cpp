@@ -42,7 +42,7 @@ void Game::initialize() {
 	_map.draw(_graphics, true);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
-
+	srand(time(NULL));
 }
 
 void Game::gameLoop() {

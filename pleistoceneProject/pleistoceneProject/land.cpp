@@ -31,24 +31,24 @@ void Land::bond(const LandNeighbor &neighbor) {
 }
 
 void Land::determineElevationType() {
-	if (_elevation < climate::land::landCutoff) {
-		_elevationType = climate::land::SUBMERGED;
-		_elevationShader = abs(double(_elevation + 6*climate::land::gaps)) / double(6*climate::land::gaps);
+	if (_elevation < climate::earth::landCutoff) {
+		_elevationType = climate::earth::SUBMERGED;
+		_elevationShader = abs(double(_elevation + 6*climate::earth::gaps)) / double(6*climate::earth::gaps);
 		return;
 	}
-	if (_elevation <climate::land::midCutoff) {
-		_elevationType = climate::land::LOW_LAND;
-		_elevationShader = abs(0.6+ 2*double(climate::land::gaps-_elevation) / double(5*climate::land::gaps));
+	if (_elevation <climate::earth::midCutoff) {
+		_elevationType = climate::earth::LOW_LAND;
+		_elevationShader = abs(0.6+ 2*double(climate::earth::gaps-_elevation) / double(5*climate::earth::gaps));
 		return;
 	}
-	if (_elevation < climate::land::highCutoff) {
-		_elevationType = climate::land::MID_LAND;
-		_elevationShader = abs(0.6+ 2*double(2*climate::land::gaps-_elevation) / double(5 * climate::land::gaps));
+	if (_elevation < climate::earth::highCutoff) {
+		_elevationType = climate::earth::MID_LAND;
+		_elevationShader = abs(0.6+ 2*double(2*climate::earth::gaps-_elevation) / double(5 * climate::earth::gaps));
 		return;
 	}
 
-	_elevationType = climate::land::HIGH_LAND;
-	_elevationShader = abs(0.4 + 2*double(_elevation-2*climate::land::gaps) / double(10 * climate::land::gaps));
+	_elevationType = climate::earth::HIGH_LAND;
+	_elevationShader = abs(0.4 + 2*double(_elevation-2*climate::earth::gaps) / double(10 * climate::earth::gaps));
 	return;
 }
 
@@ -59,7 +59,7 @@ void Land::determineElevationType() {
 //================================================================================
 
 double Land::filterSolarRadiation(double incidentSolarEnergyKJ) {
-	_solarFraction = incidentSolarEnergyKJ / climate::earth::solarEnergyPerHour;
+	_solarFraction = incidentSolarEnergyKJ / climate::planetary::solarEnergyPerHour;
 	//_topSoil.calculateParameters();
 	return _topSoil.filterSolarRadiation(incidentSolarEnergyKJ);
 }
@@ -90,18 +90,18 @@ bool Land::draw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, cli
 	return graphics.blitSurface(_elevationTextures[_elevationType], NULL, onScreenPositions);
 }
 
-std::map<climate::land::elevationType, std::string> Land::_elevationTextures;
+std::map<climate::earth::elevationType, std::string> Land::_elevationTextures;
 
 void Land::setupTextures(Graphics &graphics) {
 
 	//Elevation graphics
-	_elevationTextures[climate::land::SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
-	_elevationTextures[climate::land::LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
-	_elevationTextures[climate::land::MID_LAND] = "../../content/simpleTerrain/midLand.png";
-	_elevationTextures[climate::land::HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
+	_elevationTextures[climate::earth::SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
+	_elevationTextures[climate::earth::LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
+	_elevationTextures[climate::earth::MID_LAND] = "../../content/simpleTerrain/midLand.png";
+	_elevationTextures[climate::earth::HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
 
 	//load graphics
-	for (std::pair< climate::land::elevationType, std::string> P : _elevationTextures) {
+	for (std::pair< climate::earth::elevationType, std::string> P : _elevationTextures) {
 		graphics.loadImage(P.second);
 	}
 
@@ -116,7 +116,7 @@ void Land::setupTextures(Graphics &graphics) {
 
 double Land::getLandElevation() const { return this->_elevation; }
 
-bool Land::isSubmerged() const {return (this->_elevationType == climate::land::SUBMERGED);}
+bool Land::isSubmerged() const {return (this->_elevationType == climate::earth::SUBMERGED);}
 
 double Land::getSurfaceTemperature() const {return _topSoil.getTemperature();}
 

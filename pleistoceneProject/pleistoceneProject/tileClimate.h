@@ -5,7 +5,7 @@
 #include "water.h"
 #include "land.h"
 #include "mixture.h"
-#include "materialLayer.h"
+#include "materialColumn.h"
 
 class Tile;
 class Graphics;
@@ -15,18 +15,12 @@ class TileClimate {
 	double _longitude_deg;
 	double _latitude_deg;
 	double calculateLocalInitialtemperature();
-	double _surfaceTemperature;
-	double _surfaceElevation;
-	bool _submerged;
-
-	double _upRadiation = 0.0;
-	double _backRadiation = 0.0;
 
 	SolarRadiation _solarRadiation;//local incident radiation
 	MaterialColumn _materialColumn;
-	Air _air;//atmosphere
-	Water _water;//oceans, seas, lakes, ponds, rivers, marshes, swamps. You name it
-	Land _land;//terrestrial or submerged earth, along with rooted plant life
+
+	bool _submerged = true;
+
 	std::map<my::Direction, TileClimate> _adjacientTileClimates;
 
 public:
@@ -56,9 +50,6 @@ public:
 
 
 
-
-
-
 	//=================================================
 	//SIMULATION
 	//=================================================
@@ -72,28 +63,24 @@ private:
 	static const int _totalSteps = 5;
 
 	//step (-1)
-	void simulateSolarRadiation();
+	double simulateSolarRadiation();
+	//void filterSolarRadiation(double solarEnergyPerHour);
+	//void simulateEvaporation();//including transpiration
+	//void simulateInfraredRadiation();
 
-	//step(0)
-	void filterSolarRadiation(double solarEnergyPerHour);
-	void simulateEvaporation();//including transpiration
-	void simulateInfraredRadiation();
+	////step(1)
+	//void simulatePressure();
 
-	//step(1)
-	void simulatePressure();
+	////step(2)
+	//void simulateAirflow();
 
-	//step(2)
-	void simulateAirflow();
-
-	//step(3)
-	void simulateCondensation();
-	void simulatePrecipitation();
+	////step(3)
+	//void simulateCondensation();
+	//void simulatePrecipitation();
 
 	//step(4)
 	void simulateWaterFlow();
-	void simulatePlants();
-	void measureSurfaceTemperature();
-	
+	void simulatePlants();	
 
 public:
 	//GETTERS
@@ -103,4 +90,6 @@ public:
 	std::vector<std::string> getMessages(climate::DrawType messageType) const;
 
 };
+
+
 

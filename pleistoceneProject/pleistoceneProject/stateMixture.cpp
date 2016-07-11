@@ -106,17 +106,13 @@ GaseousMixture::GaseousMixture(Element element, double temperature, double botto
 
 
 
-
-//GaseousMixture::GaseousMixture(std::vector<Element> theElements, double temperature, double volume) :
-//	
-//{
-//	using namespace elements;
-//	//Element cloudElement = Element(MASS, CLOUD, 1);
-//	//_clouds = DropletMixture(cloudElement,temperature);
-//	//AUX
-//
-//	GaseousMixture::calculateParameters();
-//}
+GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) :
+	Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
+	_bottomElevation(bottomElevation),
+	_topElevation(topElevation)
+{
+	calculateParameters();
+}
 
 void GaseousMixture::simulateCondensation()
 {
@@ -138,10 +134,6 @@ void GaseousMixture::calculateParameters() {
 	calculateLapseRate();
 }
 
-void GaseousMixture::calculateColumnWeight() {
-	//calculate airMass
-	_columnWeight = _totalMass*climate::earth::g;
-}
 
 void GaseousMixture::calculateSpecificHeatCapacity() {
 	_specificHeatCapacity = _totalHeatCapacity / _totalMass;
@@ -160,16 +152,6 @@ void GaseousMixture::calculateSaturationDensity(){
 	_saturationDensity = std::max(_saturationDensity, 0.0);
 }
 
-double GaseousMixture::calculateBottomPressure(double downPressure) {
-	_downPressure = downPressure;
-	_columnWeight = _totalMass*climate::earth::g;
-	_bottomPressure = _downPressure + _columnWeight;
-	return _bottomPressure;
-}
-
-double GaseousMixture::getBottomPressure() const{
-	return _bottomPressure;
-}
 
 double GaseousMixture::getSaturationDensity() const{
 	return _saturationDensity;

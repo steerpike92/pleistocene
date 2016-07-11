@@ -38,7 +38,7 @@ void Tile::buildTileVector(Graphics &graphics) {
 	//Tile constructor
 	for (int row = 0; row < globals::TILE_ROWS; row++) {
 		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
-			_tiles.emplace_back(my::Address(row, col), climate::land::defaultDepth, graphics);
+			_tiles.emplace_back(my::Address(row, col), climate::earth::defaultDepth, graphics);
 			_Addresses.emplace_back(row, col);
 			if (_Addresses.back().i == my::FakeIndex) {
 				LOG("NOT A VALID Address");
@@ -203,7 +203,7 @@ void Tile::generateTileElevation(int seed) {
 				throw (2);
 			}
 
-			double elevation = noiseValue * climate::land::amplitude;
+			double elevation = noiseValue * climate::earth::amplitude;
 			_tiles[A.i]._tileClimate = TileClimate(A, elevation);
 		}
 	}

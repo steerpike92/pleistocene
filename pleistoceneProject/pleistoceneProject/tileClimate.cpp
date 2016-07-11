@@ -1,8 +1,8 @@
 #include "tileClimate.h"
 #include "graphics.h"
 
-TileClimate::TileClimate() {}
-TileClimate::~TileClimate() {}
+TileClimate::TileClimate() {}//STUB
+TileClimate::~TileClimate() {}//STUB
 
 TileClimate::TileClimate(my::Address A, double landElevation){
 	
@@ -13,28 +13,15 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 	_longitude_deg = latLonDeg.y;
 	_solarRadiation = SolarRadiation(_latitude_deg, _longitude_deg);
 
-	_surfaceTemperature= calculateLocalInitialtemperature();
+	double initialTemperature= calculateLocalInitialtemperature();
 
-	_materialColumn = MaterialColumn();
+	_materialColumn = MaterialColumn(landElevation, initialTemperature);
 
-	_land = Land(landElevation, _surfaceTemperature);
-
-	_submerged = _land.isSubmerged();
-
-	if (_submerged) {//water surface
-		_water = Water(climate::water::DEEP, landElevation, 0, _surfaceTemperature);
-		_surfaceElevation = _water.getSurfaceElevation();
-	}
-	else {//land surface
-		_water = Water(climate::water::TRANSIENT, landElevation, landElevation, _surfaceTemperature);
-		_surfaceElevation = _land.getLandElevation();
-	}
-
-	_air = Air(_surfaceElevation, _surfaceTemperature);
+	
 }
 
 double TileClimate::calculateLocalInitialtemperature() {
-	double localInitialTemperature = climate::earth::initialTemperatureK;
+	double localInitialTemperature = climate::planetary::initialTemperatureK;
 	localInitialTemperature -= pow((_latitude_deg / 90.0), 2) * 40;
 	return localInitialTemperature;
 }
@@ -73,17 +60,20 @@ bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreen
 
 bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
 	using namespace climate;
-	if (_submerged) { return _water.draw(graphics, onScreenPositions, STANDARD_DRAW); }
-	else { return _land.draw(graphics, onScreenPositions, STANDARD_DRAW); }
+	/*if (_submerged) { return _water.draw(graphics, onScreenPositions, STANDARD_DRAW); }
+	else { return _land.draw(graphics, onScreenPositions, STANDARD_DRAW); }*/
 }
 
 bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
 	using namespace climate;
 	const double landFudge = 10;
-	double colorIntensity = std::min(abs(landFudge+_surfaceTemperature - earth::initialTemperatureK) / 40.0, 1.0);
+
+	double surfaceTemperature = 10;
+
+	double colorIntensity = std::min(abs(landFudge+ surfaceTemperature - planetary::initialTemperatureK) / 40.0, 1.0);
 	double filter = 1.0 - colorIntensity;
 
-	if (landFudge+_surfaceTemperature < earth::initialTemperatureK) {//Cold
+	if (landFudge+ surfaceTemperature < planetary::initialTemperatureK) {//Cold
 		graphics.colorFilter(_climateDrawTextures["whiteTile"], filter, filter, 1.0);
 	}
 	else {//Hot
@@ -94,44 +84,30 @@ bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rec
 }
 
 bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
-	using namespace climate;
+	//using namespace climate;
 
-	double temperature = _air.getSurfaceAirTemperature();
-	const double airFudge = 20;
+	//double temperature = _air.getSurfaceAirTemperature();
+	//const double airFudge = 20;
 
-	double colorIntensity = std::min(abs(airFudge+temperature - earth::initialTemperatureK) / 20.0, 1.0);
-	double filter = 1.0 - colorIntensity;
+	//double colorIntensity = std::min(abs(airFudge+temperature - planetary::initialTemperatureK) / 20.0, 1.0);
+	//double filter = 1.0 - colorIntensity;
 
-	if (airFudge+temperature < earth::initialTemperatureK) {//Cold
-		graphics.colorFilter(_climateDrawTextures["whiteTile"], filter, filter, 1.0);
-	}
-	else {//Hot
-		graphics.colorFilter(_climateDrawTextures["whiteTile"], 1.0, filter, filter);
-	}
+	//if (airFudge+temperature < planetary::initialTemperatureK) {//Cold
+	//	graphics.colorFilter(_climateDrawTextures["whiteTile"], filter, filter, 1.0);
+	//}
+	//else {//Hot
+	//	graphics.colorFilter(_climateDrawTextures["whiteTile"], 1.0, filter, filter);
+	//}
 
-	return graphics.blitSurface(_climateDrawTextures["whiteTile"], NULL, onScreenPositions);
+	//return graphics.blitSurface(_climateDrawTextures["whiteTile"], NULL, onScreenPositions);
 }
 
 
 void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates){
 
-	//give air land and water references(pointers) to neighboring respective climate elements so tile climate doesn't have
-	//to care about intra air actions. (or land or water)
-	
-	//deliberately don't give them inter type pointers to preserve encapsulation
-
 	for (auto &climatePair : adjacientTileClimates) {
-		std::pair<my::Direction, Air*>  airPair(climatePair.first, &(climatePair.second._air));
-		_air.bond(airPair);
-
-		std::pair<my::Direction, Water*>  waterPair(climatePair.first, &(climatePair.second._water));
-		_water.bond(waterPair);
-
-		std::pair<my::Direction, Land*>  landPair(climatePair.first, &(climatePair.second._land));
-		_land.bond(landPair);
+		//STUB
 	}
-
-	
 
 }
 
@@ -152,26 +128,26 @@ void TileClimate::simulateClimate(){
 
 	switch (_simulationStep) {
 	case(0) :
-		simulateSolarRadiation();
-		simulateEvaporation();
-		simulateInfraredRadiation();
+		double solarEnergyPerHour=simulateSolarRadiation();
+		_materialColumn.filterSolarRadiation(solarEnergyPerHour);
+		_materialColumn.simulateEvaporation();
+		_materialColumn.simulateInfraredRadiation();
 		break;
 	case(1) :
-		simulatePressure();
+		_materialColumn.simulatePressure();
 		break;
 	case(2) :
-		simulateAirflow();
+		_materialColumn.simulateAirFlow();
 		break;
 
 	case(3) :
-		simulateCondensation();
-		simulatePrecipitation();
+		_materialColumn.simulateCondensation();
+		_materialColumn.simulatePrecipitation();
 		break;
 
 	case(4) :
-		simulateWaterFlow();
-		simulatePlants();
-		measureSurfaceTemperature();
+		_materialColumn.simulateWaterFlow();
+		_materialColumn.simulatePlants();
 		break;
 	default:
 		LOG("Error: Simulation step out of bounds");
@@ -180,56 +156,11 @@ void TileClimate::simulateClimate(){
 	}
 }
 
-void TileClimate::simulateSolarRadiation() {
+double TileClimate::simulateSolarRadiation() {
 	double solarFraction=_solarRadiation.applySolarRadiation();
-	double incidentSolarEnergyPerHour = solarFraction*climate::earth::solarEnergyPerHour;
-	filterSolarRadiation(incidentSolarEnergyPerHour);
+	double incidentSolarEnergyPerHour = solarFraction*climate::planetary::solarEnergyPerHour;
+	return incidentSolarEnergyPerHour;
 }
-
-void TileClimate::filterSolarRadiation(double incidentSolarEnergyPerHour) {
-	
-	incidentSolarEnergyPerHour = _air.filterSolarRadiation(incidentSolarEnergyPerHour);
-	if (_submerged) {
-		incidentSolarEnergyPerHour = _water.filterSolarRadiation(incidentSolarEnergyPerHour);
-		_land.filterSolarRadiation(incidentSolarEnergyPerHour);
-	}
-	else {
-		_land.filterSolarRadiation(incidentSolarEnergyPerHour);
-	}
-}
-
-void TileClimate::simulateEvaporation(){//stub
-}
-
-void TileClimate::simulateInfraredRadiation(){
-	if (_submerged) { _upRadiation =_water.emitInfraredRadiation();}
-	else { _upRadiation =_land.emitInfraredRadiation();}
-	_backRadiation = _air.filterAndComputeBackRadiation(_upRadiation);
-	if (_land.isSubmerged()) { _water.filterInfraredRadiation(_backRadiation); }
-	else { _land.filterInfraredRadiation(_backRadiation);}
-}
-
-void TileClimate::simulatePressure() {
-	_air.buildHydroStaticPressure();
-}
-
-void TileClimate::simulateAirflow(){//stub
-}
-
-void TileClimate::simulateCondensation(){//stub
-}
-
-void TileClimate::simulatePrecipitation(){//stub
-}
-
-void TileClimate::simulateWaterFlow(){//stub
-}
-
-void TileClimate::simulatePlants() {//stub
-}
-
-
-double TileClimate::getSurfaceTemperature() const { return _surfaceTemperature; }
 
 std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType) const {
 	using namespace climate;
@@ -249,7 +180,7 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 	std::vector<std::string> SubMessages;
 
 
-	switch (messageType) {
+	/*switch (messageType) {
 	case(SURFACE_TEMPERATURE_DRAW) : 
 		if (_land.isSubmerged()) { SubMessages= _water.getMessages(SURFACE_TEMPERATURE_DRAW); }
 		else { SubMessages= _land.getMessages(SURFACE_TEMPERATURE_DRAW); }
@@ -261,7 +192,7 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 		if (_land.isSubmerged()) { SubMessages= _water.getMessages(STANDARD_DRAW);}
 		else { SubMessages= _land.getMessages(STANDARD_DRAW);}
 		break;
-	}
+	}*/
 
 	for (std::string &str : SubMessages) {
 		messages.push_back(str);
@@ -269,9 +200,4 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 
 	return messages;
 
-}
-
-void TileClimate::measureSurfaceTemperature() {
-	if (_land.isSubmerged()) { _surfaceTemperature = _water.getSurfaceTemperature(); }
-	else{ _surfaceTemperature = _land.getSurfaceTemperature(); }
 }

@@ -1,6 +1,9 @@
 #include "globals.h"
 
-
+double uniformRandom()
+{
+	return double(rand()) / double(RAND_MAX + 1.0);
+}
 
 my::Vector2::Vector2(my::Vector2d v2) {
 	x = int(v2.x);
@@ -86,10 +89,10 @@ void my::SimulationTime::updateGlobalTime() {
 
 	_globalTime._hour++;
 
-	if (_globalTime._hour >= climate::earth::solarDay_h) {
+	if (_globalTime._hour >= climate::planetary::solarDay_h) {
 		_globalTime._hour = 0;
 		_globalTime._day++;
-		if (_globalTime._day >= climate::earth::solarYear_d) {
+		if (_globalTime._day >= climate::planetary::solarYear_d) {
 			_globalTime._day = 0;
 			_globalTime._year++;
 		}
@@ -121,15 +124,15 @@ double my::SimulationTime::getTotalHours() const {
 	double hours = 0.0;
 	if (this == &_globalTime) {
 		hours += _globalTime._hour;
-		hours += climate::earth::solarDay_h*(_globalTime._day);
-		hours += climate::earth::solarYear_d*climate::earth::solarDay_h*(_globalTime._year);
+		hours += climate::planetary::solarDay_h*(_globalTime._day);
+		hours += climate::planetary::solarYear_d*climate::planetary::solarDay_h*(_globalTime._year);
 		return hours;
 	}
 	else {
 		
 		hours += _globalTime._hour - this->_hour;
-		hours += climate::earth::solarDay_h*(_globalTime._day - this->_day);
-		hours += climate::earth::solarYear_d*climate::earth::solarDay_h*(_globalTime._year - this->_year);
+		hours += climate::planetary::solarDay_h*(_globalTime._day - this->_day);
+		hours += climate::planetary::solarYear_d*climate::planetary::solarDay_h*(_globalTime._year - this->_year);
 		return hours;
 	}
 }
@@ -137,27 +140,27 @@ double my::SimulationTime::getTotalHours() const {
 double my::SimulationTime::getTotalDays() const{
 	double days = 0.0;
 	if (this == &_globalTime) {
-		days += (_globalTime._hour) / climate::earth::solarDay_h;
+		days += (_globalTime._hour) / climate::planetary::solarDay_h;
 		days += _globalTime._day;
-		days += climate::earth::solarYear_d*(_globalTime._year);
+		days += climate::planetary::solarYear_d*(_globalTime._year);
 		return days;
 	}
-	days += (_globalTime._hour - this->_hour)/climate::earth::solarDay_h;
+	days += (_globalTime._hour - this->_hour)/climate::planetary::solarDay_h;
 	days += _globalTime._day - this->_day;
-	days += climate::earth::solarYear_d*(_globalTime._year - this->_year);
+	days += climate::planetary::solarYear_d*(_globalTime._year - this->_year);
 	return days;
 }
 
 double my::SimulationTime::getTotalYears() const{
 	double years = 0.0;
 	if (this == &_globalTime) {
-		years += ((_globalTime._hour) / climate::earth::solarDay_h) / climate::earth::solarYear_d;
-		years += (_globalTime._day) / climate::earth::solarYear_d;
+		years += ((_globalTime._hour) / climate::planetary::solarDay_h) / climate::planetary::solarYear_d;
+		years += (_globalTime._day) / climate::planetary::solarYear_d;
 		years += _globalTime._year;
 		return years;
 	}
-	years += ((_globalTime._hour - this->_hour) / climate::earth::solarDay_h)/climate::earth::solarYear_d;
-	years += (_globalTime._day - this->_day)/climate::earth::solarYear_d;
+	years += ((_globalTime._hour - this->_hour) / climate::planetary::solarDay_h)/climate::planetary::solarYear_d;
+	years += (_globalTime._day - this->_day)/climate::planetary::solarYear_d;
 	years += _globalTime._year - this->_year;
 
 	return years;

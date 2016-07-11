@@ -9,13 +9,13 @@ class Land {
 	double _elevation;
 	double _elevationShader;
 	double _solarFraction;
-	climate::land::elevationType _elevationType;
+	climate::earth::elevationType _elevationType;
 
 	typedef std::pair<my::Direction, Land*> LandNeighbor;
 	std::map<my::Direction, Land*> _landNeighbors;
 
 	SolidMixture _topSoil;
-	static std::map<climate::land::elevationType, std::string> _elevationTextures;
+	static std::map<climate::earth::elevationType, std::string> _elevationTextures;
 public:
 	Land();
 	~Land();

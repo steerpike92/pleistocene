@@ -13,7 +13,7 @@
 #include "SDL_ttf.h"
 #include <sstream>
 #include <fstream>
-
+#include <stdlib.h>
 #include <Eigen/Dense>//linear algebra
 
 #define DEBUG 1
@@ -65,9 +65,11 @@ namespace globals {
 	
 }
 
+double uniformRandom();
+
 namespace climate {
 
-	namespace earth {
+	namespace planetary {
 		const double tileArea = 100000000.0; //m^2
 
 		const double g = 9.81;		//acceleration of gravity (m/s/s)
@@ -89,20 +91,14 @@ namespace climate {
 		const double initialTemperatureK = 320.0;
 	}
 
-	enum ClimateLayerType {
-		NONE,
-		LAND,
-		WATER,
-		AIR
-	};
-
+	
 	enum DrawType {
 		STANDARD_DRAW,
 		SURFACE_TEMPERATURE_DRAW,
 		SURFACE_AIR_TEMPERATURE_DRAW
 	};
 
-	namespace land {
+	namespace earth {
 		enum elevationType {
 			SUBMERGED,
 			LOW_LAND,
@@ -110,30 +106,22 @@ namespace climate {
 			HIGH_LAND
 		};
 
-		enum Horizon {
-			PLANT,
-			TOPSOIL,
-			SUBSOIL,
-			SUBSTRATUM,
-			BEDROCK
-		};
+		const double gaps = 1000;
 
-		const int gaps = 1000;
-
-		const int landCutoff = 0;
-		const int midCutoff = gaps;
-		const int highCutoff = 2 * gaps;
+		const double landCutoff = 0;
+		const double midCutoff = gaps;
+		const double highCutoff = 2 * gaps;
 
 		//if unititilized, -3000 meter depth (average sea depth)
-		const int defaultDepth = -3 * gaps;
+		const double defaultDepth = -3 * gaps;
 
 		//high point of 5000 meters above and below sea level
 		//rarely realized due to peaking adjustment to noise function
 		const double amplitude = 3 * gaps;
-
 	}
 
-	namespace water {
+
+	namespace sea {
 
 		enum BodyType {
 			DEEP,
@@ -478,7 +466,7 @@ namespace my {
 			Vector2 v = this->getGamePos();
 
 			double _latitude_deg = ((-(double)v.y /
-				(globals::EFFECTIVE_HEIGHT*(globals::TILE_ROWS) / 2)) + 1)*climate::earth::maxLatitude;
+				(globals::EFFECTIVE_HEIGHT*(globals::TILE_ROWS) / 2)) + 1)*climate::planetary::maxLatitude;
 			double _longitude_deg = 360 * v.x /
 				(globals::TILE_COLUMNS*globals::TILE_WIDTH);
 

@@ -49,16 +49,17 @@ protected:
 	virtual void calculateSolarAbsorptionIndex();
 	virtual void calculateInfraredAbsorptionIndex();
 
-
+public:
 	//MIXING MIXTURES
 	//=====================================================================================================================
 	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion);
+	void resizeBy(double proportion);
 
+protected:
 	void push(Mixture &addedMixture);
 	//Mixture pull(Mixture &subtractedMixture);
 
-	Mixture copyProportion(double proportion) const;
-	void resizeBy(double proportion);
+	Mixture copyProportion(double proportion) const;	
 	void pushSpecific(Element addedSpecificElement, double temperature=0.0, bool tempSpecified=false );
 	double pullSpecific(Element subtractedSpecificElement);
 

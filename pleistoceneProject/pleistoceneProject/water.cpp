@@ -11,7 +11,7 @@ Water::Water(climate::water::BodyType waterType, double landElevation, double su
 	_surfaceElevation(surfaceElevation)
 {
 
-	_elevationShader = abs(double(_landElevation + 6 * climate::land::gaps)) / double(6 * climate::land::gaps);	
+	_elevationShader = abs(double(_landElevation + 6 * climate::earth::gaps)) / double(6 * climate::earth::gaps);	
 
 	using namespace elements;
 
@@ -26,7 +26,7 @@ void Water::bond(const WaterNeighbor &neighbor) {
 }
 
 double Water::filterSolarRadiation(double incidentSolarEnergyKJ) {
-	_solarFraction = incidentSolarEnergyKJ / climate::earth::solarEnergyPerHour;
+	_solarFraction = incidentSolarEnergyKJ / climate::planetary::solarEnergyPerHour;
 	//_waterSurface.calculateParameters();
 	return _waterSurface.filterSolarRadiation(incidentSolarEnergyKJ);
 }
@@ -72,11 +72,11 @@ void Water::calculateFlow() {
 
 	//int minElevation = 10000;// i.e. + inf
 
-	//if (_elevationType == climate::land::SUBMERGED) {//flow not meaningful to sea until currents are added if ever
+	//if (_elevationType == climate::earth::SUBMERGED) {//flow not meaningful to sea until currents are added if ever
 	//	_outputtileAddress = this->_Address;
 	//	//_coast = false;
 	//	_basin = false;
-	//	_feature = climate::land::feature::NONE;
+	//	_feature = climate::earth::feature::NONE;
 	//	return;
 	//}
 
@@ -92,19 +92,19 @@ void Water::calculateFlow() {
 
 	//if (minElevation > _elevation) {
 
-	//	_feature = climate::land::feature::LAKE;
+	//	_feature = climate::earth::feature::LAKE;
 
 	//	_basin = true;
 
 	//	//_basinDepth = minElevation - _elevation;
 	//}
 	//else {
-	//	_feature = climate::land::feature::NONE;
+	//	_feature = climate::earth::feature::NONE;
 	//	_basin = false;
 	//	//_basinDepth = 0;
 	//}
 	/*
-	if (_tiles[_outputtileAddress.i]._elevationType == climate::land::SUBMERGED) {
+	if (_tiles[_outputtileAddress.i]._elevationType == climate::earth::SUBMERGED) {
 	_coast = true;
 	}
 	else {
