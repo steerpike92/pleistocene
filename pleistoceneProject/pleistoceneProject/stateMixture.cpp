@@ -128,7 +128,6 @@ void GaseousMixture::calculateParameters() {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
-	calculateColumnWeight();
 	calculateSpecificHeatCapacity();
 	calculateSaturationDensity();
 	calculateLapseRate();

@@ -3,6 +3,7 @@
 #include "stateMixture.h"
 
 class MaterialLayer;
+class EarthLayer;
 class HorizonLayer;
 
 namespace layers {

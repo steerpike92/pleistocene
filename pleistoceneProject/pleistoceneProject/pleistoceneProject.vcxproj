@@ -114,7 +114,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="air.cpp" />
     <ClCompile Include="bios.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="element.cpp" />
@@ -122,9 +121,9 @@
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="input.cpp" />
-    <ClCompile Include="land.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="materialColumn.cpp" />
     <ClCompile Include="materialLayer.cpp" />
     <ClCompile Include="mixture.cpp" />
     <ClCompile Include="noise.cpp" />
@@ -132,10 +131,8 @@
     <ClCompile Include="stateMixture.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="tileClimate.cpp" />
-    <ClCompile Include="water.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="air.h" />
     <ClInclude Include="bios.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="element.h" />
@@ -143,8 +140,8 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="land.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="materialColumn.h" />
     <ClInclude Include="materialLayer.h" />
     <ClInclude Include="mixture.h" />
     <ClInclude Include="noise.h" />
@@ -152,9 +149,9 @@
     <ClInclude Include="stateMixture.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileClimate.h" />
-    <ClInclude Include="water.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="storedAlgorithms.txt" />
     <Text Include="surfaces.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

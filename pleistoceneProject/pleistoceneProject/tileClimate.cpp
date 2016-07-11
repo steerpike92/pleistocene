@@ -32,8 +32,6 @@ void TileClimate::updateClimate(int elapsedTime){
 std::map<std::string, std::string> TileClimate::_climateDrawTextures;
 
 void TileClimate::setupTextures(Graphics &graphics) {
-	Land::setupTextures(graphics);
-	Water::setupTextures(graphics);
 
 	_climateDrawTextures["whiteTile"] = "../../content/simpleTerrain/whiteTile.png";
 	graphics.loadImage(_climateDrawTextures["whiteTile"]);
@@ -62,6 +60,7 @@ bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScree
 	using namespace climate;
 	/*if (_submerged) { return _water.draw(graphics, onScreenPositions, STANDARD_DRAW); }
 	else { return _land.draw(graphics, onScreenPositions, STANDARD_DRAW); }*/
+	return false;
 }
 
 bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
@@ -100,6 +99,7 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 	//}
 
 	//return graphics.blitSurface(_climateDrawTextures["whiteTile"], NULL, onScreenPositions);
+	return false;
 }
 
 
@@ -125,10 +125,12 @@ bool TileClimate::beginNextStep() {
 }
 
 void TileClimate::simulateClimate(){
+	
+	double solarEnergyPerHour;
 
 	switch (_simulationStep) {
 	case(0) :
-		double solarEnergyPerHour=simulateSolarRadiation();
+		solarEnergyPerHour=simulateSolarRadiation();
 		_materialColumn.filterSolarRadiation(solarEnergyPerHour);
 		_materialColumn.simulateEvaporation();
 		_materialColumn.simulateInfraredRadiation();

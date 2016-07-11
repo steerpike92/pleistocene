@@ -1,78 +1,3 @@
-#include "air.h"
-#include "graphics.h"
-#include "solarRadiation.h"
-#include "tileClimate.h"
-
-Air::Air() {}
-Air::~Air() {}
-
-Air::Air(double surfaceElevation, double localInitialTemperature) :
-	_surfaceElevation(surfaceElevation),
-	_localInitialTemperature(localInitialTemperature)
-{
-	using namespace elements;
-	using namespace climate::air;
-
-	initializePressureAtElevation(surfaceElevation, surfaceElevation + boundaryLayerHeight, _boundaryLayer, BOUNDARY_LAYER);
-
-	buildTroposphere(surfaceElevation + boundaryLayerHeight, tropopauseElevation);
-
-	initializePressureAtElevation(tropopauseElevation, stratopauseElevation, _stratosphere, STRATOSPHERE);
-
-	_layerCount = 2 + _troposphere.size();
-}
-
-void Air::buildTroposphere(double bottomElevation, double topElevation) {
-	using namespace climate::air;
-
-	_troposphere.clear();
-	GaseousMixture stubMix;
-	double layerTopElevation;
-
-	int index = 1;
-	while (index*troposphereLayerHeight < bottomElevation) {
-		index++;
-	}
-
-	while (bottomElevation < topElevation) {
-		layerTopElevation = index*troposphereLayerHeight;
-		initializePressureAtElevation(bottomElevation, layerTopElevation, stubMix, TROPOSPHERE);
-		_troposphere.emplace_back(stubMix);
-		bottomElevation = layerTopElevation;
-		index++;
-	}
-}
-
-void Air::initializePressureAtElevation(double bottomElevation, double topElevation, GaseousMixture &stubMixture, climate::air::airType type) {
-
-	using namespace elements;
-	using namespace climate::air;
-	using namespace climate::earth;
-
-	double lapseRate;
-
-	if (type == STRATOSPHERE) { lapseRate = 0; }
-	else { lapseRate = 0.01; }
-
-	double height = topElevation - bottomElevation;
-
-	double bottomTemperature = _localInitialTemperature - bottomElevation*approximateLapseRate;
-	double bottomPressure = seaLevelAveragePressure* exp(-Md*g*bottomElevation / (bottomTemperature*R));
-
-	double topTemperature = bottomTemperature - height*lapseRate;
-	double topPressure = seaLevelAveragePressure*exp(-Md*g*topElevation / (topTemperature*R));
-
-	double pressureDifference = bottomPressure - topPressure;
-	double mass = pressureDifference / g;
-
-	Element air = Element(MASS, DRY_AIR, mass);
-	stubMixture = GaseousMixture(air, bottomTemperature, bottomElevation, topElevation);
-}
-
-void Air::bond(const AirNeighbor &neighbor) {
-	_airNeighbors[neighbor.first] = neighbor.second;
-}
-
 double Air::filterSolarRadiation(double incidentSolarEnergyKJ) {
 
 	//stratosphere absorbs solar radiation at a greater rate
@@ -191,67 +116,92 @@ double Air::filterDownRadiationArray() {
 	return _downRadiation[0];
 }
 
-void Air::buildHydroStaticPressure() {
-	double bottomPressure = _stratosphere.calculateBottomPressure(0);
-	for (std::vector<GaseousMixture>::reverse_iterator &i = _troposphere.rbegin();
-	i != _troposphere.rend(); ++i) {
-		bottomPressure=i->calculateBottomPressure(bottomPressure);
+
+
+
+void Land::determineElevationType() {
+	if (_elevation < climate::earth::landCutoff) {
+		_elevationType = climate::earth::SUBMERGED;
+		_elevationShader = abs(double(_elevation + 6*climate::earth::gaps)) / double(6*climate::earth::gaps);
+		return;
 	}
-	_boundaryLayer.calculateBottomPressure(bottomPressure);
-}
-
-void Air::simulateAirflow() {
-
-}
-
-
-
-
-//void Air::changeSurfaceElevation(double surfaceElevation) {
-//	//stub
-//	_surfaceElevation = surfaceElevation;
-//}
-
-
-double Air::getSurfaceAirPressure() const{
-	return _boundaryLayer.getBottomPressure();
-}
-
-double Air::getSurfaceAirTemperature() const{
-	return _boundaryLayer.getTemperature();
-}
-
-std::vector<std::string> Air::getMessages(climate::DrawType messageType) const {
-	std::vector<std::string> messages;
-	std::stringstream stream;
-	stream << "Back Radiation: " << int(_backRadiation);
-	messages.push_back(stream.str());
-
-	stream=std::stringstream();
-	stream << "Escaped Radiation: " << int(_escapedRadiation);
-	messages.push_back(stream.str());
-
-
-	std::vector<std::string> gasMessages;
-
-	gasMessages = _boundaryLayer.getMessages();
-	for (std::string &str : gasMessages) {
-		messages.push_back(str);
+	if (_elevation <climate::earth::midCutoff) {
+		_elevationType = climate::earth::LOW_LAND;
+		_elevationShader = abs(0.6+ 2*double(climate::earth::gaps-_elevation) / double(5*climate::earth::gaps));
+		return;
+	}
+	if (_elevation < climate::earth::highCutoff) {
+		_elevationType = climate::earth::MID_LAND;
+		_elevationShader = abs(0.6+ 2*double(2*climate::earth::gaps-_elevation) / double(5 * climate::earth::gaps));
+		return;
 	}
 
-	for (GaseousMixture const &gas : _troposphere) {
-		gasMessages.clear();
-		gasMessages = gas.getMessages();
-		for (std::string &str : gasMessages) {
-			messages.push_back(str);
-		}
-	}
-	gasMessages.clear();
-	gasMessages = _stratosphere.getMessages();
-	for (std::string &str : gasMessages) {
-		messages.push_back(str);
-	}
-
-	return messages;
+	_elevationType = climate::earth::HIGH_LAND;
+	_elevationShader = abs(0.4 + 2*double(_elevation-2*climate::earth::gaps) / double(10 * climate::earth::gaps));
+	return;
 }
 
+
+
+
+bool Land::draw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) {
+
+	double solarShader = SolarRadiation::getRadiationShader(_solarFraction);
+
+	double textureShader = solarShader*_elevationShader;
+	textureShader = std::max(textureShader, 0.05);
+
+	graphics.darkenTexture(_elevationTextures[_elevationType],textureShader);
+
+	return graphics.blitSurface(_elevationTextures[_elevationType], NULL, onScreenPositions);
+}
+
+std::map<climate::earth::elevationType, std::string> Land::_elevationTextures;
+
+void Land::setupTextures(Graphics &graphics) {
+
+	//Elevation graphics
+	_elevationTextures[climate::earth::SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
+	_elevationTextures[climate::earth::LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
+	_elevationTextures[climate::earth::MID_LAND] = "../../content/simpleTerrain/midLand.png";
+	_elevationTextures[climate::earth::HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
+
+	//load graphics
+	for (std::pair< climate::earth::elevationType, std::string> P : _elevationTextures) {
+		graphics.loadImage(P.second);
+	}
+
+
+	//Terrain graphics
+	//"../../content/simpleTerrain/lakeMod.png";
+}
+
+
+Water::Water(climate::water::BodyType waterType, double landElevation, double surfaceElevation, double localInitialTemperature) :
+	_bodyType(waterType),
+	_landElevation(landElevation),
+	_surfaceElevation(surfaceElevation)
+{
+
+	_elevationShader = abs(double(_landElevation + 6 * climate::earth::gaps)) / double(6 * climate::earth::gaps);	
+
+	using namespace elements;
+
+	Element water = Element(VOLUME, WATER, 20);
+
+	_waterSurface = LiquidMixture(water, localInitialTemperature);
+
+}
+
+
+bool Water::draw(Graphics & graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType)
+{
+	double solarShader = SolarRadiation::getRadiationShader(_solarFraction);
+
+	double textureShader = solarShader*_elevationShader;
+	textureShader = std::max(textureShader, 0.05);
+
+	graphics.darkenTexture(_waterTextures[_bodyType], textureShader);
+
+	return graphics.blitSurface(_waterTextures[_bodyType], NULL, onScreenPositions);
+}

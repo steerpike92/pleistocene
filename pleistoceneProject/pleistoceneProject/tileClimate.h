@@ -1,9 +1,7 @@
 #pragma once
 #include "globals.h"
 #include "solarRadiation.h"
-#include "air.h"
-#include "water.h"
-#include "land.h"
+
 #include "mixture.h"
 #include "materialColumn.h"
 

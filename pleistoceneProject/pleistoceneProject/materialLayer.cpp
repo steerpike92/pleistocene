@@ -182,7 +182,7 @@ HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, Mat
 SeaLayer::SeaLayer(){}
 SeaLayer::~SeaLayer(){}
 
-SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation = my::FakeDouble) :
+SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation) :
 	MaterialLayer(earthSurfaceElevation,layerBelow)
 {
 	using namespace elements;

@@ -5,7 +5,7 @@ SolarRadiation::SolarRadiation() {}
 SolarRadiation::~SolarRadiation() {}
 
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	_latitude_rad=(my::degToRad(latitude_deg));
 	_longitude_rad = (my::degToRad(longitude_deg));
@@ -27,7 +27,7 @@ bool SolarRadiation::_axisExists = false;
 
 //Rotation matrix from sidereal angle
 void SolarRadiation::buildRotationMatrix(double angle_rad){
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	if (!_axisExists) {//First time setup
 		_earthAxis << -sin(tilt_rad),
@@ -56,7 +56,7 @@ void SolarRadiation::buildRotationMatrix(double angle_rad){
 double SolarRadiation::_oldRotation = -1.0;
 
 void SolarRadiation::setupSolarRadiation() {
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	//Setup Rotation Matrix
 	//take total hours in this year and divide it by the length of a sidereal day (hours)
