@@ -5,7 +5,6 @@
 #include "noise.h"
 
 Tile::Tile() {}
-Tile::~Tile() {}
 
 Tile::Tile(my::Address tileAddress, double elevation, Graphics &graphics) {
 

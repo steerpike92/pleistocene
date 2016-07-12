@@ -4,7 +4,6 @@
 class SolarRadiation {
 public:
 	SolarRadiation();
-	~SolarRadiation();
 	SolarRadiation(double latitude_deg, double longitude_deg);
 
 	static void setupSolarRadiation();

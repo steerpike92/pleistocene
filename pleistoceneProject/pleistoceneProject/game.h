@@ -10,7 +10,6 @@
 class Game {
 public:
 	Game();
-	~Game();
 private:
 	void initialize();
 	void gameLoop();

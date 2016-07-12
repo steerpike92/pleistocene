@@ -477,7 +477,6 @@ namespace my {
 	public:
 		//default constructor for 
 		SimulationTime();
-		~SimulationTime();
 
 		static SimulationTime _globalTime;
 

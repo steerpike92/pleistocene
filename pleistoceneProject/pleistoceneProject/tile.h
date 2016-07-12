@@ -15,7 +15,6 @@ class Bios;
 class Tile {
 public:
 	Tile();
-	~Tile();
 	Tile(my::Address tileAddress, double elevation, Graphics &graphics);
 
 	//=====================================================================

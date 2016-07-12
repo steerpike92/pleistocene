@@ -42,7 +42,7 @@ void Game::initialize() {
 	_map.draw(_graphics, true);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
-	srand(time(NULL));
+	srand(size_t(time(NULL)));
 }
 
 void Game::gameLoop() {
@@ -136,5 +136,3 @@ void Game::draw() {
 	_bios.draw(_graphics);
 	_graphics.flip();
 }
-
-Game::~Game() { std::cout << "Exiting\n"; }

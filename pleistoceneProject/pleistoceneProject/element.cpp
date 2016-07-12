@@ -5,7 +5,6 @@
 //=====================================================================================================================
 
 Element::Element() {}
-Element::~Element() {}
 
 Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) {
 	using namespace elements;

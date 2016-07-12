@@ -2,7 +2,6 @@
 #include "graphics.h"
 
 TileClimate::TileClimate() {}//STUB
-TileClimate::~TileClimate() {}//STUB
 
 TileClimate::TileClimate(my::Address A, double landElevation){
 	

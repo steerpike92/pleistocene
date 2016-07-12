@@ -2,7 +2,6 @@
 
 
 SolarRadiation::SolarRadiation() {}
-SolarRadiation::~SolarRadiation() {}
 
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
 	using namespace climate::planetary;

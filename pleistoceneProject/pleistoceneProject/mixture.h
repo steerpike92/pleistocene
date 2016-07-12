@@ -32,7 +32,6 @@ protected:
 
 public:
 	Mixture();
-	~Mixture();
 	Mixture(Element element, double temperature, elements::State state, double fixedVolume=my::FakeDouble);
 	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble);
 

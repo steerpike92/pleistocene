@@ -6,7 +6,6 @@ class Input;
 class Camera {
 public:
 	Camera();
-	~Camera();
 
 	Camera(my::Vector2 startingPosition, double startingZoom);
 

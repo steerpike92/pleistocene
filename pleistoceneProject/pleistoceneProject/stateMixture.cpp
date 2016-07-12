@@ -7,7 +7,6 @@
 //===============================================================
 
 SolidMixture::SolidMixture(){}
-SolidMixture::~SolidMixture(){}
 
 SolidMixture::SolidMixture(Element element, double temperature) : 
 	SolidMixture(std::vector<Element> {element}, temperature){}
@@ -51,7 +50,6 @@ void SolidMixture::calculateGroundWaterFlow() {
 //===============================================================
 
 ParticulateMixture::ParticulateMixture(){}
-ParticulateMixture::~ParticulateMixture() {}
 
 ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double temperature) :
 	Mixture(theElements,temperature,elements::PARTICULATE)
@@ -71,7 +69,6 @@ Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity)
 
 
 LiquidMixture::LiquidMixture() {}
-LiquidMixture::~LiquidMixture(){}
 
 LiquidMixture::LiquidMixture(Element element, double temperature) :
 	LiquidMixture(std::vector<Element> {element}, temperature) {}
@@ -84,7 +81,6 @@ LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperatur
 //===============================================================
 
 DropletMixture::DropletMixture() {}
-DropletMixture::~DropletMixture() {}
 
 DropletMixture::DropletMixture(Element element, double temperature) :
 	Mixture(element, temperature, elements::DROPLET){}
@@ -94,7 +90,6 @@ DropletMixture::DropletMixture(Element element, double temperature) :
 //==============================================================
 
 GaseousMixture::GaseousMixture() {}
-GaseousMixture::~GaseousMixture(){}
 
 GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) :
 	Mixture(element, temperature, elements::GAS, topElevation-bottomElevation),

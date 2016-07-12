@@ -10,17 +10,17 @@ my::Vector2::Vector2(my::Vector2d v2) {
 	y = int(v2.y);
 }
 
+my::Rectangle::Rectangle() :
+	x(-1), y(-1), w(0), h(0) {}
 
-my::Rectangle::Rectangle() :x(-1), y(-1), w(0), h(0) {}
 my::Rectangle::~Rectangle() {}
 
+
 my::Rectangle::Rectangle(int x, int y, int w, int h) :
-	x(x), y(y), w(w), h(h)
-{}
+	x(x), y(y), w(w), h(h){}
 
 my::Rectangle::Rectangle(SDL_Rect rect) :
-	x(rect.x), y(rect.y), w(rect.w), h(rect.h)
-{}
+	x(rect.x), y(rect.y), w(rect.w), h(rect.h){}
 
 
 
@@ -81,7 +81,6 @@ my::SimulationTime::SimulationTime() {
 
 }
 
-my::SimulationTime::~SimulationTime() {}
 
 my::SimulationTime my::SimulationTime::_globalTime = my::SimulationTime();
 

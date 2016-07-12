@@ -6,8 +6,7 @@
 
 //Constructors
 //============
-Mixture::Mixture() {}
-Mixture::~Mixture() {}
+Mixture::Mixture(){}
 
 Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume):
 	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume){}

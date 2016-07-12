@@ -67,7 +67,6 @@ class Element {
 
 public:
 	Element();
-	~Element();
 	Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state = elements::NO_STATE);
 
 	void combineLike(Element like);

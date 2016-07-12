@@ -15,7 +15,6 @@ class SolidMixture : public Mixture {
 
 public:
 	SolidMixture();
-	~SolidMixture();
 	SolidMixture(Element element, double temperature);
 	SolidMixture(std::vector<Element> theElements, double temperature);
 
@@ -34,7 +33,6 @@ private:
 class ParticulateMixture : public Mixture {
 public:
 	ParticulateMixture();
-	~ParticulateMixture();
 	ParticulateMixture(std::vector<Element> theElements, double temperature);
 	
 	Mixture settle(double fluidViscosity, double fluidVelocity);
@@ -51,7 +49,6 @@ class LiquidMixture : public Mixture {
 
 public:
 	LiquidMixture();
-	~LiquidMixture();
 	LiquidMixture(Element element, double temperature);
 	LiquidMixture(std::vector<Element> theElements, double temperature);
 	//GETTERS
@@ -67,7 +64,6 @@ class DropletMixture : public Mixture {
 	double _dropletRadius;
 public:
 	DropletMixture();
-	~DropletMixture();
 	DropletMixture(Element element, double temperature);
 	
 	
@@ -93,7 +89,6 @@ class GaseousMixture : public Mixture {
 
 public:
 	GaseousMixture();
-	~GaseousMixture();
 	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation);
 	GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation);
 

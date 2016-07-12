@@ -9,7 +9,6 @@ class Bios;
 class Map {
 public:
 	Map();
-	~Map();
 	Map(Graphics &graphics, Bios *bios);
 
 	void generateMap(int seed);

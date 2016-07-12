@@ -4,7 +4,6 @@
 #include "tile.h"
 
 Map::Map(){}
-Map::~Map() {}
 
 Map::Map(Graphics &graphics, Bios *bios) {
 	srand((unsigned int) time(NULL));//seed random number generation

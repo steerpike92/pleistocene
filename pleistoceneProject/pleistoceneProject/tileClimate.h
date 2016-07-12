@@ -26,7 +26,6 @@ public:
 	//==============================================
 
 	TileClimate();
-	~TileClimate();
 	TileClimate(my::Address A, double landElevation);
 
 	void buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates);

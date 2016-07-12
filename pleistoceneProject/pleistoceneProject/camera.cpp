@@ -2,7 +2,6 @@
 #include "input.h"
 
 Camera::Camera() {}
-Camera::~Camera() {}
 
 Camera::Camera(my::Vector2 startingPosition, double startingZoom) {
 	_cameraPosition = startingPosition;
