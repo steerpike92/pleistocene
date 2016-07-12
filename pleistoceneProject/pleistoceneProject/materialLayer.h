@@ -94,9 +94,9 @@ namespace layers {
 }
 
 
-//==================================
-//MATERIAL LAYER
-//==================================
+//////////==================================
+//////////MATERIAL LAYER
+//////////==================================
 
 
 class MaterialLayer {
@@ -122,7 +122,6 @@ protected:
 
 public:
 	MaterialLayer();
-	//~MaterialLayer();
 	MaterialLayer(double earthSurfaceElevation, double baseElevation);
 	MaterialLayer* getAbove() const;
 	MaterialLayer* getBelow() const;
@@ -134,9 +133,9 @@ public:
 	virtual void simulateFlow()=0;
 };
 
-//================================
-//EARTH
-//================================
+////////////================================
+////////////EARTH
+////////////================================
 
 class EarthLayer : public MaterialLayer {
 protected:
@@ -163,12 +162,11 @@ protected:
 	static elements::ElementType determineEarthType(double depthIndex);
 	static elements::ElementType determineSoilType(double depthIndex);
 };
-//
-//
-////==================================
-////HORIZON
-////==================================
-//
+
+//////////==================================
+//////////HORIZON
+//////////==================================
+
 class HorizonLayer : public EarthLayer{
 	//unique horizon member variables
 
@@ -221,45 +219,58 @@ private:
 		//elevation gradients
 
 };
-//
-//
-////==================================
-////SEA
-////==================================
-//
-//class SeaLayer : public MaterialLayer {
-//	//unique sea member variables
-//	Eigen::Vector3d inertialCurrentVector;
-//
-//public:
-//	SeaLayer();
-//	SeaLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation = my::FakeDouble);
-//};
-//
-//
-////==================================
-////AIR
-////==================================
-//class AirLayer : public MaterialLayer {
-//	//unique air member variables
-//	Eigen::Vector3d inertialWindVector;
-//
-//	
-//
-//
-//public:
-//	AirLayer();
-//	AirLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double fixedTopElevation);
-//
-//private:
-//	//unique air member functions
-//
-//	static std::vector<Element> generateAirElements(double bottomElevation, double topElevation);
-//
-//	static double expectedHydrostaticPressureCalculator(double elevation);
-//	static double expectedMolsCalculator(double bottomElevation, double topElevation);
-//	static double expectedTemperatureCalculator(double elevation);
-//
-//	double lapsedTemperatureCalculator(double elevation)const;
-//	double truePressureCalculator(double elevation)const;
-//};
+
+
+//////////==================================
+//////////SEA
+//////////==================================
+
+class SeaLayer : public MaterialLayer {
+	//unique sea member variables
+	Eigen::Vector3d inertialCurrentVector;
+
+	std::unique_ptr<LiquidMixture> _liquidPtr;
+
+public:
+	SeaLayer();
+	SeaLayer(double earthSurfaceElevation, double temperature, double baseElevation, double topElevation);
+
+	void simulateFlow();
+
+	//double getTemperature()const;
+};
+
+
+
+
+//////////==================================
+//////////AIR
+//////////==================================
+
+class AirLayer : public MaterialLayer {
+	//unique air member variables
+	Eigen::Vector3d inertialWindVector;
+
+	std::unique_ptr<GaseousMixture> _gasPtr;
+
+public:
+	AirLayer();
+	AirLayer(double earthSurfaceElevation, double temperature, double baseElevation, double fixedTopElevation);
+
+	void simulateFlow();
+
+private:
+	//unique air member functions
+
+	static std::vector<Element> generateAirElements(double bottomElevation, double topElevation);
+
+	static double expectedHydrostaticPressureCalculator(double elevation);
+	static double expectedMolsCalculator(double bottomElevation, double topElevation);
+	static double expectedTemperatureCalculator(double elevation);
+
+	double lapsedTemperatureCalculator(double elevation)const;
+	double truePressureCalculator(double elevation)const;
+
+	double getTemperature()const;
+
+};

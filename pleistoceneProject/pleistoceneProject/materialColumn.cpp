@@ -8,15 +8,20 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_landElevation(landElevation),
 	_initialTemperature(initialTemperature)
 {
+	_earth.column.clear();
+	_horizon.column.clear();
+	_sea.column.clear();
+	_air.column.clear();
+
+
 	double baseElevation=buildEarth();
 	baseElevation=buildHorizon(baseElevation);
 
-	/*if (_landElevation < 0) {
-		currentLayer = buildSea(currentLayer,0);
+	if (_landElevation < 0) {
+		baseElevation = buildSea(baseElevation,0);
 	}
-	else { _seaBottom = nullptr; }
 
-	buildAir(currentLayer);*/
+	//buildAir(baseElevation);
 }
 
 double MaterialColumn::buildEarth()
@@ -51,68 +56,58 @@ double MaterialColumn::buildHorizon(double baseElevation)
 	return currentElevation;
 }
 
-//MaterialLayer* MaterialColumn::buildSea(MaterialLayer* previousLayer, double seaSurfaceElevation)
-//{
-//
-//	using namespace layers::sea;
-//	SeaLayer *buildLayer;
-//
-//	double seaBottomElevation = previousLayer->getTopElevation();
-//
-//	int i=0;//position in seaLayerElevations array
-//	
-//	while (seaBottomElevation < seaLayerElevations[i]+ seaSurfaceElevation) {
-//		i++;
-//	}
-//	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return buildLayer; }
-//
-//	i--;
-//
-//	//build sea bottom layer
-//	double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
-//	buildLayer = new SeaLayer(_landElevation, _initialTemperature, previousLayer,topElevation);
-//	_elevationMarker = buildLayer->getTopElevation();
-//	_seaBottom = buildLayer;
-//	i--;
-//
-//	//build upper layers
-//	while (i >= 0) {
-//		double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
-//		buildLayer = new SeaLayer(_landElevation, _initialTemperature, buildLayer, topElevation);
-//		_elevationMarker = buildLayer->getTopElevation();
-//		i--;
-//	}
-//
-//	_seaSurface = buildLayer;
-//
-//	return _seaSurface;
-//}
+double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation)
+{
 
-//void MaterialColumn::buildAir(MaterialLayer* previousLayer)
-//{
-//	using namespace layers::air;
-//	//build troposphere
-//	//build up to stratosphere
-//
-//	using namespace layers;
-//	AirLayer *buildLayer, *oldLayer;
-//
-//	//build boundary layer
-//	double boundaryLayerTopElevation = _elevationMarker + boundaryLayerHeight;
-//	buildLayer = new AirLayer(_landElevation, _initialTemperature,previousLayer, boundaryLayerTopElevation);
-//	_elevationMarker = buildLayer->getTopElevation();
-//	_boundaryLayer = buildLayer;
-//	oldLayer = buildLayer;
-//
-//	int i = 0;
-//	for (; _elevationMarker > airElevations[i]; i++);//adjusts to find first troposphere top height
-//
-//	for (; i < 6; i++) {
-//		buildLayer = new AirLayer(_landElevation, _initialTemperature, oldLayer, airElevations[i]);
-//		oldLayer = buildLayer;
-//	}
-//	_stratosphere = buildLayer;
-//}
+	using namespace layers::sea;
+
+	double seaBottomElevation = baseElevation;
+
+	int i=0;//position in seaLayerElevations array
+	
+	while (seaBottomElevation < seaLayerElevations[i] + seaSurfaceElevation) {
+		i++;
+	}
+	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return 0; }
+
+	i--;
+
+	//build sea bottom layer
+	double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
+	_sea.column.emplace_back(_landElevation, _initialTemperature, baseElevation,topElevation);
+	baseElevation = topElevation;
+	i--;
+
+	//build upper layers
+	while (i >= 0) {
+		double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
+		_sea.column.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
+		baseElevation = topElevation;
+		i--;
+	}
+
+	return topElevation;
+}
+
+void MaterialColumn::buildAir(double baseElevation)
+{
+	using namespace layers::air;
+
+	//build boundary layer
+	double boundaryLayerTopElevation = baseElevation + boundaryLayerHeight;
+
+	_air.column.emplace_back(_landElevation, _initialTemperature, baseElevation, boundaryLayerTopElevation);
+
+	baseElevation = boundaryLayerTopElevation;
+
+	int i = 0;
+	for (; baseElevation > airElevations[i]; i++);//adjusts to find first troposphere top height
+
+	for (; i < 6; i++) {
+		_air.column.emplace_back(_landElevation, _initialTemperature, baseElevation, airElevations[i]);
+		baseElevation = airElevations[i];
+	}
+}
 
 
 

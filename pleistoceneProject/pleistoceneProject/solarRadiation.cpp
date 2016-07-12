@@ -103,7 +103,7 @@ Eigen::Matrix3d SolarRadiation::_rotationMatrix;//Rotation matrix from sidereal 
 
 
 double SolarRadiation::getRadiationShader() {
-	double solarShader = 0.9*1.3*_solarFraction + 0.1;
+	double solarShader = _solarFraction;
 	if (!SOLAR_SHADE) { solarShader = 1; }
 	return solarShader;
 }
