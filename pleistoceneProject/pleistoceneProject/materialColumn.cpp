@@ -8,8 +8,7 @@ MaterialColumn::~MaterialColumn(){}
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_landElevation(landElevation),
-	_initialTemperature(initialTemperature),
-	_bedrock(new EarthLayer)
+	_initialTemperature(initialTemperature)
 {
 	MaterialLayer* currentLayer;
 

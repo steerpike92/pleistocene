@@ -4,6 +4,20 @@
 #include "stateMixture.h"
 #include "element.h"
 
+template <class layer>
+class SubColumn {
+private:
+	vector<layer> _layers;
+
+public:
+	void push(layer const&);  // push element 
+	void pop();               // pop element 
+	layer top() const;            // return top element 
+
+	bool empty() const {       // return true if empty.
+		return elems.empty();
+	}
+};
 
 class MaterialColumn {
 
@@ -19,8 +33,6 @@ class MaterialColumn {
 
 	double _elevationMarker;
 
-
-	std::vector<std::unique_ptr<MaterialLayer>> ownedLayers;
 
 
 //initialization

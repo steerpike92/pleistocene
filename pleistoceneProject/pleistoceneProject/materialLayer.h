@@ -98,10 +98,11 @@ namespace layers {
 //MATERIAL LAYER
 //==================================
 
+template <class StateMixture>
 class MaterialLayer {
 protected:
 	
-	std::unique_ptr<Mixture> _stateMixture;//owned mixture
+	StateMixture _mixture;
 
 	double _bottomElevation;//Elevation above sea level (of bottom of layer)
 	double _height;
