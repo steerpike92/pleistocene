@@ -444,7 +444,7 @@ elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() {
 	ElementPropertyMap infraredAbsorptivityMap;
 
 	//stub
-	infraredAbsorptivityMap[DRY_AIR] = 2.5*pow(10, -4);
+	infraredAbsorptivityMap[DRY_AIR] = 1.6*pow(10, -4);
 	infraredAbsorptivityMap[WATER_VAPOR] = 1 * pow(10, -3);
 
 	infraredAbsorptivityMap[CLOUD] = 1 * pow(10, -3);

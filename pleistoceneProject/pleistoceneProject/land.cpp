@@ -18,9 +18,9 @@ Land::Land(double elevation) {
 
 	using namespace elements;
 	std::vector<Element> composition;
-	Element clay = Element(VOLUME, CLAY, 0.4);
-	Element sand = Element(VOLUME, SAND, 0.2);
-	Element silt = Element(VOLUME, SILT, 0.4);
+	Element clay = Element(VOLUME, CLAY, 0.1);
+	Element sand = Element(VOLUME, SAND, 0.0);
+	Element silt = Element(VOLUME, SILT, 0.0);
 	composition.push_back(clay);
 	composition.push_back(sand);
 	composition.push_back(silt);
