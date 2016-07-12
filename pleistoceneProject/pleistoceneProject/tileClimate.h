@@ -17,15 +17,15 @@ class TileClimate {
 	SolarRadiation _solarRadiation;//local incident radiation
 	MaterialColumn _materialColumn;
 
-	bool _submerged = true;
-
 	std::map<my::Direction, TileClimate> _adjacientTileClimates;
-
+	
 public:
 	//INIITIALIZATION
 	//==============================================
 
 	TileClimate();
+	
+
 	TileClimate(my::Address A, double landElevation);
 
 	void buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates);
@@ -36,17 +36,23 @@ public:
 	//=================================================
 	static void setupTextures(Graphics &graphics);
 
-	bool drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType);
-private:
-	static std::map<std::string, std::string> _climateDrawTextures;
-	bool standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
-	bool surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
-	bool surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
-public:
 	void updateClimate(int elapsedTime);//animation Update
 
 
+	bool drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType);
+private:
 
+	static std::map<std::string, std::string> _climateTextures;
+	static std::map<climate::land::elevationType, std::string> _elevationTextures;
+
+	bool standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
+
+	//Standard Draw Subroutine
+	void setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType);
+
+	bool surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
+	bool surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
+public:
 	//=================================================
 	//SIMULATION
 	//=================================================
@@ -59,33 +65,13 @@ public:
 private:
 	static const int _totalSteps = 5;
 
-	//step (-1)
 	double simulateSolarRadiation();
-	//void filterSolarRadiation(double solarEnergyPerHour);
-	//void simulateEvaporation();//including transpiration
-	//void simulateInfraredRadiation();
 
-	////step(1)
-	//void simulatePressure();
-
-	////step(2)
-	//void simulateAirflow();
-
-	////step(3)
-	//void simulateCondensation();
-	//void simulatePrecipitation();
-
-	//step(4)
-	void simulateWaterFlow();
-	void simulatePlants();	
 
 public:
 	//GETTERS
 	//===========================================
-	double getSurfaceTemperature() const;
-
 	std::vector<std::string> getMessages(climate::DrawType messageType) const;
-
 };
 
 

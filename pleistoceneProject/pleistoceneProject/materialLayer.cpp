@@ -1,58 +1,42 @@
 #include "materialLayer.h"
 
+//==================================
+//MATERIAL LAYER
+//==================================
+
 MaterialLayer::MaterialLayer(){}
+//MaterialLayer::~MaterialLayer(){}
 
-MaterialLayer::MaterialLayer(double earthSurfaceElevation, MaterialLayer *layerBelow, double bottomElevation) :
+MaterialLayer::MaterialLayer(double earthSurfaceElevation, double baseElevation) :
 	_earthSurfaceElevation(earthSurfaceElevation),
-	_below(layerBelow)
+	_bottomElevation(baseElevation),
+	_bottomRelativeElevation(_bottomElevation - _earthSurfaceElevation)
 {
-	if (bottomElevation == my::FakeDouble) {
-		_bottomElevation = _below->getTopElevation();
-	}
-	else {
-		_bottomElevation = bottomElevation;
-	}
 
-	_bottomRelativeElevation = _bottomElevation - _earthSurfaceElevation;
 }
 
 MaterialLayer* MaterialLayer::getAbove()const { return _above; }
 
-
 MaterialLayer* MaterialLayer::getBelow()const { return _below; }
 
+
 double MaterialLayer::getBottomElevation()const { return _bottomElevation; }
-
-
-
 double MaterialLayer::getTopElevation()const { return _topElevation; }
+double MaterialLayer::getTemperature()const { return _mixture->getTemperature(); }
+
+
+//==================================
+//EARTH
+//==================================
 
 
 EarthLayer::EarthLayer(){}
 
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation, double layerHeight) :
-	MaterialLayer(earthSurfaceElevation,nullptr,bottomElevation),
+//EarthLayer::~EarthLayer(){}
+
+EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double baseElevation, double layerHeight) :
+	MaterialLayer(earthSurfaceElevation, baseElevation),
 	_solidPtr(new SolidMixture())
-{//bedrockConstructor
-	using namespace elements;
-	using namespace layers;
-
-	_layerType = EARTH;
-	
-	Element bedrock = Element(VOLUME, BEDROCK, layerHeight, SOLID);
-
-	//unique_ptr setup.
-	std::unique_ptr<SolidMixture> temp(new SolidMixture(bedrock, temperature));
-	_solidPtr=std::move(temp);
-	_mixture = _solidPtr.get();//raw (non-owning) base class pointer setup
-
-	_height = layerHeight;
-	_topElevation = _bottomElevation + _height;
-	_topRelativeElevation = _bottomRelativeElevation + _height;
-}
-
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double layerHeight) :
-	MaterialLayer(earthSurfaceElevation, layerBelow)
 {//normal constructor
 	using namespace elements;
 	using namespace layers;
@@ -63,8 +47,12 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, Materia
 	
 	elementVector = generateSoil(-_bottomRelativeElevation, layerHeight);//-_bottomRelativeElevation is depth below surface
 	
-	//std::unique_ptr<SolidMixture> localMixture(new SolidMixture(elementVector, temperature));
-	//_mixture = std::move(localMixture);
+	//unique_ptr setup.
+	std::unique_ptr<SolidMixture> temp(new SolidMixture(elementVector, temperature));
+	_solidPtr = std::move(temp);
+	temp.~unique_ptr();
+	_mixture = _solidPtr.get();//raw (non-owning) base class pointer setup
+
 	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
@@ -148,12 +136,16 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex)
 	return SAND;
 }
 
-
+//==================================
+//HORIZON
+//==================================
 
 HorizonLayer::HorizonLayer(){}
 
-HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow) :
-	EarthLayer(earthSurfaceElevation, temperature, layerBelow, layers::earth::topSoilHeight )//calls constructor specifically for horizon
+//HorizonLayer::~HorizonLayer(){}
+
+HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, double baseElevation) :
+	EarthLayer(earthSurfaceElevation, temperature, baseElevation, layers::earth::topSoilHeight )//calls constructor specifically for horizon
 {
 	using namespace elements;
 	using namespace layers;
@@ -161,6 +153,9 @@ HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, Mat
 	_layerType = HORIZON;//overwrite
 }
 
+//==================================
+//SEA
+//==================================
 
 //SeaLayer::SeaLayer(){}
 //
@@ -188,6 +183,12 @@ HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, Mat
 //
 //}
 //
+
+//==================================
+//AIR
+//==================================
+
+
 //
 //AirLayer::AirLayer(){}
 //

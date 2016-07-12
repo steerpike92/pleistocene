@@ -11,7 +11,8 @@ public:
 	//returns a proportion of the max radiation ([0,1]) at the lat,lon at that time 
 	double applySolarRadiation();
 
-	static double getRadiationShader(double radiationFraction);
+	double _solarFraction;
+	double getRadiationShader();
 
 private:
 	double _latitude_rad;

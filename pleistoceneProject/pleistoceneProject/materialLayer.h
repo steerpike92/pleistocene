@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "stateMixture.h"
 
-
-
 class MaterialLayer;
 class EarthLayer;
 class HorizonLayer;
@@ -124,17 +122,19 @@ protected:
 
 public:
 	MaterialLayer();
-	MaterialLayer(double earthSurfaceElevation, MaterialLayer *layerBelow = nullptr, double bottomElevation = my::FakeDouble);
+	//~MaterialLayer();
+	MaterialLayer(double earthSurfaceElevation, double baseElevation);
 	MaterialLayer* getAbove() const;
 	MaterialLayer* getBelow() const;
 
 	double getTopElevation()const;
 	double getBottomElevation()const;
+	virtual double getTemperature()const;
 
 	virtual void simulateFlow()=0;
 };
 
-//==================================
+//================================
 //EARTH
 //================================
 
@@ -147,8 +147,7 @@ protected:
 
 public:
 	EarthLayer();
-	EarthLayer(double earthSurfaceElevation, double temperature, double bottomElevation, double layerHeight);//bedrockConstructor
-	EarthLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow, double layerHeight);
+	EarthLayer(double earthSurfaceElevation, double temperature, double baseElevation, double layerHeight);
 
 	void simulateFlow();
 
@@ -189,7 +188,8 @@ class HorizonLayer : public EarthLayer{
 
 public:
 	HorizonLayer();
-	HorizonLayer(double earthSurfaceElevation, double temperature, MaterialLayer *layerBelow);
+	//~HorizonLayer();
+	HorizonLayer(double earthSurfaceElevation, double temperature, double baseElevation);
 
 private:
 	//unique horizon member functions

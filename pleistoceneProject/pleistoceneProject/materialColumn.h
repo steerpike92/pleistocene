@@ -4,28 +4,22 @@
 #include "stateMixture.h"
 #include "element.h"
 
-//template <class SpecificMixture>
-//class SubColumn {
-//private:
-//	vector<layer> _layers;
-//
-//public:
-//	void push(layer const&);  // push element 
-//	void pop();               // pop element 
-//	layer top() const;            // return top element 
-//
-//	bool empty() const {       // return true if empty.
-//		return elems.empty();
-//	}
-//};
+template <class T>
+struct SubColumn {
+	
+	std::vector<T> column;
+
+};
 
 class MaterialColumn {
 
+	SubColumn <EarthLayer> _earth;
+	SubColumn <HorizonLayer> _horizon;
+	//SubColumn <SeaLayer> seaColumn;
+	//SubColumn <AirLayer> earthColumn;
 
-	std::vector<std::unique_ptr<MaterialLayer>> _ownedLayers;
-
-	MaterialLayer *_bedrock = nullptr;//bottom Earth Layer (bottom overall layer)
-	MaterialLayer *_horizon = nullptr;//Horizon Layer (sort of top earth layer
+	//MaterialLayer *_bedrock = nullptr;//bottom Earth Layer (bottom overall layer)
+	//MaterialLayer *_horizon = nullptr;//Horizon Layer (sort of top earth layer
 	//MaterialLayer *_seaBottom = nullptr;//bottom sea Layer
 	//MaterialLayer *_seaSurface = nullptr;//top sea layer
 	//MaterialLayer *_boundaryLayer = nullptr;//bottom air layer
@@ -34,11 +28,9 @@ class MaterialColumn {
 	double _landElevation;
 	double _initialTemperature;
 
-	double _elevationMarker;
-
-
-
-//initialization
+	//====================================================
+	//INITIALIZATION
+	//====================================================
 public:
 	MaterialColumn();
 	MaterialColumn(double landElevation, double initialTemperature);
@@ -48,12 +40,14 @@ public:
 	void buildMaterialLayerSurfaces();
 
 private:
-	MaterialLayer* buildEarth();
-	MaterialLayer* buildHorizon(MaterialLayer* previousLayer);
+	double buildEarth();
+	double buildHorizon(double baseElevation);
 	//MaterialLayer* buildSea(MaterialLayer* previousLayer, double seaSurfaceElevation);
 	//void buildAir(MaterialLayer* previousLayer);
 
-
+	//====================================================
+	//SIMULATION
+	//====================================================
 public:
 //Simulation steps
 	void filterSolarRadiation(double incidentSolarRadiation);
@@ -65,5 +59,17 @@ public:
 	void simulateAirFlow();
 	void simulateWaterFlow();
 	void simulatePlants();
+
+	
+	//====================================================
+	//GETTERS
+	//====================================================
+
+	double getLandElevation()const;
+	double getSurfaceTemperature()const;
+	double getBoundaryLayerTemperature()const;
+
+
+
 
 };

@@ -4,17 +4,12 @@
 
 MaterialColumn::MaterialColumn() {}
 
-
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_landElevation(landElevation),
 	_initialTemperature(initialTemperature)
 {
-	MaterialLayer* currentLayer;
-
-	currentLayer =buildEarth();
-
-	_bedrock = currentLayer;
-	//currentLayer =buildHorizon(currentLayer);
+	double baseElevation=buildEarth();
+	baseElevation=buildHorizon(baseElevation);
 
 	/*if (_landElevation < 0) {
 		currentLayer = buildSea(currentLayer,0);
@@ -24,41 +19,36 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	buildAir(currentLayer);*/
 }
 
-MaterialLayer* MaterialColumn::buildEarth()
+double MaterialColumn::buildEarth()
 {
 	using namespace layers::earth;
 
-	MaterialLayer *buildLayer;
 	//build bedrock layer
 	double bedrockElevation = _landElevation - bedrockDepth;
 
-	//setup unique_ptr
-	_ownedLayers.emplace_back(new EarthLayer(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]));
-	auto iterator = _ownedLayers.rbegin();
-	
-	//set raw ptrs
-	buildLayer=iterator->get();
-	_bedrock = buildLayer;
+	double currentElevation;
+
+	_earth.column.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
+
+	currentElevation = _earth.column.rbegin()->getTopElevation();
+
 
 	//build remaining earth layers
 	for (int i = 1; i < earthLayers; i++){
 		double layerHeight = earthLayerHeights[i];
-		_ownedLayers.emplace_back(new EarthLayer(_landElevation, _initialTemperature, buildLayer,layerHeight));
-		auto iterator = _ownedLayers.rbegin();
-		buildLayer = iterator->get();
+		_earth.column.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[i]);
 	}
-	//return pointer to last earth layer
-	return buildLayer;
+
+	currentElevation = _earth.column.rbegin()->getTopElevation();
+	return currentElevation;
 }
 
 
-MaterialLayer* MaterialColumn::buildHorizon(MaterialLayer* previousLayer)
+double MaterialColumn::buildHorizon(double baseElevation)
 {
-	_ownedLayers.emplace_back(new HorizonLayer(_landElevation, _initialTemperature, previousLayer));
-	auto iterator = _ownedLayers.rbegin();
-	_horizon = iterator->get();
-	_elevationMarker = _horizon->getTopElevation();
-	return _horizon;
+	_horizon.column.emplace_back(_landElevation, _initialTemperature, baseElevation);
+	double currentElevation =_horizon.column.rbegin()->getTopElevation();
+	return currentElevation;
 }
 
 //MaterialLayer* MaterialColumn::buildSea(MaterialLayer* previousLayer, double seaSurfaceElevation)
@@ -175,8 +165,14 @@ void MaterialColumn::simulateCondensation()
 
 void MaterialColumn::simulatePrecipitation()
 {
+	//STUB
 }
 
 void MaterialColumn::simulateAirFlow(){}
 void MaterialColumn::simulateWaterFlow(){}
 void MaterialColumn::simulatePlants(){}
+
+
+double MaterialColumn::getLandElevation()const {return _horizon.column.rbegin()->getTopElevation();}
+double MaterialColumn::getSurfaceTemperature()const {return _horizon.column.rbegin()->getTemperature();}//STUB (check if sea)
+double MaterialColumn::getBoundaryLayerTemperature()const{return 0.0;}//STUB

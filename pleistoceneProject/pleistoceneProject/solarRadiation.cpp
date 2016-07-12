@@ -85,13 +85,13 @@ double SolarRadiation::applySolarRadiation(){
 	//rotated normal vector
 	Eigen::Vector3d _rotatedNormalVector = _rotationMatrix*_normalVector;
 
-	double irradianceProportion = _sunRayVector.dot(_rotatedNormalVector);
+	_solarFraction = _sunRayVector.dot(_rotatedNormalVector);
 
-	if (irradianceProportion < 0) {//night
-		irradianceProportion = 0;
+	if (_solarFraction < 0) {//night
+		_solarFraction = 0;
 	}
 
-	return irradianceProportion;
+	return _solarFraction;
 }
 
 Eigen::Vector3d SolarRadiation::_sunRayVector;//Vector direction of sun rays
@@ -102,8 +102,8 @@ Eigen::Matrix3d SolarRadiation::_rotationMatrix;//Rotation matrix from sidereal 
 
 
 
-double SolarRadiation::getRadiationShader(double solarFraction) {
-	double solarShader = 0.9*1.3*solarFraction + 0.1;
+double SolarRadiation::getRadiationShader() {
+	double solarShader = 0.9*1.3*_solarFraction + 0.1;
 	if (!SOLAR_SHADE) { solarShader = 1; }
 	return solarShader;
 }
