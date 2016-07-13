@@ -1,8 +1,8 @@
 #include "globals.h"
 #include "gameOptions.h"
 
-
-my::Vector2::Vector2(my::Vector2d v2) {
+namespace my {
+Vector2::Vector2(Vector2d v2) {
 	x = int(v2.x);
 	y = int(v2.y);
 }
@@ -11,20 +11,20 @@ my::Vector2::Vector2(my::Vector2d v2) {
 //////////////RECTANGLE
 //////////////=======================================
 
-my::Rectangle::Rectangle() :
+Rectangle::Rectangle() :
 	x(-1), y(-1), w(0), h(0) {}
 
-my::Rectangle::~Rectangle() {}
+Rectangle::~Rectangle() {}
 
 
-my::Rectangle::Rectangle(int x, int y, int w, int h) :
-	x(x), y(y), w(w), h(h){}
+Rectangle::Rectangle(int x, int y, int w, int h) :
+	x(x), y(y), w(w), h(h) {}
 
-my::Rectangle::Rectangle(SDL_Rect rect) :
-	x(rect.x), y(rect.y), w(rect.w), h(rect.h){}
+Rectangle::Rectangle(SDL_Rect rect) :
+	x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
 
-const SDL_Rect my::Rectangle::cameraTransform(const double SCALE, const my::Vector2 C) const {
+const SDL_Rect Rectangle::cameraTransform(const double SCALE, const Vector2 C) const {
 
 	SDL_Rect GameRect;
 
@@ -39,25 +39,25 @@ const SDL_Rect my::Rectangle::cameraTransform(const double SCALE, const my::Vect
 }
 
 
-void my::Rectangle::moveRect(const my::Vector2 &S) {
+void Rectangle::moveRect(const Vector2 &S) {
 	this->x = S.x;
 	this->y = S.y;
 }
 
-const my::Vector2 my::Rectangle::getCenter() const {
-	return my::Vector2(x + w / 2, y + h / 2);
+const Vector2 Rectangle::getCenter() const {
+	return Vector2(x + w / 2, y + h / 2);
 }
 
-const int my::Rectangle::getLeft() const { return x; }
-const int my::Rectangle::getRight() const { return x + w; }
-const int my::Rectangle::getTop() const { return y; }
-const int my::Rectangle::getBottom() const { return y + h; }
+const int Rectangle::getLeft() const { return x; }
+const int Rectangle::getRight() const { return x + w; }
+const int Rectangle::getTop() const { return y; }
+const int Rectangle::getBottom() const { return y + h; }
 
-const int my::Rectangle::getWidth() const { return w; }
-const int my::Rectangle::getHeight() const { return h; }
+const int Rectangle::getWidth() const { return w; }
+const int Rectangle::getHeight() const { return h; }
 
 
-void my::Rectangle::print() const {
+void Rectangle::print() const {
 
 	std::cout << "(" << x << "," << y << "," << w << "," << h << ")\n";
 
@@ -69,71 +69,71 @@ void my::Rectangle::print() const {
 //////////////=======================================
 
 
-void my::Address::getOptions(GameOptions &options) {
+void Address::getOptions(GameOptions &options) {
 
 	Rows = options.getRows();
 	Cols = options.getCols();
 
 }
 
-int my::Address::Rows=my::FakeIndex;
-int my::Address::Cols=my::FakeIndex;
+int Address::Rows = FakeIndex;
+int Address::Cols = FakeIndex;
 
-my::Address::Address() {
+Address::Address() {
 	r = FakeInt; c = FakeInt; exists = false; i = -FakeIndex;
 }
 
 
 //Normal constructor
-my::Address::Address(int R, int C) {
+Address::Address(int R, int C) {
 
-		//guard against 
-		if (R<0 || R >= Rows) {
-			r = FakeInt;
-			c = FakeInt;
-			exists = false;
-			i = FakeIndex;
-			return;
-		}
-
-		exists = true;
-
-		r = R;
-
-		odd = (r % 2 != 0);
-
-		if (C < 0) {
-			c = C + Cols;
-		}
-		else if (C >= Cols) {
-			c = C - Cols;
-		}
-		else c = C;
-
-		i = r*Cols + c;
-	}
-
-	//call normal constructor
-my::Address::Address(Vector2 v) : Address(v.x, v.y) {}
-
-	//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
-my::Address::Address(int R, int C, bool Spurious) {
+	//guard against 
+	if (R < 0 || R >= Rows) {
+		r = FakeInt;
+		c = FakeInt;
 		exists = false;
-		r = R;
-		odd = (r % 2 != 0);
-		c = C;
 		i = FakeIndex;
+		return;
 	}
 
-	//gets game position at an Address
-my::Vector2 my::Address::getGamePos() const {
+	exists = true;
+
+	r = R;
+
+	odd = (r % 2 != 0);
+
+	if (C < 0) {
+		c = C + Cols;
+	}
+	else if (C >= Cols) {
+		c = C - Cols;
+	}
+	else c = C;
+
+	i = r*Cols + c;
+}
+
+//call normal constructor
+Address::Address(Vector2 v) : Address(v.x, v.y) {}
+
+//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
+Address::Address(int R, int C, bool Spurious) {
+	exists = false;
+	r = R;
+	odd = (r % 2 != 0);
+	c = C;
+	i = FakeIndex;
+}
+
+//gets game position at an Address
+Vector2 Address::getGamePos() const {
 	Vector2 v;
 	v.x = (globals::TILE_WIDTH / 2) * (r % 2) + globals::TILE_WIDTH * c;
 	v.y = globals::EFFECTIVE_HEIGHT*r;
 	return v;
 }
 
-my::Vector2d my::Address::getLatLonDeg() const {
+Vector2d Address::getLatLonDeg() const {
 	Vector2 v = this->getGamePos();
 
 	double _latitude_deg = ((-(double)v.y /
@@ -144,7 +144,7 @@ my::Vector2d my::Address::getLatLonDeg() const {
 	return Vector2d(_latitude_deg, _longitude_deg);
 }
 
-my::Address my::Address::adjacent(Direction direction) const {
+Address Address::adjacent(Direction direction) const {
 
 	//even/odd changes vertical column shift
 	int colMod = 0;
@@ -174,9 +174,9 @@ my::Address my::Address::adjacent(Direction direction) const {
 	}
 }
 
-my::Address my::Address::adjacent(int i) const {
+Address Address::adjacent(int i) const {
 	if (i >= 0 && i < 6) {
-		return adjacent(static_cast<my::Direction>(i));
+		return adjacent(static_cast<Direction>(i));
 	}
 	else {
 		LOG("NOT A VALID DIRECTION");
@@ -185,9 +185,9 @@ my::Address my::Address::adjacent(int i) const {
 	}
 }
 
-int my::Address::GetRows() { return Rows; }
+int Address::GetRows() { return Rows; }
 
-int my::Address::GetCols() { return Cols; }
+int Address::GetCols() { return Cols; }
 
 
 
@@ -195,9 +195,9 @@ int my::Address::GetCols() { return Cols; }
 //////////////SIMULATION TIME
 //////////////=======================================
 
-bool my::SimulationTime::_globalTimeExists = false;
+bool SimulationTime::_globalTimeExists = false;
 
-my::SimulationTime::SimulationTime() {
+SimulationTime::SimulationTime() {
 
 	if (_globalTimeExists) {//set time equal to current global time
 		this->_year = _globalTime._year;
@@ -214,9 +214,9 @@ my::SimulationTime::SimulationTime() {
 }
 
 
-my::SimulationTime my::SimulationTime::_globalTime = my::SimulationTime();
+SimulationTime SimulationTime::_globalTime = SimulationTime();
 
-void my::SimulationTime::updateGlobalTime() {
+void SimulationTime::updateGlobalTime() {
 
 	_globalTime._hour++;
 
@@ -230,12 +230,12 @@ void my::SimulationTime::updateGlobalTime() {
 	}
 }
 
-std::vector<std::string> my::SimulationTime::readGlobalTime() {
+std::vector<std::string> SimulationTime::readGlobalTime() {
 
 	std::stringstream stream;
 	std::vector<std::string> messages;
-	
-	
+
+
 	stream << "Year: " << _globalTime._year;
 	messages.push_back(stream.str());
 
@@ -251,7 +251,7 @@ std::vector<std::string> my::SimulationTime::readGlobalTime() {
 }
 
 
-double my::SimulationTime::getTotalHours() const {
+double SimulationTime::getTotalHours() const {
 	double hours = 0.0;
 	if (this == &_globalTime) {
 		hours += _globalTime._hour;
@@ -260,7 +260,7 @@ double my::SimulationTime::getTotalHours() const {
 		return hours;
 	}
 	else {
-		
+
 		hours += _globalTime._hour - this->_hour;
 		hours += climate::planetary::solarDay_h*(_globalTime._day - this->_day);
 		hours += climate::planetary::solarYear_d*climate::planetary::solarDay_h*(_globalTime._year - this->_year);
@@ -268,7 +268,7 @@ double my::SimulationTime::getTotalHours() const {
 	}
 }
 
-double my::SimulationTime::getTotalDays() const{
+double SimulationTime::getTotalDays() const {
 	double days = 0.0;
 	if (this == &_globalTime) {
 		days += (_globalTime._hour) / climate::planetary::solarDay_h;
@@ -276,13 +276,13 @@ double my::SimulationTime::getTotalDays() const{
 		days += climate::planetary::solarYear_d*(_globalTime._year);
 		return days;
 	}
-	days += (_globalTime._hour - this->_hour)/climate::planetary::solarDay_h;
+	days += (_globalTime._hour - this->_hour) / climate::planetary::solarDay_h;
 	days += _globalTime._day - this->_day;
 	days += climate::planetary::solarYear_d*(_globalTime._year - this->_year);
 	return days;
 }
 
-double my::SimulationTime::getTotalYears() const{
+double SimulationTime::getTotalYears() const {
 	double years = 0.0;
 	if (this == &_globalTime) {
 		years += ((_globalTime._hour) / climate::planetary::solarDay_h) / climate::planetary::solarYear_d;
@@ -290,26 +290,26 @@ double my::SimulationTime::getTotalYears() const{
 		years += _globalTime._year;
 		return years;
 	}
-	years += ((_globalTime._hour - this->_hour) / climate::planetary::solarDay_h)/climate::planetary::solarYear_d;
-	years += (_globalTime._day - this->_day)/climate::planetary::solarYear_d;
+	years += ((_globalTime._hour - this->_hour) / climate::planetary::solarDay_h) / climate::planetary::solarYear_d;
+	years += (_globalTime._day - this->_day) / climate::planetary::solarYear_d;
 	years += _globalTime._year - this->_year;
 
 	return years;
 }
 
-int my::SimulationTime::getYear()const {
+int SimulationTime::getYear()const {
 	if (this == &_globalTime) {
 		return _globalTime._year;
 	}
 	return _globalTime._year - this->_year;
 }
-int my::SimulationTime::getDay()const {
+int SimulationTime::getDay()const {
 	if (this == &_globalTime) {
 		return _globalTime._day;
 	}
 	return _globalTime._day - this->_day;
 }
-int my::SimulationTime::getHour()const {
+int SimulationTime::getHour()const {
 	if (this == &_globalTime) {
 		return _globalTime._hour;
 	}
@@ -323,16 +323,18 @@ int my::SimulationTime::getHour()const {
 //////////////=======================================
 
 
-double my::degToRad(double deg) {
+double degToRad(double deg) {
 	return deg*M_PI / 180.0;
 }
 
-double my::radToDeg(double rad) {
+double radToDeg(double rad) {
 	return rad*180.0 / M_PI;
 }
 
 
-double my::uniformRandom()
+double uniformRandom()
 {
 	return double(rand()) / double(RAND_MAX + 1.0);
 }
+
+}//end namespace my

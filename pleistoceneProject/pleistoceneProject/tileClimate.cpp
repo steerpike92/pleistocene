@@ -18,7 +18,7 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 
 	double initialTemperature= calculateLocalInitialtemperature();
 
-	_materialColumn = MaterialColumn(landElevation, initialTemperature);
+	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
 	
 }
 
@@ -31,9 +31,9 @@ double TileClimate::calculateLocalInitialtemperature() {
 void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) {
 	_adjacientTileClimates = adjacientTileClimates;
 
-	std::map<my::Direction, MaterialColumn*> adjacientColumns;
+	std::map<my::Direction, layers::MaterialColumn*> adjacientColumns;
 	my::Direction direction;
-	MaterialColumn* column;
+	layers::MaterialColumn* column;
 
 	for (auto &climate : _adjacientTileClimates) {
 		direction = climate.first;

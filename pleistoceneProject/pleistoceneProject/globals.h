@@ -66,7 +66,7 @@ namespace climate {
 		const double stephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
 		const double emmisionConstantPerHour = stephanBoltzmanConstant * hour_s;
 
-		const double initialTemperatureK = 320.0;
+		const double initialTemperatureK = 295.0;
 	}
 
 	
@@ -114,303 +114,304 @@ namespace my {
 
 
 
-	const double FakeDouble = -6666.0;
-	const int FakeInt = -6666;
-	const int FakeIndex = -6666;
+const double FakeDouble = -6666.0;
+const int FakeInt = -6666;
+const int FakeIndex = -6666;
 
-	double uniformRandom();
+double uniformRandom();
 
-	enum Direction {
-		NORTH_EAST,
-		EAST,
-		SOUTH_EAST,
-		SOUTH_WEST,
-		WEST,
-		NORTH_WEST
-	};
-
-
-	class Vector2d;
-
-	class Vector2 {
-	public:
-		int x; int y;
-		Vector2() { x = 0; y = 0; }
-		Vector2(int X, int Y) { x = X; y = Y; }
-		Vector2(Vector2d v2);
-		Vector2(SDL_Point P) { x = P.x; y = P.y; }
+enum Direction {
+	NORTH_EAST,
+	EAST,
+	SOUTH_EAST,
+	SOUTH_WEST,
+	WEST,
+	NORTH_WEST
+};
 
 
-		//Addition overload
-		Vector2 operator + (Vector2 v2) {
-			Vector2 v3;
-			v3.x = this->x + v2.x;
-			v3.y = this->y + v2.y;
-			return v3;
-		}
-		void operator +=(Vector2 v2) {
-			x += v2.x;
-			y += v2.y;
-		}
+class Vector2d;
 
-		//Subtraction overload
-		Vector2 operator - (Vector2 v2) {
-			Vector2 v3;
-			v3.x = this->x - v2.x;
-			v3.y = this->y - v2.y;
-			return v3;
-		}
-		void operator -=(Vector2 v2) {
-			x -= v2.x;
-			y -= v2.y;
-		}
-
-		Vector2 operator * (int a) {
-			Vector2 v2;
-			v2.x = x*a;
-			v2.y = y*a;
-			return v2;
-		}
-		Vector2 operator * (double a) {
-			Vector2 v2;
-			v2.x = int(x*a);
-			v2.y = int(y*a);
-			return v2;
-		}
-
-		double size() {
-			return double(pow(pow(x, 2) + pow(y, 2), .5));
-		}
-
-		void print() {
-			std::cout << "(" << x << "," << y << ")" << std::endl;
-		}
-
-	};
+class Vector2 {
+public:
+	int x; int y;
+	Vector2() { x = 0; y = 0; }
+	Vector2(int X, int Y) { x = X; y = Y; }
+	Vector2(Vector2d v2);
+	Vector2(SDL_Point P) { x = P.x; y = P.y; }
 
 
-	class Vector2d {
-	public:
-		double x; double y;
+	//Addition overload
+	Vector2 operator + (Vector2 v2) {
+		Vector2 v3;
+		v3.x = this->x + v2.x;
+		v3.y = this->y + v2.y;
+		return v3;
+	}
+	void operator +=(Vector2 v2) {
+		x += v2.x;
+		y += v2.y;
+	}
 
-		//Default constructor
-		Vector2d() { x = 0.0; y = 0.0; }
+	//Subtraction overload
+	Vector2 operator - (Vector2 v2) {
+		Vector2 v3;
+		v3.x = this->x - v2.x;
+		v3.y = this->y - v2.y;
+		return v3;
+	}
+	void operator -=(Vector2 v2) {
+		x -= v2.x;
+		y -= v2.y;
+	}
 
-		//Specified constructor
-		Vector2d(double X, double Y) { x = X; y = Y; }
+	Vector2 operator * (int a) {
+		Vector2 v2;
+		v2.x = x*a;
+		v2.y = y*a;
+		return v2;
+	}
+	Vector2 operator * (double a) {
+		Vector2 v2;
+		v2.x = int(x*a);
+		v2.y = int(y*a);
+		return v2;
+	}
 
-		//Translator constructor
-		Vector2d(Vector2 v2) { x = double(v2.x); y = double(v2.y); }
+	double size() {
+		return double(pow(pow(x, 2) + pow(y, 2), .5));
+	}
 
-		//Addition overload
-		Vector2d operator + (Vector2d v2) {
-			Vector2d v3;
-			v3.x = this->x + v2.x;
-			v3.y = this->y + v2.y;
-			return v3;
-		}
-		void operator +=(Vector2d v2) {
-			x += v2.x;
-			y += v2.y;
-		}
-		//Subtraction overload
-		Vector2d operator - (Vector2d v2) {
-			Vector2d v3;
-			v3.x = this->x - v2.x;
-			v3.y = this->y - v2.y;
-			return v3;
-		}
-		void operator -=(Vector2d v2) {
-			x -= v2.x;
-			y -= v2.y;
-		}
-		Vector2d operator * (int a) {
-			Vector2d v2;
-			v2.x = x*double(a);
-			v2.y = y*double(a);
-			return v2;
-		}
+	void print() {
+		std::cout << "(" << x << "," << y << ")" << std::endl;
+	}
 
-		Vector2d operator * (double a) {
-			Vector2d v2;
-			v2.x = x*a;
-			v2.y = y*a;
-			return v2;
-		}
-
-		double size() {
-			return double(pow(pow(x, 2) + pow(y, 2), .5));
-		}
-
-		void print() {
-			std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
-		}
-
-	};
-
-	class MyVector3d {
-	public:
-		double x; double y; double z;
-
-		//Default constructor
-		MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
-
-		//Specified constructor
-		MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
-
-		//Addition overload
-		MyVector3d operator + (MyVector3d v2) {
-			MyVector3d v3;
-			v3.x = this->x + v2.x;
-			v3.y = this->y + v2.y;
-			v3.z = this->z + v2.z;
-			return v3;
-		}
-		void operator +=(MyVector3d v2) {
-			x += v2.x;
-			y += v2.y;
-			z += v2.z;
-		}
-		//Subtraction overload
-		MyVector3d operator - (MyVector3d v2) {
-			MyVector3d v3;
-			v3.x = this->x - v2.x;
-			v3.y = this->y - v2.y;
-			v3.z = this->z - v2.z;
-			return v3;
-		}
-		void operator -=(MyVector3d v2) {
-			x -= v2.x;
-			y -= v2.y;
-			z -= v2.z;
-		}
-		MyVector3d operator * (int a) {
-			MyVector3d v2;
-			v2.x = x*double(a);
-			v2.y = y*double(a);
-			v2.z = z*double(a);
-			return v2;
-		}
-
-		MyVector3d operator * (double a) {
-			MyVector3d v2;
-			v2.x = x*a;
-			v2.y = y*a;
-			v2.z = z*a;
-			return v2;
-		}
-
-		double size() {
-			return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
-		}
-
-		void print() {
-			std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
-		}
-
-	};
-
-	class Rectangle {
-	public:
-		Rectangle();
-		~Rectangle();
-		Rectangle(int x, int y, int w, int h);
-		Rectangle(SDL_Rect rect);
-
-		const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const;
-
-		const Vector2 getCenter() const;
-
-		//takes new position
-		void moveRect(const Vector2 &S);
-
-		const int getLeft() const;
-		const int getRight() const;
-		const int getTop() const;
-		const int getBottom() const;
-
-		const int getWidth() const;
-		const int getHeight() const;
-
-		void print() const;
-
-		int x, y, w, h;
+};
 
 
-	};
+class Vector2d {
+public:
+	double x; double y;
+
+	//Default constructor
+	Vector2d() { x = 0.0; y = 0.0; }
+
+	//Specified constructor
+	Vector2d(double X, double Y) { x = X; y = Y; }
+
+	//Translator constructor
+	Vector2d(Vector2 v2) { x = double(v2.x); y = double(v2.y); }
+
+	//Addition overload
+	Vector2d operator + (Vector2d v2) {
+		Vector2d v3;
+		v3.x = this->x + v2.x;
+		v3.y = this->y + v2.y;
+		return v3;
+	}
+	void operator +=(Vector2d v2) {
+		x += v2.x;
+		y += v2.y;
+	}
+	//Subtraction overload
+	Vector2d operator - (Vector2d v2) {
+		Vector2d v3;
+		v3.x = this->x - v2.x;
+		v3.y = this->y - v2.y;
+		return v3;
+	}
+	void operator -=(Vector2d v2) {
+		x -= v2.x;
+		y -= v2.y;
+	}
+	Vector2d operator * (int a) {
+		Vector2d v2;
+		v2.x = x*double(a);
+		v2.y = y*double(a);
+		return v2;
+	}
+
+	Vector2d operator * (double a) {
+		Vector2d v2;
+		v2.x = x*a;
+		v2.y = y*a;
+		return v2;
+	}
+
+	double size() {
+		return double(pow(pow(x, 2) + pow(y, 2), .5));
+	}
+
+	void print() {
+		std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
+	}
+
+};
+
+class MyVector3d {
+public:
+	double x; double y; double z;
+
+	//Default constructor
+	MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
+
+	//Specified constructor
+	MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
+
+	//Addition overload
+	MyVector3d operator + (MyVector3d v2) {
+		MyVector3d v3;
+		v3.x = this->x + v2.x;
+		v3.y = this->y + v2.y;
+		v3.z = this->z + v2.z;
+		return v3;
+	}
+	void operator +=(MyVector3d v2) {
+		x += v2.x;
+		y += v2.y;
+		z += v2.z;
+	}
+	//Subtraction overload
+	MyVector3d operator - (MyVector3d v2) {
+		MyVector3d v3;
+		v3.x = this->x - v2.x;
+		v3.y = this->y - v2.y;
+		v3.z = this->z - v2.z;
+		return v3;
+	}
+	void operator -=(MyVector3d v2) {
+		x -= v2.x;
+		y -= v2.y;
+		z -= v2.z;
+	}
+	MyVector3d operator * (int a) {
+		MyVector3d v2;
+		v2.x = x*double(a);
+		v2.y = y*double(a);
+		v2.z = z*double(a);
+		return v2;
+	}
+
+	MyVector3d operator * (double a) {
+		MyVector3d v2;
+		v2.x = x*a;
+		v2.y = y*a;
+		v2.z = z*a;
+		return v2;
+	}
+
+	double size() {
+		return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
+	}
+
+	void print() {
+		std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
+	}
+
+};
+
+class Rectangle {
+public:
+	Rectangle();
+	~Rectangle();
+	Rectangle(int x, int y, int w, int h);
+	Rectangle(SDL_Rect rect);
+
+	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const;
+
+	const Vector2 getCenter() const;
+
+	//takes new position
+	void moveRect(const Vector2 &S);
+
+	const int getLeft() const;
+	const int getRight() const;
+	const int getTop() const;
+	const int getBottom() const;
+
+	const int getWidth() const;
+	const int getHeight() const;
+
+	void print() const;
+
+	int x, y, w, h;
+
+
+};
 
 
 
-	class Address {
+class Address {
 		
-		static int Rows;
-		static int Cols;
+	static int Rows;
+	static int Cols;
 
-	public:
-		static void getOptions(GameOptions &options);
+public:
+	static void getOptions(GameOptions &options);
 
-		int r;//row
-		int c;//column
-		int i;//tile index (-1 if doesn't exist)
-		bool exists = false;//existance or validity flag
-		bool odd = false;//odd row flag
+	int r;//row
+	int c;//column
+	int i;//tile index (-1 if doesn't exist)
+	bool exists = false;//existance or validity flag
+	bool odd = false;//odd row flag
 
-		//default constructor
-		Address();
+	//default constructor
+	Address();
 
-		//Normal constructor
-		Address(int R, int C);
+	//Normal constructor
+	Address(int R, int C);
 
-		//call normal constructor
-		Address(Vector2 v);
+	//call normal constructor
+	Address(Vector2 v);
 
-		//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
-		Address(int R, int C, bool Spurious);
+	//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
+	Address(int R, int C, bool Spurious);
 
-		//gets game position at an Address
-		Vector2 getGamePos() const;
+	//gets game position at an Address
+	Vector2 getGamePos() const;
 
-		Vector2d getLatLonDeg() const;
+	Vector2d getLatLonDeg() const;
 
-		Address adjacent(Direction direction) const;
+	Address adjacent(Direction direction) const;
 
-		Address adjacent(int i) const;
+	Address adjacent(int i) const;
 
-		static int GetRows();
-		static int GetCols();
-	};
-
-
-	class SimulationTime {
-	public:
-		//default constructor for 
-		SimulationTime();
-
-		static SimulationTime _globalTime;
-
-		static void updateGlobalTime();
-
-		static std::vector<std::string> readGlobalTime();
-
-		double getTotalYears() const;
-		double getTotalDays() const;
-		double getTotalHours() const;
-
-		int getYear() const;
-		int getDay() const;
-		int getHour() const;
-
-	private:
-		int _year;
-		int _day;
-		int _hour;
-
-		static bool _globalTimeExists;
-
-	};
+	static int GetRows();
+	static int GetCols();
+};
 
 
-	double degToRad(double deg);
-	double radToDeg(double rad);
-}
+class SimulationTime {
+public:
+	//default constructor for 
+	SimulationTime();
+
+	static SimulationTime _globalTime;
+
+	static void updateGlobalTime();
+
+	static std::vector<std::string> readGlobalTime();
+
+	double getTotalYears() const;
+	double getTotalDays() const;
+	double getTotalHours() const;
+
+	int getYear() const;
+	int getDay() const;
+	int getHour() const;
+
+private:
+	int _year;
+	int _day;
+	int _hour;
+
+	static bool _globalTimeExists;
+
+};
+
+
+double degToRad(double deg);
+double radToDeg(double rad);
+
+}//end namespace my
 

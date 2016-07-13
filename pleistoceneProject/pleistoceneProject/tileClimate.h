@@ -15,7 +15,7 @@ class TileClimate {
 	double calculateLocalInitialtemperature();
 
 	SolarRadiation _solarRadiation;//local incident radiation
-	MaterialColumn _materialColumn;
+	layers::MaterialColumn _materialColumn;
 
 	std::map<my::Direction, TileClimate*> _adjacientTileClimates;
 	
