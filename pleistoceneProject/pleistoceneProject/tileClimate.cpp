@@ -28,12 +28,20 @@ double TileClimate::calculateLocalInitialtemperature() {
 	return localInitialTemperature;
 }
 
-void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> adjacientTileClimates) {
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) {
+	_adjacientTileClimates = adjacientTileClimates;
 
-	for (auto &climatePair : adjacientTileClimates) {
-		//STUB
+	std::map<my::Direction, MaterialColumn*> adjacientColumns;
+	my::Direction direction;
+	MaterialColumn* column;
+
+	for (auto &climate : _adjacientTileClimates) {
+		direction = climate.first;
+		column = &(climate.second->_materialColumn);
+		adjacientColumns[direction] = column;
 	}
 
+	_materialColumn.buildAdjacency(adjacientColumns);
 }
 
 

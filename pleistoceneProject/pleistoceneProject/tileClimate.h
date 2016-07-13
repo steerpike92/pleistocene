@@ -17,7 +17,7 @@ class TileClimate {
 	SolarRadiation _solarRadiation;//local incident radiation
 	MaterialColumn _materialColumn;
 
-	std::map<my::Direction, TileClimate> _adjacientTileClimates;
+	std::map<my::Direction, TileClimate*> _adjacientTileClimates;
 	
 public:
 	//INIITIALIZATION
@@ -28,7 +28,7 @@ public:
 
 	TileClimate(my::Address A, double landElevation);
 
-	void buildAdjacency(std::map<my::Direction, TileClimate*> adjacientTileClimates);
+	void buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates);
 	
 
 	//=================================================

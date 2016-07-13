@@ -14,13 +14,30 @@ MaterialLayer::MaterialLayer(double baseElevation, double bottomElevation) :
 
 }
 
+void MaterialLayer::addSurface(layers::SharedSurface &surface)
+{
+	_sharedSurfaces.push_back(surface);
+}
+
+void MaterialLayer::clearSurfaces()
+{
+	_sharedSurfaces.clear();
+}
+
 //SIMULATION
 //==============================
 
-double MaterialLayer::filterSolarRadiation(double energyKJ) 
+void MaterialLayer::filterSolarRadiation(double energyKJ) 
 {
 	energyKJ=_mixture->filterSolarRadiation(energyKJ);
-	return energyKJ;
+
+	//don't send down less than a joule
+	if (energyKJ > 0.001) { 
+		//if down is nullptr the sunlight has reached the abyss and you have bigger problems
+		if (_down == nullptr) { LOG("sun shines in hell"); throw(2); }
+
+		_down->filterSolarRadiation(energyKJ);	//chain downward
+	}
 }
 
 double MaterialLayer::emitInfraredRadiation() 
@@ -41,6 +58,7 @@ double MaterialLayer::filterInfraredRadiation(double energyKJ)
 double MaterialLayer::getBottomElevation()const { return _bottomElevation; }
 double MaterialLayer::getTopElevation()const { return _topElevation; }
 double MaterialLayer::getTemperature()const { return _mixture->getTemperature(); }
+
 
 
 //////////==================================

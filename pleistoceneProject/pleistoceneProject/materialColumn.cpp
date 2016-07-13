@@ -25,6 +25,8 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	else {_submerged = false;}
 
 	buildAir(baseElevation);
+
+	buildUniversalColumn();
 }
 
 double MaterialColumn::buildEarth()
@@ -35,6 +37,7 @@ double MaterialColumn::buildEarth()
 	double bedrockElevation = _landElevation - bedrockDepth;
 
 	double currentElevation;
+
 
 	_earth.emplace_back(bedrockElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
 
@@ -112,6 +115,70 @@ void MaterialColumn::buildAir(double baseElevation)
 	}
 }
 
+//needs to be rebuilt after every insertion/deletion
+void MaterialColumn::buildUniversalColumn() {
+
+	_column.clear();
+	for (auto &layer : _earth) {
+		_column.push_back(&layer);
+	}
+	for (auto &layer : _horizon) {
+		_column.push_back(&layer);
+	}
+	for (auto &layer : _sea) {
+		_column.push_back(&layer);
+	}
+	for (auto &layer : _air) {
+		_column.push_back(&layer);
+	}
+
+	//build vertical ptrs
+	MaterialLayer* previous = nullptr;
+	
+	for (auto layer : _column) {
+		layer->_down = previous;
+		if (previous) previous->_up = layer;
+
+		previous = layer;
+	}
+
+}
+
+void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) 
+{
+	_adjacientColumns = adjacientColumns;
+
+	buildMaterialLayerSurfaces();
+	buildEarthLayerSurfaces();
+	buildHorizonNeighborhood();
+}
+
+void MaterialColumn::buildMaterialLayerSurfaces()
+{
+	using namespace layers;
+	for (my::Direction direction : ownedDirections) {
+		buildNeighborSurfaces(direction);
+	}
+}
+
+void MaterialColumn::buildVerticalSurfaces() {
+	using namespace layers;
+	SharedSurface surface;
+	for (MaterialLayer *layer : _column) {
+		surface.area = climate::planetary::tileArea;
+		surface.spatialDirection = UP;
+		surface.materialLayer = layer->_up;
+		layer->addSurface(surface);
+	}
+}
+
+void MaterialColumn::buildNeighborSurfaces(my::Direction direction)
+{
+	MaterialColumn *neighborColumn = _adjacientColumns[direction];
+
+	//surface algorithm
+	//STUB
+}
 
 
 void MaterialColumn::buildEarthLayerSurfaces()
@@ -129,13 +196,7 @@ void MaterialColumn::buildHorizonNeighborhood()
 	//need neighboring horizons
 }
 
-void MaterialColumn::buildMaterialLayerSurfaces()
-{
-	//fluxing air and sea layers. Earth layers included as they can block passage of air/sea
 
-
-
-}
 
 ////////////==================================
 ////////////SIMULATION
@@ -145,24 +206,26 @@ void MaterialColumn::filterSolarRadiation(double energyKJ)
 {
 
 	//stratosphere absorbs solar radiation at a greater rate (ozone absorption of UV)
-	double ozoneBoost = 2;
-	energyKJ = _air.back().filterSolarRadiation(energyKJ*ozoneBoost) / ozoneBoost;
+	//double ozoneBoost = 2;
+	//_air.back().filterSolarRadiation(energyKJ*ozoneBoost) / ozoneBoost;
+
+	_column.back()->filterSolarRadiation(energyKJ);
 
 	//filter through rest of atmosphere
-	for (auto rit = _air.rbegin()+1; rit != _air.rend(); ++rit) {//starts one below stratosphere
-		energyKJ = rit->filterSolarRadiation(energyKJ);
-	}
+	//for (auto rit = _air.rbegin()+1; rit != _air.rend(); ++rit) {//starts one below stratosphere
+	//	energyKJ = rit->filterSolarRadiation(energyKJ);
+	//}
 
-	//filter through sea
-	if (_submerged) {
-		for (auto rit = _sea.rbegin() + 1; rit != _sea.rend(); ++rit) {//starts one below stratosphere
-			energyKJ = rit->filterSolarRadiation(energyKJ);
-		}
-	}
+	////filter through sea
+	//if (_submerged) {
+	//	for (auto rit = _sea.rbegin() + 1; rit != _sea.rend(); ++rit) {//starts one below stratosphere
+	//		energyKJ = rit->filterSolarRadiation(energyKJ);
+	//	}
+	//}
 
-	if (energyKJ > 0.01) {//don't needlessly call filter on horizon
-		_horizon.back().filterSolarRadiation(energyKJ);
-	}
+	//if (energyKJ > 0.01) {//don't needlessly call filter on horizon
+	//	_horizon.back().filterSolarRadiation(energyKJ);
+	//}
 
 }
 

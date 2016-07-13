@@ -15,15 +15,17 @@ namespace layers {
 	};
 
 	enum SpatialDirection {
-		UP,
-		DOWN,
 		NORTH_EAST,
 		EAST,
 		SOUTH_EAST,
 		SOUTH_WEST,
 		WEST,
-		NORTH_WEST
+		NORTH_WEST,
+		UP,
+		DOWN
 	};
+
+	const std::vector<my::Direction> ownedDirections{ my::NORTH_EAST, my::EAST, my::SOUTH_EAST };
 
 	struct SharedSurface {
 		SpatialDirection spatialDirection;
@@ -102,7 +104,7 @@ namespace layers {
 
 class MaterialLayer {
 protected:
-	
+	//MaterialLayer is basically just a wrapper for a Mixture
 	Mixture *_mixture;
 
 	double _bottomElevation;//Elevation above sea level (of bottom of layer)
@@ -116,11 +118,8 @@ protected:
 
 	layers::LayerType _layerType;
 
-	
-	MaterialLayer* _above = nullptr;//i.e. next node
-	MaterialLayer* _below = nullptr;//i.e. previous node
 
-	//std::vector<layers::SharedSurface> _sharedSurfaces;
+	std::vector<layers::SharedSurface> _sharedSurfaces;
 
 public:
 	//INITIALIZATION
@@ -128,9 +127,17 @@ public:
 	MaterialLayer();
 	MaterialLayer(double baseElevation, double bottomElevation);
 
+	MaterialLayer *_up = nullptr;
+	MaterialLayer *_down = nullptr;
+
+	void addSurface(layers::SharedSurface &surface);
+	void clearSurfaces();
+
 	//SIMULATION
 	//============================
-	double filterSolarRadiation(double energyKJ);
+
+	//chains downward
+	void filterSolarRadiation(double energyKJ);
 	double emitInfraredRadiation();
 	double filterInfraredRadiation(double energyKJ);
 
