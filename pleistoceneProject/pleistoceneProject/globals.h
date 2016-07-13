@@ -55,6 +55,7 @@ namespace climate {
 		const int solarDay_h = 24;	//length of a solar day in hours
 		const int hour_s = 3600;
 		//const int hour_s = 14400;
+
 		const double siderealDay_h = double(solarDay_h*solarYear_d) / double(solarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
 		const double tilt_rad = 0.4101524;//radians of axial tilt
 		//const double tilt_rad = (M_PI / 2)*.6;
@@ -96,6 +97,7 @@ namespace climate {
 		//high point of 5000 meters above and below sea level
 		//rarely realized due to peaking adjustment to noise function
 		const double amplitude = 5 * gaps;
+
 	}
 
 

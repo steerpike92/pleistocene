@@ -259,7 +259,7 @@ double Mixture::emitInfrared() {
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 5 * pow(10, -4);
+		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
 	}
 	else {
 		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4);
