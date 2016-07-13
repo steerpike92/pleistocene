@@ -153,6 +153,7 @@
     <ClInclude Include="tileClimate.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="june13notes.txt" />
     <Text Include="surfaces.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -138,6 +138,7 @@ public:
 
 	//chains downward
 	void filterSolarRadiation(double energyKJ);
+
 	double emitInfraredRadiation();
 	double filterInfraredRadiation(double energyKJ);
 
@@ -155,7 +156,7 @@ public:
 ////////////================================
 
 class EarthLayer : public MaterialLayer {
-protected:
+private:
 	//unique earth member variables
 	//std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
 
@@ -167,7 +168,7 @@ public:
 
 	void simulateFlow();
 
-protected:
+private:
 	//unique earth member functions
 
 	//buildAlignedEarthSurfaces

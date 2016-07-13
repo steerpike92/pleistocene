@@ -20,6 +20,9 @@ class MaterialColumn {
 	bool _submerged;
 	double _initialTemperature;
 
+	double _escapeRadiation;
+	double _backRadiation;
+
 	std::map<my::Direction, MaterialColumn*> _adjacientColumns;
 
 	//====================================================

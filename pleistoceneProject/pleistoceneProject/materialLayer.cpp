@@ -46,11 +46,11 @@ double MaterialLayer::emitInfraredRadiation()
 	return energyKJ;
 }
 
-double MaterialLayer::filterInfraredRadiation(double energyKJ)
-{
-	energyKJ = _mixture->filterInfrared(energyKJ);
-	return energyKJ;
+//for earth/horizon/sea     air has an override
+double MaterialLayer::filterInfraredRadiation(double energyKJ) {
+	return _mixture->filterInfrared(energyKJ);
 }
+
 
 //GETTERS
 //==============================
@@ -266,6 +266,12 @@ std::vector<Element> AirLayer::generateAirElements(double bottomElevation, doubl
 	return elementVector;
 }
 
+//SIMULATION
+//=========================
+
+void AirLayer::simulateFlow() {} //STUB
+
+
 //UTILITY
 //=========================
 
@@ -363,10 +369,6 @@ double AirLayer::truePressureCalculator(double elevation) const
 	return TruePressure;
 }
 
-//SIMULATION
-//=========================
-
-void AirLayer::simulateFlow() {} //STUB
 
 
 

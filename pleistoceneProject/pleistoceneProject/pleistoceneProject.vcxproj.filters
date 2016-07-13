@@ -127,5 +127,8 @@
     <Text Include="surfaces.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="june13notes.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

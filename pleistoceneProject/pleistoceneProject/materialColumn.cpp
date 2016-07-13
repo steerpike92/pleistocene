@@ -204,29 +204,7 @@ void MaterialColumn::buildHorizonNeighborhood()
 
 void MaterialColumn::filterSolarRadiation(double energyKJ)
 {
-
-	//stratosphere absorbs solar radiation at a greater rate (ozone absorption of UV)
-	//double ozoneBoost = 2;
-	//_air.back().filterSolarRadiation(energyKJ*ozoneBoost) / ozoneBoost;
-
 	_column.back()->filterSolarRadiation(energyKJ);
-
-	//filter through rest of atmosphere
-	//for (auto rit = _air.rbegin()+1; rit != _air.rend(); ++rit) {//starts one below stratosphere
-	//	energyKJ = rit->filterSolarRadiation(energyKJ);
-	//}
-
-	////filter through sea
-	//if (_submerged) {
-	//	for (auto rit = _sea.rbegin() + 1; rit != _sea.rend(); ++rit) {//starts one below stratosphere
-	//		energyKJ = rit->filterSolarRadiation(energyKJ);
-	//	}
-	//}
-
-	//if (energyKJ > 0.01) {//don't needlessly call filter on horizon
-	//	_horizon.back().filterSolarRadiation(energyKJ);
-	//}
-
 }
 
 void MaterialColumn::simulateEvaporation()
@@ -236,118 +214,41 @@ void MaterialColumn::simulateEvaporation()
 
 void MaterialColumn::simulateInfraredRadiation()
 {
-	double upRadiation;
-	if (_submerged) { upRadiation = _sea.back().emitInfraredRadiation(); }
-	else { upRadiation = _horizon.back().emitInfraredRadiation(); }
+	MaterialLayer* surfaceLayer;
+
+	//surface radiation
+	if (_submerged) { surfaceLayer = &_sea.back(); }
+	else { surfaceLayer = &_horizon.back(); }
 
 
+	double upRadiation;//radiation incident upwards upon layer
+	double emittedEnergy;
+	std::vector<double> downRadiation;//radiation incident downwards upon layer
+
+	upRadiation = surfaceLayer->emitInfraredRadiation();
+
+	//filter/emit upwards
+	for (AirLayer &air : _air) {
+		emittedEnergy = air.emitInfraredRadiation();
+		downRadiation.push_back(emittedEnergy / 2.0);
+		upRadiation = air.filterInfraredRadiation(upRadiation) + emittedEnergy / 2.0;
+	}
+	_escapeRadiation = upRadiation;
+
+	//this may be the most unnecessarily complex thing I've ever done in c++
+	double currentDownRadiation;
+	auto radiation_rit = downRadiation.rbegin();//end of down radiation vector
+	//filter downwards
+	for (auto air_rit = _air.rbegin()+1; air_rit != _air.rend(); ++air_rit) {
+		currentDownRadiation = *radiation_rit;
+		radiation_rit++;//advance down radiation reverse iterator
+		*radiation_rit += air_rit->filterInfraredRadiation(currentDownRadiation);//filter radiation
+	}
+	_backRadiation = *radiation_rit; //I think
+
+	surfaceLayer->filterInfraredRadiation(_backRadiation);
 
 }
-
-
-
-	//double Air::filterAndComputeBackRadiation(double incidentInfraredEnergyKJ) {
-
-	//	fillRadiationArrays(incidentInfraredEnergyKJ);
-
-	//	_backRadiation = filterDownRadiationArray();
-	//	_escapedRadiation = filterUpRadiationArray();
-
-	//	return _backRadiation;
-	//}
-
-	//void Air::fillRadiationArrays(double incidentInfraredEnergyKJ) {
-
-	//	//Step 0: 0 initialize radiation arrays
-	//	for (int i = 0; i < _layerCount + 2; i++) {
-	//		_upRadiation[i] = 0.0;
-	//		_downRadiation[i] = 0.0;
-	//	}
-
-
-	//	//EX (troposphere may be different number of layers)
-
-	//	//index, layer
-
-	//	// 0 -- surface		(downRadiation[0] = back radiation)(upRadiation[0] = 0)
-	//	// 1 -- _boundaryLayer	(upRadiation[1] is from surface)
-	//	// 2 -- _troposphere[0]
-	//	// 3 -- _troposphere[1]
-	//	// 4 -- _troposphere[2]
-	//	// 5 -- _troposphere[3]
-	//	// 6 -- _stratosphere	(downRadiation[6] = 0)
-	//	// 7 -- space		(downRadiation[7] = 0)(upRadiation[7] escapes system)
-
-	//	//Radiation arrays give the direction and KJ of energy INCIDENT upon THAT layer
-
-
-	//	//Step 1: Fill radiaiton arrays with emitted energy
-	//	_upRadiation[1] = incidentInfraredEnergyKJ;
-
-	//	double emittedRadiation;
-
-	//	int layerIndex = 1;
-
-	//	//1.a boundary layer
-	//	emittedRadiation = _boundaryLayer.emitInfrared();
-	//	_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;
-	//	_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;//this radiation goes to surface
-	//	layerIndex++;
-
-	//	//1.b troposphere
-	//	for (GaseousMixture &gasMix : _troposphere) {
-	//		emittedRadiation = gasMix.emitInfrared();
-	//		_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;
-	//		_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;
-	//		layerIndex++;
-	//	}
-
-	//	//1.c stratosphere
-	//	emittedRadiation = _stratosphere.emitInfrared();
-	//	_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;//this radiation goes to space
-	//	_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;
-	//}
-
-	//double Air::filterUpRadiationArray() {
-	//	/*std::cout << "\nupRad: ";
-	//	for (int i = 0; i < _layerCount + 2; i++) {
-	//	std::cout << int(_upRadiation[i])<<", ";
-	//	}*/
-
-	//	int layerIndex = 1;
-
-	//	_upRadiation[layerIndex + 1] += _boundaryLayer.filterInfrared(_upRadiation[layerIndex]);//filter up to cell above
-	//	layerIndex++;
-
-	//	for (GaseousMixture &gasMix : _troposphere) {
-	//		_upRadiation[layerIndex + 1] += gasMix.filterInfrared(_upRadiation[layerIndex]);//filter up to cell above
-	//		layerIndex++;
-	//	}
-	//	//std::cout << "Before Stratosphere: " << int(_upRadiation[layerIndex]) << std::endl;
-	//	_upRadiation[layerIndex + 1] += _stratosphere.filterInfrared(_upRadiation[layerIndex]);//escapes to space
-	//											       //std::cout << "After Stratosphere: " << int(_upRadiation[layerIndex+1]) << std::endl;
-
-	//	return _upRadiation[layerIndex + 1];
-	//}
-
-	//double Air::filterDownRadiationArray() {
-	//	/*std::cout << "\ndownRad: ";
-	//	for (int i = 0; i < _layerCount + 2; i++) {
-	//	std::cout << int(_downRadiation[i]) << ", ";
-	//	}*/
-
-	//	int layerIndex = _layerCount - 1;
-
-	//	for (std::vector<GaseousMixture>::reverse_iterator &gasPtr = _troposphere.rbegin(); gasPtr != _troposphere.rend(); ++gasPtr) {//reverse iterator
-	//		_downRadiation[layerIndex - 1] += gasPtr->filterInfrared(_downRadiation[layerIndex]);
-	//		layerIndex--;
-	//	}
-	//	//std::cout << "Before Boundary: " << int(_downRadiation[layerIndex]) << std::endl;
-	//	_downRadiation[layerIndex - 1] += _boundaryLayer.filterInfrared(_downRadiation[layerIndex]);//back to surface
-	//												    //std::cout << "After Boundary: " << int(_downRadiation[layerIndex-1]) << std::endl;
-
-	//	return _downRadiation[0];
-	//}
 
 void MaterialColumn::simulatePressure() 
 {
@@ -391,6 +292,15 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 	stream << "Land Elevation: " << int(_landElevation);
 	messages.push_back(stream.str());
 
+	stream = std::stringstream();
+	stream << "Back Radiation: " << int(_backRadiation) << " KJ";
+	messages.push_back(stream.str());
+
+	stream = std::stringstream();
+	stream << "Escape Radiation: " << int(_escapeRadiation) << " KJ";
+	messages.push_back(stream.str());
+
+
 	switch (messageType) {
 	case(climate::STANDARD_DRAW) :
 
@@ -408,18 +318,18 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 	case(climate::SURFACE_TEMPERATURE_DRAW) :
 		if (_submerged) {
 			stream = std::stringstream();
-			stream << "Water Surface Temp: " << int(_sea.back().getTemperature());
+			stream << "Water Surface Temp: " << int(_sea.back().getTemperature()-273)<<" °C";
 			messages.push_back(stream.str());
 		}
 		else {
 			stream = std::stringstream();
-			stream << "Land Surface Temp: " << int(_horizon.back().getTemperature());
+			stream << "Land Surface Temp: " << int(_horizon.back().getTemperature()-273)<<" °C";
 			messages.push_back(stream.str());
 		}
 		break;
 	case(climate::SURFACE_AIR_TEMPERATURE_DRAW) :
 		stream = std::stringstream();
-		stream << "Air Surface Temp: " << int(_air.front().getTemperature());
+		stream << "Air Surface Temp: " << int(_air.front().getTemperature()- 273)<< "°C";
 		messages.push_back(stream.str());
 		break;
 	}
