@@ -47,8 +47,9 @@ public:
 	void simulateWaterFlow();
 	void simulatePlants();
 
-	
 
+
+	
 	//====================================================
 	//GETTERS
 	//====================================================
@@ -57,5 +58,6 @@ public:
 	double getSurfaceTemperature()const;
 	double getBoundaryLayerTemperature()const;
 
+	std::vector<std::string> getMessages(climate::DrawType messageType)const;
 
 };

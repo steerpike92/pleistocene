@@ -95,7 +95,7 @@ namespace climate {
 
 		//high point of 5000 meters above and below sea level
 		//rarely realized due to peaking adjustment to noise function
-		const double amplitude = 3 * gaps;
+		const double amplitude = 5 * gaps;
 	}
 
 

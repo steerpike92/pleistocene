@@ -24,6 +24,7 @@ Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) {
 
 void Map::generateMap(int seed) {
 	Tile::generateTileElevation(seed);
+	Tile::setupTileClimateAdjacency();
 }
 
 

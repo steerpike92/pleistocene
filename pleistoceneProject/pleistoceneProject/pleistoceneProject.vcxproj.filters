@@ -127,8 +127,5 @@
     <Text Include="surfaces.txt">
       <Filter>Source Files</Filter>
     </Text>
-    <Text Include="storedAlgorithms.txt">
-      <Filter>Source Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>

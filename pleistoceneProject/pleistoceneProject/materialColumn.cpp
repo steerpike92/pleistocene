@@ -43,10 +43,9 @@ double MaterialColumn::buildEarth()
 	//build remaining earth layers
 	for (int i = 1; i < earthLayers; i++){
 		double layerHeight = earthLayerHeights[i];
-		_earth.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[i]);
+		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
+		currentElevation = _earth.back().getTopElevation();
 	}
-
-	currentElevation = _earth.back().getTopElevation();
 	return currentElevation;
 }
 
@@ -133,6 +132,9 @@ void MaterialColumn::buildHorizonNeighborhood()
 void MaterialColumn::buildMaterialLayerSurfaces()
 {
 	//fluxing air and sea layers. Earth layers included as they can block passage of air/sea
+
+
+
 }
 
 ////////////==================================
@@ -171,8 +173,118 @@ void MaterialColumn::simulateEvaporation()
 
 void MaterialColumn::simulateInfraredRadiation()
 {
-	//STUB
+	double upRadiation;
+	if (_submerged) { upRadiation = _sea.back().emitInfraredRadiation(); }
+	else { upRadiation = _horizon.back().emitInfraredRadiation(); }
+
+
+
 }
+
+
+
+	//double Air::filterAndComputeBackRadiation(double incidentInfraredEnergyKJ) {
+
+	//	fillRadiationArrays(incidentInfraredEnergyKJ);
+
+	//	_backRadiation = filterDownRadiationArray();
+	//	_escapedRadiation = filterUpRadiationArray();
+
+	//	return _backRadiation;
+	//}
+
+	//void Air::fillRadiationArrays(double incidentInfraredEnergyKJ) {
+
+	//	//Step 0: 0 initialize radiation arrays
+	//	for (int i = 0; i < _layerCount + 2; i++) {
+	//		_upRadiation[i] = 0.0;
+	//		_downRadiation[i] = 0.0;
+	//	}
+
+
+	//	//EX (troposphere may be different number of layers)
+
+	//	//index, layer
+
+	//	// 0 -- surface		(downRadiation[0] = back radiation)(upRadiation[0] = 0)
+	//	// 1 -- _boundaryLayer	(upRadiation[1] is from surface)
+	//	// 2 -- _troposphere[0]
+	//	// 3 -- _troposphere[1]
+	//	// 4 -- _troposphere[2]
+	//	// 5 -- _troposphere[3]
+	//	// 6 -- _stratosphere	(downRadiation[6] = 0)
+	//	// 7 -- space		(downRadiation[7] = 0)(upRadiation[7] escapes system)
+
+	//	//Radiation arrays give the direction and KJ of energy INCIDENT upon THAT layer
+
+
+	//	//Step 1: Fill radiaiton arrays with emitted energy
+	//	_upRadiation[1] = incidentInfraredEnergyKJ;
+
+	//	double emittedRadiation;
+
+	//	int layerIndex = 1;
+
+	//	//1.a boundary layer
+	//	emittedRadiation = _boundaryLayer.emitInfrared();
+	//	_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;
+	//	_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;//this radiation goes to surface
+	//	layerIndex++;
+
+	//	//1.b troposphere
+	//	for (GaseousMixture &gasMix : _troposphere) {
+	//		emittedRadiation = gasMix.emitInfrared();
+	//		_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;
+	//		_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;
+	//		layerIndex++;
+	//	}
+
+	//	//1.c stratosphere
+	//	emittedRadiation = _stratosphere.emitInfrared();
+	//	_upRadiation[layerIndex + 1] = emittedRadiation / 2.0;//this radiation goes to space
+	//	_downRadiation[layerIndex - 1] = emittedRadiation / 2.0;
+	//}
+
+	//double Air::filterUpRadiationArray() {
+	//	/*std::cout << "\nupRad: ";
+	//	for (int i = 0; i < _layerCount + 2; i++) {
+	//	std::cout << int(_upRadiation[i])<<", ";
+	//	}*/
+
+	//	int layerIndex = 1;
+
+	//	_upRadiation[layerIndex + 1] += _boundaryLayer.filterInfrared(_upRadiation[layerIndex]);//filter up to cell above
+	//	layerIndex++;
+
+	//	for (GaseousMixture &gasMix : _troposphere) {
+	//		_upRadiation[layerIndex + 1] += gasMix.filterInfrared(_upRadiation[layerIndex]);//filter up to cell above
+	//		layerIndex++;
+	//	}
+	//	//std::cout << "Before Stratosphere: " << int(_upRadiation[layerIndex]) << std::endl;
+	//	_upRadiation[layerIndex + 1] += _stratosphere.filterInfrared(_upRadiation[layerIndex]);//escapes to space
+	//											       //std::cout << "After Stratosphere: " << int(_upRadiation[layerIndex+1]) << std::endl;
+
+	//	return _upRadiation[layerIndex + 1];
+	//}
+
+	//double Air::filterDownRadiationArray() {
+	//	/*std::cout << "\ndownRad: ";
+	//	for (int i = 0; i < _layerCount + 2; i++) {
+	//	std::cout << int(_downRadiation[i]) << ", ";
+	//	}*/
+
+	//	int layerIndex = _layerCount - 1;
+
+	//	for (std::vector<GaseousMixture>::reverse_iterator &gasPtr = _troposphere.rbegin(); gasPtr != _troposphere.rend(); ++gasPtr) {//reverse iterator
+	//		_downRadiation[layerIndex - 1] += gasPtr->filterInfrared(_downRadiation[layerIndex]);
+	//		layerIndex--;
+	//	}
+	//	//std::cout << "Before Boundary: " << int(_downRadiation[layerIndex]) << std::endl;
+	//	_downRadiation[layerIndex - 1] += _boundaryLayer.filterInfrared(_downRadiation[layerIndex]);//back to surface
+	//												    //std::cout << "After Boundary: " << int(_downRadiation[layerIndex-1]) << std::endl;
+
+	//	return _downRadiation[0];
+	//}
 
 void MaterialColumn::simulatePressure() 
 {
@@ -200,5 +312,56 @@ void MaterialColumn::simulatePlants(){}
 ////////////==================================
 
 double MaterialColumn::getLandElevation()const {return _horizon.back().getTopElevation();}
-double MaterialColumn::getSurfaceTemperature()const {return _horizon.back().getTemperature();}//STUB (check if sea)
-double MaterialColumn::getBoundaryLayerTemperature()const{return 1.0;}//STUB
+double MaterialColumn::getSurfaceTemperature()const
+{
+	if (_submerged) { return _sea.back().getTemperature(); }
+	
+	else { return _horizon.back().getTemperature(); }
+}
+double MaterialColumn::getBoundaryLayerTemperature()const{return _air.front().getTemperature();}
+
+std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageType) const
+{
+	std::vector<std::string> messages;
+
+	std::stringstream stream;
+	stream << "Land Elevation: " << int(_landElevation);
+	messages.push_back(stream.str());
+
+	switch (messageType) {
+	case(climate::STANDARD_DRAW) :
+
+		stream=std::stringstream();
+		stream << "Bedrock Elevation: " << int(_earth.front().getBottomElevation());
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Horizon Elevation: " << int(_earth.back().getTopElevation());
+		messages.push_back(stream.str());
+
+
+
+		break;
+	case(climate::SURFACE_TEMPERATURE_DRAW) :
+		if (_submerged) {
+			stream = std::stringstream();
+			stream << "Water Surface Temp: " << int(_sea.back().getTemperature());
+			messages.push_back(stream.str());
+		}
+		else {
+			stream = std::stringstream();
+			stream << "Land Surface Temp: " << int(_horizon.back().getTemperature());
+			messages.push_back(stream.str());
+		}
+		break;
+	case(climate::SURFACE_AIR_TEMPERATURE_DRAW) :
+		stream = std::stringstream();
+		stream << "Air Surface Temp: " << int(_air.front().getTemperature());
+		messages.push_back(stream.str());
+		break;
+	}
+
+
+	return messages;
+}
+ 

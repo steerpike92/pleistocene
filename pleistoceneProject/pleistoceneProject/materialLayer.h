@@ -47,13 +47,13 @@ namespace layers {
 		const double bedrockDepth = 201; //201 m of simulated subterranian activity
 
 		const int earthLayers = 6;//if changed, update earthLayerHeights
-		const double earthLayerHeight = (bedrockDepth - 1) / (earthLayers - 1);
+		const double earthLayerHeight = (bedrockDepth - 2) / (double(earthLayers-1));
 		const double subSoilHeight = 0.8; //80 cm of subsoil
-		//const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
-		const double topSoilHeight = 1; //1 m of topsoil in horizon
+		const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
+		//const double topSoilHeight = 1; //1 m of topsoil in horizon
 
 		const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
-			earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight,topSoilHeight };
+			earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight};
 	}
 
 	
@@ -263,6 +263,9 @@ class AirLayer : public MaterialLayer {
 
 	std::unique_ptr<GaseousMixture> _gasPtr;
 
+	double incidentUpRadiation;
+	double incidentDownRadiation;
+
 public:
 	AirLayer();
 	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation);
@@ -281,6 +284,7 @@ private:
 	double lapsedTemperatureCalculator(double elevation)const;
 	double truePressureCalculator(double elevation)const;
 
+public:
 	double getTemperature()const;
 
 };

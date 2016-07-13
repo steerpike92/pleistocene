@@ -153,7 +153,6 @@
     <ClInclude Include="tileClimate.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="storedAlgorithms.txt" />
     <Text Include="surfaces.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

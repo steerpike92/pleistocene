@@ -28,7 +28,7 @@ double TileClimate::calculateLocalInitialtemperature() {
 	return localInitialTemperature;
 }
 
-void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate> adjacientTileClimates) {
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> adjacientTileClimates) {
 
 	for (auto &climatePair : adjacientTileClimates) {
 		//STUB
@@ -191,23 +191,22 @@ bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rec
 }
 
 bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
-	//using namespace climate;
+	using namespace climate;
 
-	//double temperature = _air.getSurfaceAirTemperature();
-	//const double airFudge = 20;
+	double temperature = _materialColumn.getBoundaryLayerTemperature();
+	const double airFudge = 20;
 
-	//double colorIntensity = std::min(abs(airFudge+temperature - planetary::initialTemperatureK) / 20.0, 1.0);
-	//double filter = 1.0 - colorIntensity;
+	double colorIntensity = std::min(abs(airFudge+temperature - planetary::initialTemperatureK) / 20.0, 1.0);
+	double filter = 1.0 - colorIntensity;
 
-	//if (airFudge+temperature < planetary::initialTemperatureK) {//Cold
-	//	graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
-	//}
-	//else {//Hot
-	//	graphics.colorFilter(_climateTextures["whiteTile"], 1.0, filter, filter);
-	//}
+	if (airFudge+temperature < planetary::initialTemperatureK) {//Cold
+		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
+	}
+	else {//Hot
+		graphics.colorFilter(_climateTextures["whiteTile"], 1.0, filter, filter);
+	}
 
-	//return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
-	return false;
+	return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
 }
 
 std::map<std::string, std::string> TileClimate::_climateTextures;
@@ -241,32 +240,9 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 
 	std::vector<std::string> messages;
 
-	/*std::stringstream stream;
-	stream << "Up Radiation: " << int(_upRadiation);
-	messages.push_back(stream.str());
-
-	stream = std::stringstream();
-	stream << "Back Radiation: " << int(_backRadiation);
-	messages.push_back(stream.str());*/
 
 
-
-	std::vector<std::string> SubMessages;
-
-
-	/*switch (messageType) {
-	case(SURFACE_TEMPERATURE_DRAW) : 
-		if (_land.isSubmerged()) { SubMessages= _water.getMessages(SURFACE_TEMPERATURE_DRAW); }
-		else { SubMessages= _land.getMessages(SURFACE_TEMPERATURE_DRAW); }
-		break;
-	case(SURFACE_AIR_TEMPERATURE_DRAW) :
-		SubMessages= _air.getMessages(SURFACE_AIR_TEMPERATURE_DRAW);
-		break;
-	default : 
-		if (_land.isSubmerged()) { SubMessages= _water.getMessages(STANDARD_DRAW);}
-		else { SubMessages= _land.getMessages(STANDARD_DRAW);}
-		break;
-	}*/
+	std::vector<std::string> SubMessages = _materialColumn.getMessages(messageType);
 
 	for (std::string &str : SubMessages) {
 		messages.push_back(str);

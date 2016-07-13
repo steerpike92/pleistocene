@@ -6,7 +6,7 @@
 
 Tile::Tile() {}
 
-Tile::Tile(my::Address tileAddress, double elevation, Graphics &graphics) {
+Tile::Tile(my::Address tileAddress) {
 
 	_Address = tileAddress;
 
@@ -27,27 +27,44 @@ std::vector<Tile> Tile::_tiles;
 
 std::vector<my::Address> Tile::_Addresses;
 
+
 void Tile::setupTiles(Graphics &graphics) {
-	buildTileVector(graphics);
+	buildTileVector();
 	setupTextures(graphics);
 	buildTileNeighbors();
 }
 
-
-
-void Tile::buildTileVector(Graphics &graphics) {
+//initializes each tile at a default depth
+void Tile::buildTileVector() {
 	//Tile constructor
 	for (int row = 0; row < my::Address::GetRows(); row++) {
 		for (int col = 0; col <  my::Address::GetCols(); col++) {
-			_tiles.emplace_back(my::Address(row, col), climate::land::defaultDepth, graphics);
+			_tiles.emplace_back(my::Address(row, col));
 			_Addresses.emplace_back(row, col);
 			if (_Addresses.back().i == my::FakeIndex) {
-				LOG("NOT A VALID Address");
+				LOG("not a valid Address");
 			}
 		}
 	}
 }
 
+void Tile::buildTileNeighbors() {
+	for (Tile &T : _tiles) {
+		T.buildNeighborhood();
+	}
+}
+
+void Tile::buildNeighborhood() {
+	my::Address neighborAddress;
+	for (int j = 0; j < 6; j++) {
+		neighborAddress = this->_Address.adjacent(j);
+		if (neighborAddress.i != -1) {
+			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
+		}
+	}
+}
+
+Bios* Tile::_biosPtr;
 
 std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols){
 
@@ -153,31 +170,32 @@ void Tile::generateTileElevation(int seed) {
 	int TileCols = my::Address::GetCols();
 
 	//Noise building parameters
-	double zoom = 4000;
-	double persistance = .55;
-	int octaves = 8;
-	const int hBlendDistance = TileCols / 10;
-	const int vBlendDistance = std::min(10, TileRows/10);
-	int Cols = TileCols + hBlendDistance;
-	int Rows = TileRows;
+	double			zoom = 4000;
+	double			persistance = .55;
+	const int		octaves = 8;					
 
-	//NOISE GENERATOR
-	//===================
+	const int		hBlendDistance = TileCols / 10;			//horizontal blend distance for east west map edge blending
+	const int		vBlendDistance = std::min(10, TileRows/10);	//vertical blend distance for blending poles into sea
+	int Cols = TileCols + hBlendDistance;					//columns in noise table
+	int Rows = TileRows;							//rows in noise table
+
+	//noise generator;
 	std::vector<double> noiseTable = buildNoiseTable(seed, zoom, persistance, octaves, Rows, Cols);
+
+	//noise edge blender
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
-	//SET ELEVATION
-	//=====================
-
-	double shelfPower = 1.5;
-	double slopePower = 1;
-	double abyssPower = .5;
-
-	double landPower = 2;
+	
+	//Elevation shape parameters
+	const double shelfPower = 1.5;
+	const double slopePower = 1;
+	const double abyssPower = .5;
+	const double landPower = 2;
 
 	my::Address A;
 	double noiseValue;
 
+	//SET ELEVATION
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
@@ -196,13 +214,11 @@ void Tile::generateTileElevation(int seed) {
 				}
 			}
 
-			//Final elevation set
+			//determine tile to set
 			A = my::Address(row, col);
-			if (A.i == my::FakeIndex) {
-				LOG("waht happened?");
-				throw (2);
-			}
+			if (A.i == my::FakeIndex) {LOG("address index out of bounds");throw (2);}
 
+			//set elevation
 			double elevation = noiseValue * climate::land::amplitude;
 			_tiles[A.i]._tileClimate = TileClimate(A, elevation);
 		}
@@ -210,23 +226,29 @@ void Tile::generateTileElevation(int seed) {
 }
 
 
-void Tile::buildTileNeighbors() {
-	for (Tile &T : _tiles) {
-		T.buildNeighborhood();
-	}
-}
+void Tile::setupTileClimateAdjacency() {
 
-void Tile::buildNeighborhood() {
-	my::Address neighborAddress;
-	for (int j = 0; j < 6; j++) {
-		neighborAddress = this->_Address.adjacent(j);
-		if (neighborAddress.i != -1) {
-			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
+	std::map<my::Direction, TileClimate*>	adjacientTileClimates;
+	my::Direction				direction;
+	TileClimate				*climatePtr;
+
+	for (Tile &tile : _tiles) {
+		//build adjacient climate map for tile
+		for (auto neighbor : tile._directionalNeighbors) {
+			direction = neighbor.first;
+			climatePtr = &(_tiles[neighbor.second.i]._tileClimate);//grab neighbor _tileClimate ptr
+			adjacientTileClimates[direction] = climatePtr;
 		}
+
+		//pass map to tile's tileClimate
+		tile._tileClimate.buildAdjacency(adjacientTileClimates);
+
+		//clear and restart for next tile
+		adjacientTileClimates.clear();
 	}
 }
 
-Bios* Tile::_biosPtr;
+
 
 
 
