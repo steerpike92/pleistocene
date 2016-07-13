@@ -6,12 +6,14 @@ Game::Game() {
 }
 
 void Game::initialize() {
+
+	_options = GameOptions();
 	_infoBar = InfoBar(_graphics);
 	_bios = Bios(_graphics);
-	_map = Map(_graphics, &_bios);
+	_map = Map(_graphics, &_bios, _options);
 	
 
-	_camera = Camera(my::Vector2(0, 0), pow(.8, 10));
+	_camera = Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
@@ -38,7 +40,7 @@ void Game::determineElapsedTime() {
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
 	size_t delay;
 
-	if (_elapsedTime_MS < 10 && DELAY) {
+	if (_elapsedTime_MS < 10 && 0) {//STUB "delay"
 		delay = 10 - _elapsedTime_MS;
 		SDL_Delay(delay);
 		_elapsedTime_MS = 10;
@@ -100,7 +102,7 @@ void Game::updateSimulation() {
 }
 
 void Game::draw() {
-	if (!DAILY_DRAW) {
+	if (true) {//STUB "daily draw"
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag);
 	}

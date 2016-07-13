@@ -37,8 +37,8 @@ void Tile::setupTiles(Graphics &graphics) {
 
 void Tile::buildTileVector(Graphics &graphics) {
 	//Tile constructor
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
+	for (int row = 0; row < my::Address::GetRows(); row++) {
+		for (int col = 0; col <  my::Address::GetCols(); col++) {
 			_tiles.emplace_back(my::Address(row, col), climate::land::defaultDepth, graphics);
 			_Addresses.emplace_back(row, col);
 			if (_Addresses.back().i == my::FakeIndex) {
@@ -111,10 +111,13 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 	//blend map east/west edge together
 	double blend;
 
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
+	int TileRows = my::Address::GetRows();
+	int TileCols = my::Address::GetCols();
+
+	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < hBlendDistance; col++) {
 			blend = (col / std::max(double(hBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				((double(hBlendDistance) - col) / std::max(double(hBlendDistance), 1.0))*noiseTable[row*Cols + col + globals::TILE_COLUMNS];
+				((double(hBlendDistance) - col) / std::max(double(hBlendDistance), 1.0))*noiseTable[row*Cols + col + TileCols];
 
 			noiseTable[row*Cols + col] = blend;
 		}
@@ -123,7 +126,7 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 	//blend north/south pole into water. Walking into a black barrier is kinda lame
 
 	for (int row = 0; row < vBlendDistance; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
+		for (int col = 0; col < TileCols; col++) {
 			blend = (row / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
 				(double(vBlendDistance - row) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row + vBlendDistance)*Cols + col]);
 
@@ -131,10 +134,10 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 		}
 	}
 
-	for (int row = globals::TILE_ROWS - vBlendDistance; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
-			blend = (double(globals::TILE_ROWS - row) / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				(double(vBlendDistance + row - globals::TILE_ROWS) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
+	for (int row = TileRows - vBlendDistance; row < TileRows; row++) {
+		for (int col = 0; col < TileCols; col++) {
+			blend = (double(TileRows - row) / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
+				(double(vBlendDistance + row - TileRows) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
 
 			noiseTable[row*Cols + col] = blend;
 		}
@@ -146,14 +149,17 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 
 void Tile::generateTileElevation(int seed) {
 
+	int TileRows = my::Address::GetRows();
+	int TileCols = my::Address::GetCols();
+
 	//Noise building parameters
 	double zoom = 4000;
 	double persistance = .55;
 	int octaves = 8;
-	const int hBlendDistance = globals::TILE_COLUMNS / 10;
-	const int vBlendDistance = std::min(10,globals::TILE_ROWS/10);
-	int Cols = globals::TILE_COLUMNS + hBlendDistance;
-	int Rows = globals::TILE_ROWS;
+	const int hBlendDistance = TileCols / 10;
+	const int vBlendDistance = std::min(10, TileRows/10);
+	int Cols = TileCols + hBlendDistance;
+	int Rows = TileRows;
 
 	//NOISE GENERATOR
 	//===================
@@ -172,8 +178,8 @@ void Tile::generateTileElevation(int seed) {
 	my::Address A;
 	double noiseValue;
 
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
+	for (int row = 0; row < TileRows; row++) {
+		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
 			if (noiseValue>0) {
 				noiseValue = pow(noiseValue, landPower);

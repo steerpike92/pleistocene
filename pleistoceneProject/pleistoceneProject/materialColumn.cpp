@@ -36,7 +36,7 @@ double MaterialColumn::buildEarth()
 
 	double currentElevation;
 
-	_earth.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
+	_earth.emplace_back(bedrockElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
 
 	currentElevation = _earth.back().getTopElevation();
 
@@ -95,8 +95,11 @@ void MaterialColumn::buildAir(double baseElevation)
 	double layerBottomElevation = baseElevation;
 	double layerTopElevation= layerBottomElevation + boundaryLayerHeight;
 	
+	AirLayer buildLayer;
+
 	//build boundary layer
-	_air.emplace_back(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	_air.push_back(std::move(buildLayer));
 	layerBottomElevation = layerTopElevation;
 
 	int i = 0;
@@ -104,7 +107,8 @@ void MaterialColumn::buildAir(double baseElevation)
 
 	for (; i < 6; i++) {
 		layerTopElevation = airElevations[i];
-		_air.emplace_back(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		_air.push_back(std::move(buildLayer));
 		layerBottomElevation = layerTopElevation;
 	}
 }

@@ -1,11 +1,12 @@
 #include "map.h"
+#include "gameOptions.h"
 #include "graphics.h"
 #include "noise.h"
 #include "tile.h"
 
 Map::Map(){}
 
-Map::Map(Graphics &graphics, Bios *bios) {
+Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) {
 	srand((unsigned int) time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions

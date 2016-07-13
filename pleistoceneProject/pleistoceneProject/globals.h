@@ -18,14 +18,8 @@
 #include <memory>
 
 #define DEBUG 1
-#define EXCEPTION_HANDLING 0
-#define LOOP 1
-#define MAP_SIZE 0
-#define RESTRICT_CAMERA 1
-#define DELAY 0
+#define EXCEPTION_HANDLING 1
 
-#define DAILY_DRAW 1
-#define SOLAR_SHADE 1
 
 
 #if DEBUG
@@ -44,30 +38,11 @@ namespace globals {
 
 	const int EFFECTIVE_HEIGHT = 190;
 	
-	//Earth size:
-	
-#if (MAP_SIZE==2)
-	const int TILE_ROWS = 121;
-	const int TILE_COLUMNS = 90;
-#elif (MAP_SIZE==1)
-	const int TILE_ROWS = 31;
-	const int TILE_COLUMNS = 30;
-#else
-	const int TILE_ROWS = 1;
-	const int TILE_COLUMNS = 1;
-
-#endif
-
-	const int GAME_WIDTH_PIXELS = (TILE_HEIGHT/2) * TILE_ROWS + TILE_WIDTH * TILE_COLUMNS;
-	const int GAME_HEIGHT_PIXELS = EFFECTIVE_HEIGHT * (TILE_ROWS+1);
-
 	const int FPS = 50;//target FPS (20 MS)
 	const int MAX_FRAME_TIME = 5*1000/FPS;//cutoff frame time after 100 MS 
 
-	
 }
 
-double uniformRandom();
 
 namespace climate {
 
@@ -131,12 +106,17 @@ namespace climate {
 	}
 }
 
+class GameOptions;
+
 namespace my {
+
+
 
 	const double FakeDouble = -6666.0;
 	const int FakeInt = -6666;
 	const int FakeIndex = -6666;
 
+	double uniformRandom();
 
 	enum Direction {
 		NORTH_EAST,
@@ -358,119 +338,44 @@ namespace my {
 	};
 
 
+
 	class Address {
+		
+		static int Rows;
+		static int Cols;
+
 	public:
+		static void getOptions(GameOptions &options);
+
 		int r;//row
 		int c;//column
 		int i;//tile index (-1 if doesn't exist)
 		bool exists = false;//existance or validity flag
 		bool odd = false;//odd row flag
 
-				 //default constructor
-		Address() {
-			r = FakeInt; c = FakeInt; exists = false; i = -FakeIndex;
-		}
+		//default constructor
+		Address();
 
 		//Normal constructor
-		Address(int R, int C) {
-
-			//guard against 
-			if (R<0 || R >= globals::TILE_ROWS) {
-				r = FakeInt;
-				c = FakeInt;
-				exists = false;
-				i = FakeIndex;
-				return;
-			}
-
-			exists = true;
-
-			r = R;
-
-			odd = (r % 2 != 0);
-
-			if (C < 0) {
-				c = C + globals::TILE_COLUMNS;
-			}
-			else if (C >= globals::TILE_COLUMNS) {
-				c = C - globals::TILE_COLUMNS;
-			}
-			else c = C;
-
-			i = r*globals::TILE_COLUMNS + c;
-		}
+		Address(int R, int C);
 
 		//call normal constructor
-		Address(Vector2 v) : Address(v.x, v.y) {}
+		Address(Vector2 v);
 
 		//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
-		Address(int R, int C, bool Spurious) {
-			exists = false;
-			r = R;
-			odd = (r % 2 != 0);
-			c = C;
-			i = FakeIndex;
-		}
+		Address(int R, int C, bool Spurious);
 
 		//gets game position at an Address
-		Vector2 getGamePos() const {
-			Vector2 v;
-			v.x = (globals::TILE_WIDTH / 2) * (r % 2) + globals::TILE_WIDTH * c;
-			v.y = globals::EFFECTIVE_HEIGHT*r;
-			return v;
-		}
+		Vector2 getGamePos() const;
 
-		Vector2d getLatLonDeg() const {
-			Vector2 v = this->getGamePos();
+		Vector2d getLatLonDeg() const;
 
-			double _latitude_deg = ((-(double)v.y /
-				(globals::EFFECTIVE_HEIGHT*(globals::TILE_ROWS) / 2)) + 1)*climate::planetary::maxLatitude;
-			double _longitude_deg = 360 * v.x /
-				(globals::TILE_COLUMNS*globals::TILE_WIDTH);
+		Address adjacent(Direction direction) const;
 
-			return Vector2d(_latitude_deg, _longitude_deg);
-		}
+		Address adjacent(int i) const;
 
-		Address adjacent(Direction direction) const {
-
-			//even/odd changes vertical column shift
-			int colMod = 0;
-
-			if (odd) {
-				colMod = 1;
-			}
-
-			switch (direction) {
-
-			case(NORTH_EAST) :
-				return Address(r - 1, c + colMod);
-			case(EAST) :
-				return Address(r, c + 1);
-			case(SOUTH_EAST) :
-				return Address(r + 1, c + colMod);
-			case(SOUTH_WEST) :
-				return Address(r + 1, c + colMod - 1);
-			case(WEST) :
-				return Address(r, c - 1);
-			case(NORTH_WEST) :
-				return Address(r - 1, c + colMod - 1);
-			default:
-				LOG("NOT A VALID DIRECTION");
-				throw(2);
-				return Address(r, c);
-			}
-		}
-
-		Address adjacent(int i) const {
-			if (i >= 0 && i < 6) {
-				return adjacent(static_cast<my::Direction>(i));
-			}
-			else {
-				LOG("NOT A VALID DIRECTION");
-				throw (2);
-				return Address(FakeInt, FakeInt, true);
-			}
-		}
+		static int GetRows();
+		static int GetCols();
 	};
 
 

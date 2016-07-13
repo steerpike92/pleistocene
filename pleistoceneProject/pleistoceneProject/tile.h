@@ -5,6 +5,7 @@
 class Map;
 class Graphics;
 class Bios;
+class GameOptions;
 
 //Tiles are hexagons
 //organized into horizontal rows and vertical columns in my::Vector2 _tileAddress(row,column)
@@ -21,6 +22,8 @@ public:
 	//SETUP
 	//=======================================================================
 
+	//static void getOptions(GameOptions &options);
+
 private:
 	static std::vector <Tile> _tiles;
 
@@ -34,7 +37,7 @@ private:
 	static std::vector<my::Address> _Addresses;
 
 	//my::Rectangle with ingame tile dimensions
-	SDL_Rect _gameRectangle; 
+	SDL_Rect _gameRectangle;
 
 public:
 	//Calls other constructors

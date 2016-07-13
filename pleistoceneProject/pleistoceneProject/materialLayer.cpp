@@ -117,7 +117,7 @@ elements::ElementType EarthLayer::determineEarthType(double depthIndex)
 	//depthIndex is from 0 to 1 (0=surface, 1=bedrockBottom)
 
 	//randomDouble is from 0 to 1;
-	double randomDouble=uniformRandom();
+	double randomDouble=my::uniformRandom();
 
 	//soilRV : soil Random Variable from 0 to 1. 
 	//low values correspond to near surface type soils (at surface, soilRV < 0.5)
@@ -139,7 +139,7 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex)
 	//Not used here yet but eventually probably
 
 	//randomDouble is from 0 to 1;
-	double soilRV = uniformRandom();
+	double soilRV = my::uniformRandom();
 
 	if (soilRV > 0.67) { return CLAY; }
 	if (soilRV > 0.33) { return SILT; }
@@ -150,8 +150,6 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex)
 //===========================
 
 void EarthLayer::simulateFlow() {}//STUB
-
-
 
 ////////////==================================
 ////////////HORIZON
@@ -259,7 +257,7 @@ double AirLayer::expectedHydrostaticPressureCalculator(double elevation)
 
 	//choose set of standard values based on elevation
 	int i;
-	if (elevation > StandardElevation[0]){i = 1;}
+	if (elevation > StandardElevation[1]){i = 1;}
 	else { i = 0; }
 	
 	//set of parameters
@@ -296,7 +294,7 @@ double AirLayer::expectedTemperatureCalculator(double elevation)
 
 	//choose set of standard values based on elevation
 	int i;
-	if (elevation > StandardElevation[0]) { i = 1; }
+	if (elevation > StandardElevation[1]) { i = 1; }
 	else { i = 0; }
 
 	//parameters
