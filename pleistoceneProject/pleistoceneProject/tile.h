@@ -5,27 +5,27 @@
 class Map;
 class Graphics;
 class Bios;
+class GameOptions;
 
 //Tiles are hexagons
 //organized into horizontal rows and vertical columns in my::Vector2 _tileAddress(row,column)
-//Holds terrain features->
-//determins thegraphics of the tile, 
 
 //Iterated through row by row to draw (so tiles can be drawn on top of each other)
 class Tile {
 public:
 	Tile();
-	~Tile();
-	Tile(my::Address tileAddress, int elevation, Graphics &graphics);
+	Tile(my::Address tileAddress);
 
 	//=====================================================================
 	//SETUP
 	//=======================================================================
 
+	//static void getOptions(GameOptions &options);
+
 private:
 	static std::vector <Tile> _tiles;
 
-	static void buildTileVector(Graphics &graphics);
+	static void buildTileVector();
 
 	static void buildTileNeighbors();//all tiles
 	void buildNeighborhood();//individual tile
@@ -35,7 +35,7 @@ private:
 	static std::vector<my::Address> _Addresses;
 
 	//my::Rectangle with ingame tile dimensions
-	SDL_Rect _gameRectangle; 
+	SDL_Rect _gameRectangle;
 
 public:
 	//Calls other constructors
@@ -49,8 +49,16 @@ private:
 
 	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable,int Rows, int Cols, int vBlendDistance, int  hBlendDistance);
 
-	//Draw to renderer
+	
 public:
+	//construct surface relationships 
+	static void setupTileClimateAdjacency();
+
+
+
+	//GRAPHICS
+	//====================
+
 	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//all
 private: 
 	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//one
@@ -71,12 +79,6 @@ private:
 public:
 	static Bios* _biosPtr;
 
-
-public:
-	static void alterElevations(int deltaM);
-private:
-	void alterElevation(int deltaM);
-
 private:
 	//(row,column)
 	my::Address _Address;
@@ -88,7 +90,7 @@ public:
 	SDL_Rect getGameRect() const;
 	std::vector<std::string> sendMessages() const;//communicates with bios
 
-protected:
+private:
 	//==================================================================================
 	//GAMEPLAY VARIABLES
 	//==================================================================================
@@ -105,6 +107,6 @@ protected:
 	//0>= ... <360
 	double _longitude_deg;
 
-
+	//all simulation happens in TileClimate
 	TileClimate _tileClimate;
 };

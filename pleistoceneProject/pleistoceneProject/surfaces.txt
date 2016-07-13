@@ -1,0 +1,38 @@
+
+
+Step 1:
+
+Add elevations to mixtures
+
+
+Actually, it might be easier to just keep all of the mixture functionality intact and inherit
+
+
+Say a new class "MaterialLayer" which owns a mixture includes auxiliary mixture fuctionality
+
+
+
+creating a material layer...
+
+Really what we have is a column of material layers, starting from the bedrock is simplest as then,
+ the system only goes upwards.
+
+So in order of creation:
+	Becrock
+	Substratum (dynamic layer count)
+	Subsoil
+	Topsoil
+
+	(optional water column)
+	(Aphotic layer) (dynamic layer count)
+	(Photic layer)
+
+	Boundary layer
+	Troposphere (dynamic layer count)
+	s3	5
+
+
+It's a bidirectional linked list
+
+
+

@@ -7,7 +7,6 @@
 //===============================================================
 
 SolidMixture::SolidMixture(){}
-SolidMixture::~SolidMixture(){}
 
 SolidMixture::SolidMixture(Element element, double temperature) : 
 	SolidMixture(std::vector<Element> {element}, temperature){}
@@ -33,6 +32,7 @@ void SolidMixture::calcualtePorosity() {
 		_voidSpace += elementPair.second.getVoidSpace();
 	}
 }
+
 void SolidMixture::calculatePermeability() {
 	using namespace elements;
 	double totalPermeability = 0;
@@ -50,12 +50,16 @@ void SolidMixture::calculateGroundWaterFlow() {
 //===============================================================
 
 ParticulateMixture::ParticulateMixture(){}
-ParticulateMixture::~ParticulateMixture() {}
 
 ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double temperature) :
 	Mixture(theElements,temperature,elements::PARTICULATE)
 {
 
+}
+
+Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity)
+{
+	return Mixture();
 }
 
 
@@ -65,7 +69,6 @@ ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double 
 
 
 LiquidMixture::LiquidMixture() {}
-LiquidMixture::~LiquidMixture(){}
 
 LiquidMixture::LiquidMixture(Element element, double temperature) :
 	LiquidMixture(std::vector<Element> {element}, temperature) {}
@@ -78,7 +81,6 @@ LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperatur
 //===============================================================
 
 DropletMixture::DropletMixture() {}
-DropletMixture::~DropletMixture() {}
 
 DropletMixture::DropletMixture(Element element, double temperature) :
 	Mixture(element, temperature, elements::DROPLET){}
@@ -88,10 +90,9 @@ DropletMixture::DropletMixture(Element element, double temperature) :
 //==============================================================
 
 GaseousMixture::GaseousMixture() {}
-GaseousMixture::~GaseousMixture(){}
 
-GaseousMixture::GaseousMixture(Element element, double temperature, double volume, double bottomElevation, double topElevation) :
-	Mixture(element, temperature, elements::GAS, volume, true),
+GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) :
+	Mixture(element, temperature, elements::GAS, topElevation-bottomElevation),
 	_bottomElevation(bottomElevation),
 	_topElevation(topElevation)
 {
@@ -99,31 +100,34 @@ GaseousMixture::GaseousMixture(Element element, double temperature, double volum
 }
 
 
-//GaseousMixture::GaseousMixture(std::vector<Element> theElements, double temperature, double volume) :
-//	
-//{
-//	using namespace elements;
-//	//Element cloudElement = Element(MASS, CLOUD, 1);
-//	//_clouds = DropletMixture(cloudElement,temperature);
-//	//AUX
-//
-//	GaseousMixture::calculateParameters();
-//}
+
+GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) :
+	Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
+	_bottomElevation(bottomElevation),
+	_topElevation(topElevation)
+{
+	calculateParameters();
+}
+
+void GaseousMixture::simulateCondensation()
+{
+
+}
+
+DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation)
+{
+	return upperPrecipitation;
+}
 
 void GaseousMixture::calculateParameters() {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
-	calculateColumnWeight();
 	calculateSpecificHeatCapacity();
 	calculateSaturationDensity();
 	calculateLapseRate();
 }
 
-void GaseousMixture::calculateColumnWeight() {
-	//calculate airMass
-	_columnWeight = _totalMass*climate::earth::g;
-}
 
 void GaseousMixture::calculateSpecificHeatCapacity() {
 	_specificHeatCapacity = _totalHeatCapacity / _totalMass;
@@ -142,16 +146,6 @@ void GaseousMixture::calculateSaturationDensity(){
 	_saturationDensity = std::max(_saturationDensity, 0.0);
 }
 
-double GaseousMixture::calculateBottomPressure(double downPressure) {
-	_downPressure = downPressure;
-	_columnWeight = _totalMass*climate::earth::g;
-	_bottomPressure = _downPressure + _columnWeight;
-	return _bottomPressure;
-}
-
-double GaseousMixture::getBottomPressure() const{
-	return _bottomPressure;
-}
 
 double GaseousMixture::getSaturationDensity() const{
 	return _saturationDensity;

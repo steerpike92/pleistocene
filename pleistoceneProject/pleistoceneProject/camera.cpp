@@ -1,14 +1,22 @@
 #include "camera.h"
 #include "input.h"
+#include "gameOptions.h"
 
 Camera::Camera() {}
-Camera::~Camera() {}
 
-Camera::Camera(my::Vector2 startingPosition, double startingZoom) {
+Camera::Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options ) {
 	_cameraPosition = startingPosition;
 	_zoomScale = startingZoom;
+	_optionsPtr = options;
+	updateCameraOptions();
 }
 
+void Camera::updateCameraOptions() {
+	RESTRICT_CAMERA = _optionsPtr->getRestrictCameraOption();
+	LOOP = _optionsPtr->getLoopOption();
+	_gameWidth_pixels = _optionsPtr->getCols()*globals::TILE_WIDTH;
+	_gameHeight_pixels = _optionsPtr->getRows()*globals::EFFECTIVE_HEIGHT;
+}
 
 my::Vector2 Camera::getCameraPosition() const {
 	return _cameraPosition;
@@ -47,8 +55,8 @@ bool Camera::processCommands(const Input &input, int elapsedTime) {
 
 		if (_zoomScale > 0.01 || (RESTRICT_CAMERA == 0)) {
 
-			if ((globals::GAME_WIDTH_PIXELS * _zoomScale  > globals::SCREEN_WIDTH) &&
-				(globals::GAME_HEIGHT_PIXELS * _zoomScale > globals::SCREEN_HEIGHT)
+			if ((_gameWidth_pixels * _zoomScale  > globals::SCREEN_WIDTH) &&
+				(_gameHeight_pixels * _zoomScale > globals::SCREEN_HEIGHT)
 				|| (RESTRICT_CAMERA == 0)) {
 
 				//Move _cameraPosition to center of view
@@ -76,16 +84,16 @@ bool Camera::processCommands(const Input &input, int elapsedTime) {
 	if (input.wasKeyHeld(SDL_SCANCODE_A)) {
 		_cameraPosition.x -= elapsedTime / 2;
 
-		if (_cameraPosition.x < -globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS / 2 && LOOP) {
-			_cameraPosition.x = int(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS / 2);
+		if (_cameraPosition.x < -globals::TILE_WIDTH * _zoomScale*my::Address::GetCols() / 2 && LOOP) {
+			_cameraPosition.x = int(globals::TILE_WIDTH * _zoomScale*my::Address::GetCols() / 2);
 		}
 		movementflag = true;
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_D)) {
 		_cameraPosition.x += elapsedTime / 2;
-		if (_cameraPosition.x >(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS*1.5 - globals::SCREEN_WIDTH) && LOOP) {
-			_cameraPosition.x -= int(globals::TILE_WIDTH * _zoomScale*globals::TILE_COLUMNS);
+		if (_cameraPosition.x >(globals::TILE_WIDTH * _zoomScale*my::Address::GetCols()*1.5 - globals::SCREEN_WIDTH) && LOOP) {
+			_cameraPosition.x -= int(globals::TILE_WIDTH * _zoomScale*my::Address::GetCols());
 		}
 		movementflag = true;
 
@@ -99,7 +107,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime) {
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_S)) {
-		if (_cameraPosition.y < ((globals::GAME_HEIGHT_PIXELS) * _zoomScale - globals::SCREEN_HEIGHT)) {
+		if (_cameraPosition.y < ((_gameHeight_pixels) * _zoomScale - globals::SCREEN_HEIGHT)) {
 			_cameraPosition.y += elapsedTime / 2;
 			movementflag = true;
 		}

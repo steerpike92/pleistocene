@@ -1,38 +1,19 @@
 #include "game.h"
 
 Game::Game() {
-	try
-	{
 	initialize();
 	gameLoop();
-	}
-	catch (int exception_num)
-	{
-		LOG("Handled Error");
-		switch (exception_num) {
-		case(0) : LOG("Startup error"); break;
-		case(1) : LOG("Image loading error"); break;
-		case(2) : LOG("Game logic error"); break;
-		default: LOG("Unkown exception number"); break;
-		}
-		system("pause");
-		return;
-	}
-	catch (...) {
-		LOG("Unhandled Error");
-		system("pause");
-		return;
-	}
 }
 
-
 void Game::initialize() {
+
+	_options = GameOptions();
 	_infoBar = InfoBar(_graphics);
 	_bios = Bios(_graphics);
-	_map = Map(_graphics, &_bios);
+	_map = Map(_graphics, &_bios, _options);
 	
 
-	_camera = Camera(my::Vector2(0, 0), pow(.8, 10));
+	_camera = Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
@@ -42,7 +23,7 @@ void Game::initialize() {
 	_map.draw(_graphics, true);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
-
+	srand(size_t(time(NULL)));
 }
 
 void Game::gameLoop() {
@@ -59,7 +40,7 @@ void Game::determineElapsedTime() {
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
 	size_t delay;
 
-	if (_elapsedTime_MS < 10 && DELAY) {
+	if (_elapsedTime_MS < 10 && 0) {//STUB "delay"
 		delay = 10 - _elapsedTime_MS;
 		SDL_Delay(delay);
 		_elapsedTime_MS = 10;
@@ -85,16 +66,14 @@ void Game::processInput(int elapsedTime) {
 	}
 
 	//Map Draw Type
-	if (_input.wasKeyPressed(SDL_SCANCODE_0)) {_map.setDrawType(0);}
+	//if (_input.wasKeyPressed(SDL_SCANCODE_0)) {_map.setDrawType(0);}
 	if (_input.wasKeyPressed(SDL_SCANCODE_1)) {_map.setDrawType(1);}
 	if (_input.wasKeyPressed(SDL_SCANCODE_2)) {_map.setDrawType(2);}
 	if (_input.wasKeyPressed(SDL_SCANCODE_3)) {_map.setDrawType(3);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_4)) {_map.setDrawType(4);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_5)) {_map.setDrawType(5);}
+	//if (_input.wasKeyPressed(SDL_SCANCODE_4)) {_map.setDrawType(4);}
+	//if (_input.wasKeyPressed(SDL_SCANCODE_5)) {_map.setDrawType(5);}
+	
 
-
-	/*if (_input.wasKeyHeld(SDL_SCANCODE_R)) _map.alterElevation(10);
-	if (_input.wasKeyHeld(SDL_SCANCODE_L)) _map.alterElevation(-10);*/
 
 	//selection
 	if (_input.wasButtonPressed(1)) {
@@ -123,7 +102,7 @@ void Game::updateSimulation() {
 }
 
 void Game::draw() {
-	if (!DAILY_DRAW) {
+	if (true) {//STUB "daily draw"
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag);
 	}
@@ -136,5 +115,3 @@ void Game::draw() {
 	_bios.draw(_graphics);
 	_graphics.flip();
 }
-
-Game::~Game() { std::cout << "Exiting\n"; }

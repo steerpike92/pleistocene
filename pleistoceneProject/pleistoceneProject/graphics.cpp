@@ -128,7 +128,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 	SDL_bool onScreen = SDL_FALSE;
 	SDL_Rect localDestRect;
 	int loopStart = 0, loopEnd = 0;
-	if (LOOP) { loopStart = -1; loopEnd = 1; }//map elements 
+	if (1) { loopStart = -1; loopEnd = 1; }//map elements //Stub add option
 
 	for (int i = loopStart; i <= loopEnd; i++) {
 
@@ -136,7 +136,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 		localDestRect = *gameRectangle;
 
 		//add world looping shift
-		localDestRect.x += i * globals::TILE_WIDTH * globals::TILE_COLUMNS;
+		localDestRect.x += i * globals::TILE_WIDTH * my::Address::GetCols();
 
 		//Adjust for camera position
 		my::Rectangle dest(localDestRect);

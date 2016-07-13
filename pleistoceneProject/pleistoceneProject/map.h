@@ -1,16 +1,15 @@
 #pragma once
 #include "globals.h"
 
-
 class Tile;
 class Graphics;
 class Bios;
+class GameOptions;
 
 class Map {
 public:
 	Map();
-	~Map();
-	Map(Graphics &graphics, Bios *bios);
+	Map(Graphics &graphics, Bios *bios, GameOptions &options);
 
 	void generateMap(int seed);
 
@@ -19,9 +18,9 @@ public:
 
 	void simulate();
 
-	void alterElevation(int deltaM);
-
 	Bios* _bioPtr;
+
+	bool _exists = false;
 
 	static climate::DrawType getDrawType();
 	void setDrawType(int drawNumber);

@@ -5,24 +5,26 @@
 //=====================================================================================================================
 
 //Constructors
-//============
-Mixture::Mixture() {}
-Mixture::~Mixture() {}
+//======================
 
-Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed):
-	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume, volumeIsFixed){}
+Mixture::Mixture(){}
 
-Mixture::Mixture(std::vector<Element> theElements, double temperature, elements::State state, double fixedVolume, bool volumeIsFixed) :
+Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume):
+	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume){}
+
+Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume) :
 	_temperature(temperature),
 	_state(state),
-	_volumeIsFixed(volumeIsFixed),
 	_fixedVolume(fixedVolume)
 {
 	if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin): "); LOG(temperature); throw(2); }
 
+	if (_fixedVolume == my::FakeDouble) {_volumeIsFixed = false;}
+	else { _volumeIsFixed = true; }
+
 	_elements.clear();
 
-	for (Element &element : theElements) {
+	for (Element &element : compositionElements) {
 		pushSpecific(element);
 	}
 	calculateParameters();
@@ -41,7 +43,6 @@ void Mixture::calculateParameters() {
 	calculateAlbedoIndex();
 	calculateSolarAbsorptionIndex();
 	calculateInfraredAbsorptionIndex();
-
 }
 
 void Mixture::calculateMass() {
@@ -226,6 +227,8 @@ double Mixture::pullSpecific(Element pulledElement) {
 //========================================================================================================
 
 double Mixture::filterSolarRadiation(double solarEnergyKJ){
+	if (solarEnergyKJ <= 0) { return 0; }
+
 	_totalSolarAbsorbed = 0;
 	_totalInfraredAbsorbed = 0;
 	_totalInfraredEmitted = 0;
@@ -256,10 +259,10 @@ double Mixture::emitInfrared() {
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = climate::earth::emmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
+		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
 	}
 	else {
-		emissionEnergy = climate::earth::emmisionConstantPerHour * pow(_temperature, 4);
+		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4);
 	}
 
 	_totalInfraredEmitted += emissionEnergy;
@@ -297,6 +300,7 @@ double Mixture::getHeight()const { return _totalVolume; }
 double Mixture::getAlbedo()const { return _albedo; }
 double Mixture::getVolume()const { return _totalVolume; }
 double Mixture::getMass()const { return _totalMass; }
+double Mixture::getMols()const { return _totalMols; }
 
 std::vector<std::string> Mixture::getMessages() const {
 	std::vector<std::string> messages;

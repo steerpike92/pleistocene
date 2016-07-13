@@ -2,10 +2,9 @@
 
 
 SolarRadiation::SolarRadiation() {}
-SolarRadiation::~SolarRadiation() {}
 
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	_latitude_rad=(my::degToRad(latitude_deg));
 	_longitude_rad = (my::degToRad(longitude_deg));
@@ -27,7 +26,7 @@ bool SolarRadiation::_axisExists = false;
 
 //Rotation matrix from sidereal angle
 void SolarRadiation::buildRotationMatrix(double angle_rad){
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	if (!_axisExists) {//First time setup
 		_earthAxis << -sin(tilt_rad),
@@ -56,7 +55,7 @@ void SolarRadiation::buildRotationMatrix(double angle_rad){
 double SolarRadiation::_oldRotation = -1.0;
 
 void SolarRadiation::setupSolarRadiation() {
-	using namespace climate::earth;
+	using namespace climate::planetary;
 
 	//Setup Rotation Matrix
 	//take total hours in this year and divide it by the length of a sidereal day (hours)
@@ -86,13 +85,13 @@ double SolarRadiation::applySolarRadiation(){
 	//rotated normal vector
 	Eigen::Vector3d _rotatedNormalVector = _rotationMatrix*_normalVector;
 
-	double irradianceProportion = _sunRayVector.dot(_rotatedNormalVector);
+	_solarFraction = _sunRayVector.dot(_rotatedNormalVector);
 
-	if (irradianceProportion < 0) {//night
-		irradianceProportion = 0;
+	if (_solarFraction < 0) {//night
+		_solarFraction = 0;
 	}
 
-	return irradianceProportion;
+	return _solarFraction;
 }
 
 Eigen::Vector3d SolarRadiation::_sunRayVector;//Vector direction of sun rays
@@ -103,8 +102,8 @@ Eigen::Matrix3d SolarRadiation::_rotationMatrix;//Rotation matrix from sidereal 
 
 
 
-double SolarRadiation::getRadiationShader(double solarFraction) {
-	double solarShader = 0.9*1.3*solarFraction + 0.1;
-	if (!SOLAR_SHADE) { solarShader = 1; }
+double SolarRadiation::getRadiationShader() {
+	double solarShader = _solarFraction;
+	if (!1) { solarShader = 1; }//STUB "solar shade option"
 	return solarShader;
 }

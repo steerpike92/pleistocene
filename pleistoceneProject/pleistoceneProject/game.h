@@ -1,5 +1,6 @@
 #pragma once
 #include "globals.h"
+#include "gameOptions.h"
 #include "graphics.h"
 #include "input.h"
 #include "bios.h"
@@ -10,7 +11,6 @@
 class Game {
 public:
 	Game();
-	~Game();
 private:
 	void initialize();
 	void gameLoop();
@@ -33,6 +33,8 @@ private:
 	//Drawing to renderer and flip to window
 	void draw();
 
+	GameOptions _options;
+
 	//Holds input information (key maps, mouse info)
 	Input _input;
 
@@ -50,5 +52,6 @@ private:
 
 	//holds camera position, 
 	Camera _camera;
+
 
 };

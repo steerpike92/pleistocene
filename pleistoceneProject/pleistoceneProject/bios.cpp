@@ -5,7 +5,6 @@
 #include "map.h"
 
 Bios::Bios(){}
-Bios::~Bios() {}
 
 Bios::Bios(Graphics &graphics) {
 
@@ -87,7 +86,6 @@ void Bios::draw(Graphics &graphics) {
 
 
 InfoBar::InfoBar(){}
-InfoBar::~InfoBar() {}
 
 InfoBar::InfoBar(Graphics &graphics) {
 	int width = globals::SCREEN_WIDTH;

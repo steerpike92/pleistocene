@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="air.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bios.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,9 +34,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="land.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -66,14 +60,17 @@
     <ClCompile Include="tileClimate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="water.cpp">
+    <ClCompile Include="materialLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="materialColumn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gameOptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="air.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="bios.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,9 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="land.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="map.h">
@@ -119,12 +113,21 @@
     <ClInclude Include="tileClimate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="water.h">
+    <ClInclude Include="materialLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="materialColumn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="surfaces.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="june13notes.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>

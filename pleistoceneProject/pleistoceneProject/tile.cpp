@@ -5,9 +5,8 @@
 #include "noise.h"
 
 Tile::Tile() {}
-Tile::~Tile() {}
 
-Tile::Tile(my::Address tileAddress, int elevation, Graphics &graphics) {
+Tile::Tile(my::Address tileAddress) {
 
 	_Address = tileAddress;
 
@@ -28,20 +27,22 @@ std::vector<Tile> Tile::_tiles;
 
 std::vector<my::Address> Tile::_Addresses;
 
+
 void Tile::setupTiles(Graphics &graphics) {
-	buildTileVector(graphics);
+	buildTileVector();
 	setupTextures(graphics);
 	buildTileNeighbors();
 }
 
-void Tile::buildTileVector(Graphics &graphics) {
+//initializes each tile at a default depth
+void Tile::buildTileVector() {
 	//Tile constructor
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
-			_tiles.emplace_back(my::Address(row, col), climate::land::defaultDepth, graphics);
+	for (int row = 0; row < my::Address::GetRows(); row++) {
+		for (int col = 0; col <  my::Address::GetCols(); col++) {
+			_tiles.emplace_back(my::Address(row, col));
 			_Addresses.emplace_back(row, col);
-			if (_Addresses.back().i == -1) {
-				LOG("NOT A VALID Address");
+			if (_Addresses.back().i == my::FakeIndex) {
+				LOG("not a valid Address");
 			}
 		}
 	}
@@ -53,6 +54,17 @@ void Tile::buildTileNeighbors() {
 	}
 }
 
+void Tile::buildNeighborhood() {
+	my::Address neighborAddress;
+	for (int j = 0; j < 6; j++) {
+		neighborAddress = this->_Address.adjacent(j);
+		if (neighborAddress.i != -1) {
+			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
+		}
+	}
+}
+
+Bios* Tile::_biosPtr;
 
 std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols){
 
@@ -116,10 +128,13 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 	//blend map east/west edge together
 	double blend;
 
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
+	int TileRows = my::Address::GetRows();
+	int TileCols = my::Address::GetCols();
+
+	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < hBlendDistance; col++) {
 			blend = (col / std::max(double(hBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				((double(hBlendDistance) - col) / std::max(double(hBlendDistance), 1.0))*noiseTable[row*Cols + col + globals::TILE_COLUMNS];
+				((double(hBlendDistance) - col) / std::max(double(hBlendDistance), 1.0))*noiseTable[row*Cols + col + TileCols];
 
 			noiseTable[row*Cols + col] = blend;
 		}
@@ -128,7 +143,7 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 	//blend north/south pole into water. Walking into a black barrier is kinda lame
 
 	for (int row = 0; row < vBlendDistance; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
+		for (int col = 0; col < TileCols; col++) {
 			blend = (row / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
 				(double(vBlendDistance - row) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row + vBlendDistance)*Cols + col]);
 
@@ -136,10 +151,10 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 		}
 	}
 
-	for (int row = globals::TILE_ROWS - vBlendDistance; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
-			blend = (double(globals::TILE_ROWS - row) / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				(double(vBlendDistance + row - globals::TILE_ROWS) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
+	for (int row = TileRows - vBlendDistance; row < TileRows; row++) {
+		for (int col = 0; col < TileCols; col++) {
+			blend = (double(TileRows - row) / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
+				(double(vBlendDistance + row - TileRows) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
 
 			noiseTable[row*Cols + col] = blend;
 		}
@@ -149,37 +164,40 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 
 }
 
-
 void Tile::generateTileElevation(int seed) {
 
-	//Noise building parameters
-	double zoom = 4000;
-	double persistance = .55;
-	int octaves = 8;
-	const int hBlendDistance = globals::TILE_COLUMNS / 10;
-	const int vBlendDistance = std::min(10,globals::TILE_ROWS/10);
-	int Cols = globals::TILE_COLUMNS + hBlendDistance;
-	int Rows = globals::TILE_ROWS;
+	int TileRows = my::Address::GetRows();
+	int TileCols = my::Address::GetCols();
 
-	//NOISE GENERATOR
-	//===================
+	//Noise building parameters
+	double			zoom = 4000;
+	double			persistance = .55;
+	const int		octaves = 8;					
+
+	const int		hBlendDistance = TileCols / 10;			//horizontal blend distance for east west map edge blending
+	const int		vBlendDistance = std::min(10, TileRows/10);	//vertical blend distance for blending poles into sea
+	int Cols = TileCols + hBlendDistance;					//columns in noise table
+	int Rows = TileRows;							//rows in noise table
+
+	//noise generator;
 	std::vector<double> noiseTable = buildNoiseTable(seed, zoom, persistance, octaves, Rows, Cols);
+
+	//noise edge blender
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
-	//SET ELEVATION
-	//=====================
-
-	double shelfPower = 1.5;
-	double slopePower = 1;
-	double abyssPower = .5;
-
-	double landPower = 2;
+	
+	//Elevation shape parameters
+	const double shelfPower = 1.5;
+	const double slopePower = 1;
+	const double abyssPower = .5;
+	const double landPower = 2;
 
 	my::Address A;
 	double noiseValue;
 
-	for (int row = 0; row < globals::TILE_ROWS; row++) {
-		for (int col = 0; col < globals::TILE_COLUMNS; col++) {
+	//SET ELEVATION
+	for (int row = 0; row < TileRows; row++) {
+		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
 			if (noiseValue>0) {
 				noiseValue = pow(noiseValue, landPower);
@@ -196,44 +214,43 @@ void Tile::generateTileElevation(int seed) {
 				}
 			}
 
-			//Final elevation set
+			//determine tile to set
 			A = my::Address(row, col);
-			if (A.i == -1) {
-				LOG("waht happened?");
-				throw (2);
-			}
+			if (A.i == my::FakeIndex) {LOG("address index out of bounds");throw (2);}
 
+			//set elevation
 			double elevation = noiseValue * climate::land::amplitude;
 			_tiles[A.i]._tileClimate = TileClimate(A, elevation);
 		}
 	}
 }
 
-void Tile::alterElevations(int deltaM) {
-	//
-	//	for (my::Address A : _Addresses) {
-	//		_tiles[A.i].alterElevation(deltaM);
-	//	}
-	//
-	//	calculateTileFlows();
+
+void Tile::setupTileClimateAdjacency() {
+
+	std::map<my::Direction, TileClimate*>	adjacientTileClimates;
+	my::Direction				direction;
+	TileClimate				*climatePtr;
+
+	for (Tile &tile : _tiles) {
+		//build adjacient climate map for tile
+		for (auto neighbor : tile._directionalNeighbors) {
+			direction = neighbor.first;
+			climatePtr = &(_tiles[neighbor.second.i]._tileClimate);//grab neighbor _tileClimate ptr
+			adjacientTileClimates[direction] = climatePtr;
+		}
+
+		//pass map to tile's tileClimate
+		tile._tileClimate.buildAdjacency(adjacientTileClimates);
+
+		//clear and restart for next tile
+		adjacientTileClimates.clear();
+	}
 }
 
-void Tile::alterElevation(int deltaM) {
-	//
-	//	setElevation(_elevation + deltaM);
-	//
-}
 
-Bios* Tile::_biosPtr;
 
-void Tile::setupTextures(Graphics &graphics) {
 
-	TileClimate::setupTextures(graphics);
-
-	//selection graphics
-	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
-	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
-}
 
 
 void Tile::updateTiles(int elapsedTime) {
@@ -246,6 +263,9 @@ void Tile::update(int elapsedTime) {
 
 }
 
+//SIMULATION
+//============================
+
 void Tile::simulateTiles() {
 
 	TileClimate::beginNewHour();
@@ -257,7 +277,22 @@ void Tile::simulateTiles() {
 	}
 }
 
-void Tile::simulate() { _tileClimate.simulateClimate(); }
+void Tile::simulate() { 
+	_tileClimate.simulateClimate(); 
+}
+
+
+//GRAPHICS
+//=======================
+
+void Tile::setupTextures(Graphics &graphics) {
+
+	TileClimate::setupTextures(graphics);
+
+	//selection graphics
+	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
+	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
+}
 
 void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
 	for (Tile &tile : _tiles) {
@@ -286,6 +321,10 @@ void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovem
 	if (selectionValue) {_biosPtr->selectTile(this);}
 }
 
+
+//GETTERS
+//=================
+
 my::Address Tile::getAddress()const {return _Address;}
 
 SDL_Rect Tile::getGameRect() const {return _gameRectangle;}
@@ -310,12 +349,3 @@ std::vector<std::string> Tile::sendMessages() const {
 }
 
 
-void Tile::buildNeighborhood() {
-	my::Address neighborAddress;
-	for (int j = 0; j < 6; j++) {
-		neighborAddress = this->_Address.adjacent(j);
-		if (neighborAddress.i != -1) {
-			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
-		}
-	}
-}

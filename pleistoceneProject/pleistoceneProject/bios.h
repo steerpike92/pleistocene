@@ -7,7 +7,6 @@ class Tile;
 class Bios {
 public:
 	Bios();
-	~Bios();
 
 	Bios(Graphics &graphics);
 
@@ -39,7 +38,6 @@ private:
 class InfoBar {
 public:
 	InfoBar();
-	~InfoBar();
 
 	InfoBar(Graphics &graphics);
 
