@@ -5,7 +5,8 @@
 //=====================================================================================================================
 
 //Constructors
-//============
+//======================
+
 Mixture::Mixture(){}
 
 Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume):
@@ -226,6 +227,8 @@ double Mixture::pullSpecific(Element pulledElement) {
 //========================================================================================================
 
 double Mixture::filterSolarRadiation(double solarEnergyKJ){
+	if (solarEnergyKJ <= 0) { return 0; }
+
 	_totalSolarAbsorbed = 0;
 	_totalInfraredAbsorbed = 0;
 	_totalInfraredEmitted = 0;

@@ -108,7 +108,7 @@ protected:
 	double _height;
 	double _topElevation;//Elevation above sea level (of top of layer)
 
-	double _earthSurfaceElevation;
+	double _baseElevation;
 
 	double _bottomRelativeElevation;//Elevation relative to earth's surface (negative if below) (of bottom of layer)
 	double _topRelativeElevation;//Elevation relative to earth's surface (negative if below) (of top of layer)
@@ -118,14 +118,23 @@ protected:
 	
 	MaterialLayer* _above = nullptr;//i.e. next node
 	MaterialLayer* _below = nullptr;//i.e. previous node
+
 	//std::vector<layers::SharedSurface> _sharedSurfaces;
 
 public:
+	//INITIALIZATION
+	//============================
 	MaterialLayer();
-	MaterialLayer(double earthSurfaceElevation, double baseElevation);
-	MaterialLayer* getAbove() const;
-	MaterialLayer* getBelow() const;
+	MaterialLayer(double baseElevation, double bottomElevation);
 
+	//SIMULATION
+	//============================
+	double filterSolarRadiation(double energyKJ);
+	double emitInfraredRadiation();
+	double filterInfraredRadiation(double energyKJ);
+
+	//GETTERS
+	//============================
 	double getTopElevation()const;
 	double getBottomElevation()const;
 	virtual double getTemperature()const;
@@ -146,7 +155,7 @@ protected:
 
 public:
 	EarthLayer();
-	EarthLayer(double earthSurfaceElevation, double temperature, double baseElevation, double layerHeight);
+	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight);
 
 	void simulateFlow();
 
@@ -187,7 +196,7 @@ class HorizonLayer : public EarthLayer{
 public:
 	HorizonLayer();
 	//~HorizonLayer();
-	HorizonLayer(double earthSurfaceElevation, double temperature, double baseElevation);
+	HorizonLayer(double baseElevation, double temperature, double bottomElevation);
 
 private:
 	//unique horizon member functions
@@ -233,7 +242,7 @@ class SeaLayer : public MaterialLayer {
 
 public:
 	SeaLayer();
-	SeaLayer(double earthSurfaceElevation, double temperature, double baseElevation, double topElevation);
+	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation);
 
 	void simulateFlow();
 
@@ -255,7 +264,7 @@ class AirLayer : public MaterialLayer {
 
 public:
 	AirLayer();
-	AirLayer(double earthSurfaceElevation, double temperature, double baseElevation, double fixedTopElevation);
+	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation);
 
 	void simulateFlow();
 

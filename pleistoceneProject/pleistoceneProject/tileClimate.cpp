@@ -45,37 +45,40 @@ void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate> adjacientT
 int TileClimate::_simulationStep;
 
 void TileClimate::beginNewHour() {
-	_simulationStep = -1;
+	_simulationStep = 0;
 	SolarRadiation::setupSolarRadiation();
 	//i.e. create earth rotation matrix for current time and set sun ray vector
 }
 
-
+bool TileClimate::beginNextStep() {
+	_simulationStep++;
+	return (_simulationStep <= _totalSteps);//check if simulation hour complete
+}
 
 void TileClimate::simulateClimate(){
 	
 	double solarEnergyPerHour;
 
 	switch (_simulationStep) {
-	case(0) :
+	case(1) :
 		solarEnergyPerHour=simulateSolarRadiation();
-		_materialColumn.filterSolarRadiation(solarEnergyPerHour);
+		if (solarEnergyPerHour > 0) {_materialColumn.filterSolarRadiation(solarEnergyPerHour);}
 		_materialColumn.simulateEvaporation();
 		_materialColumn.simulateInfraredRadiation();
 		break;
-	case(1) :
+	case(2) :
 		_materialColumn.simulatePressure();
 		break;
-	case(2) :
+	case(3) :
 		_materialColumn.simulateAirFlow();
 		break;
 
-	case(3) :
+	case(4) :
 		_materialColumn.simulateCondensation();
 		_materialColumn.simulatePrecipitation();
 		break;
 
-	case(4) :
+	case(5) :
 		_materialColumn.simulateWaterFlow();
 		_materialColumn.simulatePlants();
 		break;
@@ -92,10 +95,7 @@ double TileClimate::simulateSolarRadiation() {
 	return incidentSolarEnergyPerHour;
 }
 
-bool TileClimate::beginNextStep() {
-	_simulationStep++;
-	return (_simulationStep < _totalSteps);//check if simulation hour complete
-}
+
 
 //======================================
 //GRAPHICS

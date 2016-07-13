@@ -6,18 +6,37 @@
 
 MaterialLayer::MaterialLayer(){}
 
-MaterialLayer::MaterialLayer(double earthSurfaceElevation, double baseElevation) :
-	_earthSurfaceElevation(earthSurfaceElevation),
-	_bottomElevation(baseElevation),
-	_bottomRelativeElevation(_bottomElevation - _earthSurfaceElevation)
+MaterialLayer::MaterialLayer(double baseElevation, double bottomElevation) :
+	_baseElevation(baseElevation),
+	_bottomElevation(bottomElevation),
+	_bottomRelativeElevation(_bottomElevation - _baseElevation)
 {
 
 }
 
-MaterialLayer* MaterialLayer::getAbove()const { return _above; }
+//SIMULATION
+//==============================
 
-MaterialLayer* MaterialLayer::getBelow()const { return _below; }
+double MaterialLayer::filterSolarRadiation(double energyKJ) 
+{
+	energyKJ=_mixture->filterSolarRadiation(energyKJ);
+	return energyKJ;
+}
 
+double MaterialLayer::emitInfraredRadiation() 
+{
+	double energyKJ = _mixture->emitInfrared();
+	return energyKJ;
+}
+
+double MaterialLayer::filterInfraredRadiation(double energyKJ)
+{
+	energyKJ = _mixture->filterInfrared(energyKJ);
+	return energyKJ;
+}
+
+//GETTERS
+//==============================
 
 double MaterialLayer::getBottomElevation()const { return _bottomElevation; }
 double MaterialLayer::getTopElevation()const { return _topElevation; }
@@ -28,13 +47,10 @@ double MaterialLayer::getTemperature()const { return _mixture->getTemperature();
 //////////EARTH
 //////////==================================
 
-
 EarthLayer::EarthLayer(){}
 
-//EarthLayer::~EarthLayer(){}
-
-EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double baseElevation, double layerHeight) :
-	MaterialLayer(earthSurfaceElevation, baseElevation),
+EarthLayer::EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) :
+	MaterialLayer(baseElevation, bottomElevation),
 	_solidPtr(new SolidMixture())
 {//normal constructor
 	using namespace elements;
@@ -55,11 +71,6 @@ EarthLayer::EarthLayer(double earthSurfaceElevation, double temperature, double 
 	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
-}
-
-void EarthLayer::simulateFlow()
-{
-	//Stubby
 }
 
 
@@ -135,16 +146,21 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex)
 	return SAND;
 }
 
-//==================================
-//HORIZON
-//==================================
+//SIMULATION
+//===========================
+
+void EarthLayer::simulateFlow() {}//STUB
+
+
+
+////////////==================================
+////////////HORIZON
+////////////==================================
 
 HorizonLayer::HorizonLayer(){}
 
-//HorizonLayer::~HorizonLayer(){}
-
-HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, double baseElevation) :
-	EarthLayer(earthSurfaceElevation, temperature, baseElevation, layers::earth::topSoilHeight )//calls constructor specifically for horizon
+HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation) :
+	EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight )//calls constructor specifically for horizon
 {
 	using namespace elements;
 	using namespace layers;
@@ -152,14 +168,14 @@ HorizonLayer::HorizonLayer(double earthSurfaceElevation, double temperature, dou
 	_layerType = HORIZON;//overwrite
 }
 
-//==================================
-//SEA
-//==================================
+//////////////==================================
+//////////////SEA
+//////////////==================================
 
 SeaLayer::SeaLayer(){}
 
-SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, double baseElevation, double topElevation) :
-	MaterialLayer(earthSurfaceElevation, baseElevation),
+SeaLayer::SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) :
+	MaterialLayer(baseElevation, bottomElevation),
 	_liquidPtr(new LiquidMixture())
 {
 	using namespace elements;
@@ -186,21 +202,20 @@ SeaLayer::SeaLayer(double earthSurfaceElevation, double temperature, double base
 
 }
 
-void SeaLayer::simulateFlow()
-{
-	//Stubby
-}
+//SIMULATION
+//===========================
+
+void SeaLayer::simulateFlow(){} //STUB
 
 //////////==================================
 //////////AIR
 //////////==================================
 
 
-
 AirLayer::AirLayer(){}
 
-AirLayer::AirLayer(double earthSurfaceElevation, double temperature, double baseElevation, double fixedTopElevation) :
-	MaterialLayer(earthSurfaceElevation, baseElevation),
+AirLayer::AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) :
+	MaterialLayer(baseElevation, bottomElevation),
 	_gasPtr(new GaseousMixture)
 {
 	using namespace elements;
@@ -234,6 +249,9 @@ std::vector<Element> AirLayer::generateAirElements(double bottomElevation, doubl
 
 	return elementVector;
 }
+
+//UTILITY
+//=========================
 
 double AirLayer::expectedHydrostaticPressureCalculator(double elevation)
 {
@@ -329,6 +347,16 @@ double AirLayer::truePressureCalculator(double elevation) const
 	return TruePressure;
 }
 
+//SIMULATION
+//=========================
+
+void AirLayer::simulateFlow() {} //STUB
+
+
+
+//GETTERS
+//=========================
+
 double AirLayer::getTemperature()const { return _gasPtr->getTemperature(); }
 
-void AirLayer::simulateFlow(){}
+

@@ -11,6 +11,8 @@ Map::Map(Graphics &graphics, Bios *bios) {
 	//build tiles in memory and calls setup functions
 	Tile::setupTiles(graphics);
 
+	_exists = true;
+
 	Tile::_biosPtr = bios;//give tile class a static bios reference
 
 	//Map generating algorithm
@@ -23,10 +25,6 @@ void Map::generateMap(int seed) {
 	Tile::generateTileElevation(seed);
 }
 
-void Map::alterElevation(int deltaM) {
-	//this->_totalElevationChange += deltaM;
-	Tile::alterElevations(deltaM);
-}
 
 void Map::update(int elapsedTime) {
 	Tile::updateTiles(elapsedTime);
@@ -41,6 +39,8 @@ climate::DrawType Map::_drawType = climate::STANDARD_DRAW;
 void Map::setDrawType(int drawNumber) {
 	using namespace climate;
 	switch (drawNumber) {
+	case(1) : _drawType = STANDARD_DRAW;
+		break;
 	case(2) : _drawType = SURFACE_TEMPERATURE_DRAW;
 		break;
 	case(3) : _drawType = SURFACE_AIR_TEMPERATURE_DRAW;

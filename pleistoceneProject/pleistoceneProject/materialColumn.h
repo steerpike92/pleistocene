@@ -4,19 +4,16 @@
 #include "stateMixture.h"
 #include "element.h"
 
-template <class T>
-struct SubColumn {
-	std::vector<T> column;
-};
 
 class MaterialColumn {
 
-	SubColumn <EarthLayer> _earth;
-	SubColumn <HorizonLayer> _horizon;
-	SubColumn <SeaLayer> _sea;
-	SubColumn <AirLayer> _air;
+	std::vector<EarthLayer> _earth;
+	std::vector<HorizonLayer> _horizon;
+	std::vector<SeaLayer> _sea;
+	std::vector<AirLayer> _air;
 
 	double _landElevation;
+	bool _submerged;
 	double _initialTemperature;
 
 	//====================================================

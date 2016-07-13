@@ -18,9 +18,9 @@ public:
 
 	void simulate();
 
-	void alterElevation(int deltaM);
-
 	Bios* _bioPtr;
+
+	bool _exists = false;
 
 	static climate::DrawType getDrawType();
 	void setDrawType(int drawNumber);

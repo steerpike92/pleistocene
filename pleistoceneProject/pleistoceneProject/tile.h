@@ -70,12 +70,6 @@ private:
 public:
 	static Bios* _biosPtr;
 
-
-public:
-	static void alterElevations(int deltaM);
-private:
-	void alterElevation(int deltaM);
-
 private:
 	//(row,column)
 	my::Address _Address;
@@ -87,7 +81,7 @@ public:
 	SDL_Rect getGameRect() const;
 	std::vector<std::string> sendMessages() const;//communicates with bios
 
-protected:
+private:
 	//==================================================================================
 	//GAMEPLAY VARIABLES
 	//==================================================================================

@@ -2,26 +2,29 @@
 #include "materialLayer.h"
 #include "globals.h"
 
+
+////////////==================================
+////////////INITIALIZATION
+////////////==================================
+
 MaterialColumn::MaterialColumn() {}
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature):
 	_landElevation(landElevation),
 	_initialTemperature(initialTemperature)
 {
-	_earth.column.clear();
-	_horizon.column.clear();
-	_sea.column.clear();
-	_air.column.clear();
-
 
 	double baseElevation=buildEarth();
+
 	baseElevation=buildHorizon(baseElevation);
 
 	if (_landElevation < 0) {
 		baseElevation = buildSea(baseElevation,0);
+		_submerged = true;
 	}
+	else {_submerged = false;}
 
-	//buildAir(baseElevation);
+	buildAir(baseElevation);
 }
 
 double MaterialColumn::buildEarth()
@@ -33,26 +36,25 @@ double MaterialColumn::buildEarth()
 
 	double currentElevation;
 
-	_earth.column.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
+	_earth.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
 
-	currentElevation = _earth.column.rbegin()->getTopElevation();
-
+	currentElevation = _earth.back().getTopElevation();
 
 	//build remaining earth layers
 	for (int i = 1; i < earthLayers; i++){
 		double layerHeight = earthLayerHeights[i];
-		_earth.column.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[i]);
+		_earth.emplace_back(_landElevation, _initialTemperature, bedrockElevation, earthLayerHeights[i]);
 	}
 
-	currentElevation = _earth.column.rbegin()->getTopElevation();
+	currentElevation = _earth.back().getTopElevation();
 	return currentElevation;
 }
 
 
 double MaterialColumn::buildHorizon(double baseElevation)
 {
-	_horizon.column.emplace_back(_landElevation, _initialTemperature, baseElevation);
-	double currentElevation =_horizon.column.rbegin()->getTopElevation();
+	_horizon.emplace_back(_landElevation, _initialTemperature, baseElevation);
+	double currentElevation =_horizon.back().getTopElevation();
 	return currentElevation;
 }
 
@@ -65,23 +67,18 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 
 	int i=0;//position in seaLayerElevations array
 	
-	while (seaBottomElevation < seaLayerElevations[i] + seaSurfaceElevation) {
-		i++;
-	}
+	while (seaBottomElevation < seaLayerElevations[i] + seaSurfaceElevation) { i++; } //determine number of layers
+
 	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return 0; }
 
 	i--;
 
-	//build sea bottom layer
-	double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
-	_sea.column.emplace_back(_landElevation, _initialTemperature, baseElevation,topElevation);
-	baseElevation = topElevation;
-	i--;
+	double topElevation;
 
-	//build upper layers
+	//build sea layers
 	while (i >= 0) {
-		double topElevation = seaLayerElevations[i]+seaSurfaceElevation;
-		_sea.column.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
+		topElevation = seaLayerElevations[i]+seaSurfaceElevation;
+		_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
 		baseElevation = topElevation;
 		i--;
 	}
@@ -93,19 +90,22 @@ void MaterialColumn::buildAir(double baseElevation)
 {
 	using namespace layers::air;
 
+	//for air, baseElevation corresponds to the base of the air column
+	//layerBbottomElevation corresponds to the bottom of that layer
+	double layerBottomElevation = baseElevation;
+	double layerTopElevation= layerBottomElevation + boundaryLayerHeight;
+	
 	//build boundary layer
-	double boundaryLayerTopElevation = baseElevation + boundaryLayerHeight;
-
-	_air.column.emplace_back(_landElevation, _initialTemperature, baseElevation, boundaryLayerTopElevation);
-
-	baseElevation = boundaryLayerTopElevation;
+	_air.emplace_back(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	layerBottomElevation = layerTopElevation;
 
 	int i = 0;
-	for (; baseElevation > airElevations[i]; i++);//adjusts to find first troposphere top height
+	for (; layerBottomElevation > airElevations[i]; i++);//adjusts to find first troposphere top height
 
 	for (; i < 6; i++) {
-		_air.column.emplace_back(_landElevation, _initialTemperature, baseElevation, airElevations[i]);
-		baseElevation = airElevations[i];
+		layerTopElevation = airElevations[i];
+		_air.emplace_back(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		layerBottomElevation = layerTopElevation;
 	}
 }
 
@@ -131,11 +131,33 @@ void MaterialColumn::buildMaterialLayerSurfaces()
 	//fluxing air and sea layers. Earth layers included as they can block passage of air/sea
 }
 
+////////////==================================
+////////////SIMULATION
+////////////==================================
 
-
-void MaterialColumn::filterSolarRadiation(double incidentSolarRadiation)
+void MaterialColumn::filterSolarRadiation(double energyKJ)
 {
-	//STUB
+
+	//stratosphere absorbs solar radiation at a greater rate (ozone absorption of UV)
+	double ozoneBoost = 2;
+	energyKJ = _air.back().filterSolarRadiation(energyKJ*ozoneBoost) / ozoneBoost;
+
+	//filter through rest of atmosphere
+	for (auto rit = _air.rbegin()+1; rit != _air.rend(); ++rit) {//starts one below stratosphere
+		energyKJ = rit->filterSolarRadiation(energyKJ);
+	}
+
+	//filter through sea
+	if (_submerged) {
+		for (auto rit = _sea.rbegin() + 1; rit != _sea.rend(); ++rit) {//starts one below stratosphere
+			energyKJ = rit->filterSolarRadiation(energyKJ);
+		}
+	}
+
+	if (energyKJ > 0.01) {//don't needlessly call filter on horizon
+		_horizon.back().filterSolarRadiation(energyKJ);
+	}
+
 }
 
 void MaterialColumn::simulateEvaporation()
@@ -168,6 +190,11 @@ void MaterialColumn::simulateWaterFlow(){}
 void MaterialColumn::simulatePlants(){}
 
 
-double MaterialColumn::getLandElevation()const {return _horizon.column.rbegin()->getTopElevation();}
-double MaterialColumn::getSurfaceTemperature()const {return _horizon.column.rbegin()->getTemperature();}//STUB (check if sea)
-double MaterialColumn::getBoundaryLayerTemperature()const{return 0.0;}//STUB
+
+////////////==================================
+////////////GETTERS
+////////////==================================
+
+double MaterialColumn::getLandElevation()const {return _horizon.back().getTopElevation();}
+double MaterialColumn::getSurfaceTemperature()const {return _horizon.back().getTemperature();}//STUB (check if sea)
+double MaterialColumn::getBoundaryLayerTemperature()const{return 1.0;}//STUB

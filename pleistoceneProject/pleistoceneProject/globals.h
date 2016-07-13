@@ -18,11 +18,12 @@
 #include <memory>
 
 #define DEBUG 1
+#define EXCEPTION_HANDLING 0
 #define LOOP 1
-#define MAP_SIZE 2
+#define MAP_SIZE 0
 #define RESTRICT_CAMERA 1
-#define COAST_DRAW 0
 #define DELAY 0
+
 #define DAILY_DRAW 1
 #define SOLAR_SHADE 1
 

@@ -33,6 +33,8 @@ void Tile::setupTiles(Graphics &graphics) {
 	buildTileNeighbors();
 }
 
+
+
 void Tile::buildTileVector(Graphics &graphics) {
 	//Tile constructor
 	for (int row = 0; row < globals::TILE_ROWS; row++) {
@@ -43,12 +45,6 @@ void Tile::buildTileVector(Graphics &graphics) {
 				LOG("NOT A VALID Address");
 			}
 		}
-	}
-}
-
-void Tile::buildTileNeighbors() {
-	for (Tile &T : _tiles) {
-		T.buildNeighborhood();
 	}
 }
 
@@ -148,7 +144,6 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 
 }
 
-
 void Tile::generateTileElevation(int seed) {
 
 	//Noise building parameters
@@ -208,31 +203,26 @@ void Tile::generateTileElevation(int seed) {
 	}
 }
 
-void Tile::alterElevations(int deltaM) {
-	//
-	//	for (my::Address A : _Addresses) {
-	//		_tiles[A.i].alterElevation(deltaM);
-	//	}
-	//
-	//	calculateTileFlows();
+
+void Tile::buildTileNeighbors() {
+	for (Tile &T : _tiles) {
+		T.buildNeighborhood();
+	}
 }
 
-void Tile::alterElevation(int deltaM) {
-	//
-	//	setElevation(_elevation + deltaM);
-	//
+void Tile::buildNeighborhood() {
+	my::Address neighborAddress;
+	for (int j = 0; j < 6; j++) {
+		neighborAddress = this->_Address.adjacent(j);
+		if (neighborAddress.i != -1) {
+			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
+		}
+	}
 }
 
 Bios* Tile::_biosPtr;
 
-void Tile::setupTextures(Graphics &graphics) {
 
-	TileClimate::setupTextures(graphics);
-
-	//selection graphics
-	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
-	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
-}
 
 
 void Tile::updateTiles(int elapsedTime) {
@@ -245,6 +235,9 @@ void Tile::update(int elapsedTime) {
 
 }
 
+//SIMULATION
+//============================
+
 void Tile::simulateTiles() {
 
 	TileClimate::beginNewHour();
@@ -256,7 +249,22 @@ void Tile::simulateTiles() {
 	}
 }
 
-void Tile::simulate() { _tileClimate.simulateClimate(); }
+void Tile::simulate() { 
+	_tileClimate.simulateClimate(); 
+}
+
+
+//GRAPHICS
+//=======================
+
+void Tile::setupTextures(Graphics &graphics) {
+
+	TileClimate::setupTextures(graphics);
+
+	//selection graphics
+	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
+	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
+}
 
 void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
 	for (Tile &tile : _tiles) {
@@ -285,6 +293,10 @@ void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovem
 	if (selectionValue) {_biosPtr->selectTile(this);}
 }
 
+
+//GETTERS
+//=================
+
 my::Address Tile::getAddress()const {return _Address;}
 
 SDL_Rect Tile::getGameRect() const {return _gameRectangle;}
@@ -309,12 +321,3 @@ std::vector<std::string> Tile::sendMessages() const {
 }
 
 
-void Tile::buildNeighborhood() {
-	my::Address neighborAddress;
-	for (int j = 0; j < 6; j++) {
-		neighborAddress = this->_Address.adjacent(j);
-		if (neighborAddress.i != -1) {
-			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
-		}
-	}
-}
