@@ -6,15 +6,15 @@ class Tile;
 
 class Bios {
 public:
-	Bios();
+	Bios() noexcept;
 
-	Bios(Graphics &graphics);
+	Bios(Graphics &graphics)  noexcept;
 
-	void clear();
-	void update();
-	void draw(Graphics &graphics);
+	void clear()  noexcept;
+	void update() noexcept;
+	void draw(Graphics &graphics) noexcept;
 
-	void selectTile(Tile * const tile);
+	void selectTile(Tile * const tile) noexcept;
 
 private:
 
@@ -37,12 +37,12 @@ private:
 
 class InfoBar {
 public:
-	InfoBar();
+	InfoBar() noexcept;
 
-	InfoBar(Graphics &graphics);
+	InfoBar(Graphics &graphics) noexcept;
 
-	void draw(Graphics &graphics);
-	void update();
+	void draw(Graphics &graphics) noexcept;
+	void update() noexcept;
 
 private:
 

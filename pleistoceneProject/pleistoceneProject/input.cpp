@@ -3,7 +3,7 @@
 #include "game.h"
 #include "camera.h"
 
-void Input::beginNewFrame() {
+void Input::beginNewFrame() noexcept {
 	_pressedKeys.clear();
 	_releasedKeys.clear();
 
@@ -46,18 +46,18 @@ void Input::beginNewFrame() {
 }
 
 
-void Input::keyDownEvent(const SDL_Event &event) {
+void Input::keyDownEvent(const SDL_Event &event) noexcept {
 	_pressedKeys[event.key.keysym.scancode] = true;
 	_heldKeys[event.key.keysym.scancode] = true;
 }
 
-void Input::keyUpEvent(const SDL_Event &event) {
+void Input::keyUpEvent(const SDL_Event &event) noexcept {
 	_heldKeys[event.key.keysym.scancode] = false;
 	_releasedKeys[event.key.keysym.scancode] = true;
 }
 
 
-void Input::storeMousePositionData(const SDL_Event &event) {
+void Input::storeMousePositionData(const SDL_Event &event) noexcept {
 
 	_mousePoint.x = event.button.x;
 	_mousePoint.y = event.button.y;
@@ -66,7 +66,7 @@ void Input::storeMousePositionData(const SDL_Event &event) {
 }
 
 //Called when button pressed
-void Input::buttonDownEvent(const SDL_Event& event) {
+void Input::buttonDownEvent(const SDL_Event& event) noexcept {
 
 	_pressedButtons[event.button.button] = true;
 
@@ -82,7 +82,7 @@ void Input::buttonDownEvent(const SDL_Event& event) {
 
 }
 
-void Input::buttonUpEvent(const SDL_Event& event) {
+void Input::buttonUpEvent(const SDL_Event& event) noexcept {
 	_releasedButtons[event.button.button] = true;
 	_heldButtons[event.button.button] = false;
 
@@ -91,13 +91,13 @@ void Input::buttonUpEvent(const SDL_Event& event) {
 	if (event.button.button == 1) _points[1] = _mousePoint;
 }
 
-void Input::mouseMovementEvent(const SDL_Event& event) {
+void Input::mouseMovementEvent(const SDL_Event& event) noexcept {
 	storeMousePositionData(event);
 	_points[1] = _mousePoint;
 }
 
 template<typename keyType>
-bool Input::checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const{
+bool Input::checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const noexcept {
 	//Check uninitialized
 	if (boolMap.count(key) == 0) {
 		return false;
@@ -105,40 +105,40 @@ bool Input::checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const{
 	return boolMap.at(key);
 }
 
-bool Input::wasKeyPressed(SDL_Scancode key) const{	
+bool Input::wasKeyPressed(SDL_Scancode key) const noexcept {	
 	return checkBoolMap(key, _pressedKeys);
 }
-bool Input::wasKeyHeld(SDL_Scancode key)const {
+bool Input::wasKeyHeld(SDL_Scancode key) const noexcept {
 	return checkBoolMap(key, _heldKeys);
 }
-bool Input::wasKeyReleased(SDL_Scancode key)const {
+bool Input::wasKeyReleased(SDL_Scancode key) const noexcept {
 	return checkBoolMap(key, _releasedKeys);
 
 }
 
-bool Input::wasButtonPressed(int buttonIndex)const {
+bool Input::wasButtonPressed(int buttonIndex) const noexcept {
 	return checkBoolMap(buttonIndex, _pressedButtons);
 
 }
-bool Input::wasButtonHeld(int buttonIndex)const {
+bool Input::wasButtonHeld(int buttonIndex) const noexcept {
 	return checkBoolMap(buttonIndex, _heldButtons);
 }
-bool Input::wasButtonReleased(int buttonIndex) const {
+bool Input::wasButtonReleased(int buttonIndex) const noexcept {
 	return checkBoolMap(buttonIndex, _releasedButtons);
 }
 
-my::Vector2 Input::getMouseLocation() const {
+my::Vector2 Input::getMouseLocation() const noexcept {
 	return _mouseLocation;
 }
-SDL_Point Input::getMousePoint() const {
+SDL_Point Input::getMousePoint() const noexcept {
 	return _mousePoint;
 }
 
-SDL_Rect* Input::getSelectionRect() {
+SDL_Rect* Input::getSelectionRect() noexcept {
 	SDL_EnclosePoints(_points, 2, NULL, &_selectionRect);
 	return &_selectionRect;
 }
 
-void Input::setCamera(Camera &camera) {
+void Input::setCamera(Camera &camera) noexcept {
 		_cameraPtr = &camera;
 }

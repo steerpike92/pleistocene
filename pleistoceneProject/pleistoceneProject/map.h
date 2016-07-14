@@ -8,22 +8,22 @@ class GameOptions;
 
 class Map {
 public:
-	Map();
-	Map(Graphics &graphics, Bios *bios, GameOptions &options);
+	Map() noexcept;
+	Map(Graphics &graphics, Bios *bios, GameOptions &options) noexcept;
 
-	void generateMap(int seed);
+	void generateMap(int seed) noexcept;
 
-	void draw(Graphics &graphics, bool cameraMovementFlag);
-	void update(int elapsedTime);
+	void draw(Graphics &graphics, bool cameraMovementFlag) noexcept;
+	void update(int elapsedTime) noexcept;
 
-	void simulate();
+	void simulate() noexcept;
 
 	Bios* _bioPtr;
 
 	bool _exists = false;
 
-	static climate::DrawType getDrawType();
-	void setDrawType(int drawNumber);
+	static climate::DrawType getDrawType() noexcept;
+	void setDrawType(int drawNumber) noexcept;
 private:
 
 	static climate::DrawType _drawType;

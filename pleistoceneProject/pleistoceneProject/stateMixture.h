@@ -14,15 +14,15 @@ class SolidMixture : public Mixture {
 	double _permeability;
 
 public:
-	SolidMixture();
-	SolidMixture(Element element, double temperature);
-	SolidMixture(std::vector<Element> theElements, double temperature);
+	SolidMixture() noexcept;
+	SolidMixture(Element element, double temperature) noexcept;
+	SolidMixture(std::vector<Element> theElements, double temperature) noexcept;
 
-	void calculateParameters();
+	void calculateParameters() noexcept;
 private:
-	void calcualtePorosity();
-	void calculatePermeability();
-	void calculateGroundWaterFlow();
+	void calcualtePorosity() noexcept;
+	void calculatePermeability() noexcept;
+	void calculateGroundWaterFlow() noexcept;
 
 };
 
@@ -32,10 +32,10 @@ private:
 
 class ParticulateMixture : public Mixture {
 public:
-	ParticulateMixture();
-	ParticulateMixture(std::vector<Element> theElements, double temperature);
+	ParticulateMixture() noexcept;
+	ParticulateMixture(std::vector<Element> theElements, double temperature) noexcept;
 	
-	Mixture settle(double fluidViscosity, double fluidVelocity);
+	Mixture settle(double fluidViscosity, double fluidVelocity) noexcept;
 };
 
 
@@ -48,9 +48,9 @@ class LiquidMixture : public Mixture {
 	//std::vector<Element> dissolvedElements;//dissolved oxygen/salt
 
 public:
-	LiquidMixture();
-	LiquidMixture(Element element, double temperature);
-	LiquidMixture(std::vector<Element> theElements, double temperature);
+	LiquidMixture() noexcept;
+	LiquidMixture(Element element, double temperature) noexcept;
+	LiquidMixture(std::vector<Element> theElements, double temperature) noexcept;
 	//GETTERS
 	//===========================
 };
@@ -63,8 +63,8 @@ public:
 class DropletMixture : public Mixture {
 	double _dropletRadius;
 public:
-	DropletMixture();
-	DropletMixture(Element element, double temperature);
+	DropletMixture() noexcept;
+	DropletMixture(Element element, double temperature) noexcept;
 	
 	
 
@@ -88,24 +88,24 @@ class GaseousMixture : public Mixture {
 	double _saturationDensity=0;
 
 public:
-	GaseousMixture();
-	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation);
-	GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation);
+	GaseousMixture() noexcept;
+	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation)  noexcept;
+	GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation)  noexcept;
 
-	void simulateCondensation();
-	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation);
+	void simulateCondensation() noexcept;
+	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation) noexcept;
 
-	void calculateParameters();
+	void calculateParameters() noexcept;
 	
 private:
-	void calculateSpecificHeatCapacity();
-	void calculateLapseRate();
-	void calculateSaturationDensity();
+	void calculateSpecificHeatCapacity() noexcept;
+	void calculateLapseRate() noexcept;
+	void calculateSaturationDensity() noexcept;
 public:
 	//GETTERS
 	//===========================
-	double getLapseRate()const;
-	double getSaturationDensity()const;
+	double getLapseRate() const noexcept;
+	double getSaturationDensity() const noexcept;
 };
 
 

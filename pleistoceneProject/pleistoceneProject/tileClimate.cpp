@@ -5,9 +5,9 @@
 //INITIALIALIZATION
 //======================================
 
-TileClimate::TileClimate() {}
+TileClimate::TileClimate() noexcept {}
 
-TileClimate::TileClimate(my::Address A, double landElevation){
+TileClimate::TileClimate(my::Address A, double landElevation) noexcept {
 	
 	_Address = A;
 
@@ -22,13 +22,13 @@ TileClimate::TileClimate(my::Address A, double landElevation){
 	
 }
 
-double TileClimate::calculateLocalInitialtemperature() {
+double TileClimate::calculateLocalInitialtemperature() noexcept {
 	double localInitialTemperature = climate::planetary::initialTemperatureK;
 	localInitialTemperature -= pow((_latitude_deg / 90.0), 2) * 40;
 	return localInitialTemperature;
 }
 
-void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) {
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept {
 	_adjacientTileClimates = adjacientTileClimates;
 
 	std::map<my::Direction, layers::MaterialColumn*> adjacientColumns;
@@ -52,18 +52,18 @@ void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacien
 
 int TileClimate::_simulationStep;
 
-void TileClimate::beginNewHour() {
+void TileClimate::beginNewHour() noexcept {
 	_simulationStep = 0;
 	SolarRadiation::setupSolarRadiation();
 	//i.e. create earth rotation matrix for current time and set sun ray vector
 }
 
-bool TileClimate::beginNextStep() {
+bool TileClimate::beginNextStep() noexcept {
 	_simulationStep++;
 	return (_simulationStep <= _totalSteps);//check if simulation hour complete
 }
 
-void TileClimate::simulateClimate(){
+void TileClimate::simulateClimate() noexcept {
 	
 	double solarEnergyPerHour;
 
@@ -90,14 +90,12 @@ void TileClimate::simulateClimate(){
 		_materialColumn.simulateWaterFlow();
 		_materialColumn.simulatePlants();
 		break;
-	default:
-		LOG("Error: Simulation step out of bounds");
-		throw(2);
-		break;
+	//default:
+		//NOEXCEPT LOG("Error: Simulation step out of bounds");throw(2);break;
 	}
 }
 
-double TileClimate::simulateSolarRadiation() {
+double TileClimate::simulateSolarRadiation() noexcept {
 	double solarFraction=_solarRadiation.applySolarRadiation();
 	double incidentSolarEnergyPerHour = solarFraction*climate::planetary::solarEnergyPerHour;
 	return incidentSolarEnergyPerHour;
@@ -109,31 +107,29 @@ double TileClimate::simulateSolarRadiation() {
 //GRAPHICS
 //======================================
 
-void TileClimate::updateClimate(int elapsedTime) {
+void TileClimate::updateClimate(int elapsedTime) noexcept {
 }
 
 
 
-bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) {
+bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) noexcept {
 
 	using namespace climate;
 	bool selectionFlag = false;
 
 	switch (drawType) {
-	case(STANDARD_DRAW) :
-		return standardDraw(graphics, onScreenPositions);
 	case(SURFACE_TEMPERATURE_DRAW) :
 		return surfaceTemperatureDraw(graphics, onScreenPositions);
 	case(SURFACE_AIR_TEMPERATURE_DRAW) :
 		return surfaceAirTemperatureDraw(graphics, onScreenPositions);
-	default:
-		LOG("NO DRAW TYPE");
-		throw(2);
-		return false;
+	default :
+		return standardDraw(graphics, onScreenPositions);
+	//default:
+		//NOEXCEPT LOG("NO DRAW TYPE");throw(2);return false;
 	}
 }
 
-bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
+bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 
 	double elevation = _materialColumn.getLandElevation();
@@ -155,7 +151,7 @@ bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScree
 
 
 void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, 
-	climate::land::elevationType &computedElevationType) {
+	climate::land::elevationType &computedElevationType) noexcept {
 
 	if (elevation< climate::land::landCutoff) {
 		computedElevationType = climate::land::SUBMERGED;
@@ -179,7 +175,7 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 }
 
 
-bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
+bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 	const double landFudge = 10;
 
@@ -198,7 +194,7 @@ bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rec
 	return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
 }
 
-bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) {
+bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 
 	double temperature = _materialColumn.getBoundaryLayerTemperature();
@@ -220,7 +216,7 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 std::map<std::string, std::string> TileClimate::_climateTextures;
 std::map<climate::land::elevationType, std::string> TileClimate::_elevationTextures;
 
-void TileClimate::setupTextures(Graphics &graphics) {
+void TileClimate::setupTextures(Graphics &graphics)  noexcept {
 
 	_climateTextures["whiteTile"] = "../../content/simpleTerrain/whiteTile.png";
 
@@ -243,7 +239,7 @@ void TileClimate::setupTextures(Graphics &graphics) {
 //GETTERS
 //===========================================
 
-std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType) const {
+std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType) const noexcept {
 	using namespace climate;
 
 	std::vector<std::string> messages;

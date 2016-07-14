@@ -7,17 +7,13 @@
 #include "input.h"
 
 
-Graphics::Graphics() {
+Graphics::Graphics() noexcept {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
-		LOG("ERROR SDL FAILED TO INIT");
-		throw(0);
+		//NOEXCEPT LOG("ERROR SDL FAILED TO INIT");throw(0);
 	}
 	else LOG("SDL RUNNING");
 
-	if (TTF_Init() == -1) {
-		LOG("ERROR: could not initialize TTF");
-		throw(0);
-	}
+	if (TTF_Init() == -1) {LOG("ERROR: could not initialize TTF");}
 	
 	_window=SDL_CreateWindow("Tribe", 50, 50, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, 0); 
 	_renderer = SDL_CreateRenderer(_window, 0, 0);
@@ -28,7 +24,7 @@ Graphics::Graphics() {
 	this->_font = TTF_OpenFont("../../content/fonts/Roboto-Black.ttf", 10);
 }
 
-Graphics::~Graphics() {
+Graphics::~Graphics() noexcept {
 	SDL_DestroyWindow(_window);
 	SDL_DestroyRenderer(_renderer);
 	SDL_Quit();
@@ -38,63 +34,55 @@ Graphics::~Graphics() {
 }
 
 
-void Graphics::clear() {
+void Graphics::clear() noexcept {
 	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 1);
 	SDL_RenderClear(_renderer);
 }
 
 
-void Graphics::loadImage(const std::string pathName) {
+void Graphics::loadImage(const std::string pathName) noexcept {
 	//Add surface to _spriteSheets map
 	if (_spriteSheets.count(pathName) == 0) {
 		_spriteSheets[pathName] = IMG_Load(pathName.c_str());
-		if (_spriteSheets[pathName] == NULL) {
-			LOG("Error loading image: ");
-			LOG(pathName);
-			throw(1);
-		}
+		//NOEXCEPT if (_spriteSheets[pathName] == NULL) {LOG("Error loading image: ");LOG(pathName);throw(1);}
 		//Add texture to _textures map
 		_textures[pathName] = SDL_CreateTextureFromSurface(_renderer, _spriteSheets[pathName]);
-		if (_textures[pathName] == NULL) {
-			LOG("Error creating texture: ");
-			LOG(pathName);
-			throw(1);
-		}
+		//NOEXCEPT if (_textures[pathName] == NULL) {LOG("Error creating texture: ");LOG(pathName);throw(1);}
 		//Add name to list of names
 		_pathNames.push_back(pathName);
 	}
 }
 
-my::Vector2 Graphics::imageDimensions(const std::string pathName) {
+my::Vector2 Graphics::imageDimensions(const std::string pathName)  noexcept {
 	return my::Vector2(_spriteSheets[pathName]->w, _spriteSheets[pathName]->h);
 }
 
-void  Graphics::freeImage(const std::string pathName) {
+void  Graphics::freeImage(const std::string pathName) noexcept {
 	_spriteSheets.erase(pathName);
 	_textures.erase(pathName);
 	_pathNames.erase(std::remove(_pathNames.begin(), _pathNames.end(), pathName), _pathNames.end());
 }
 
-void Graphics::freeAll() {
+void Graphics::freeAll()  noexcept {
 	_spriteSheets.clear();
 	_textures.clear();
 	_pathNames.clear();
 }
 
-void Graphics::setCamera(Camera &camera) {
+void Graphics::setCamera(Camera &camera) noexcept {
 	_cameraPtr = &camera;
 }
 
-void Graphics::setInput(Input &input) {
+void Graphics::setInput(Input &input) noexcept {
 	_inputPtr = &input;
 }
 
-void Graphics::darkenTexture(const std::string &texturePathName, double filter) {
+void Graphics::darkenTexture(const std::string &texturePathName, double filter)  noexcept {
 	colorFilter(texturePathName, filter, filter, filter);
 }
 
 void Graphics::colorFilter(const std::string &texturePathName, double redFilter,
-	double greenFilter, double blueFilter) {
+	double greenFilter, double blueFilter)  noexcept {
 	
 	//cull stupid values
 	redFilter = std::min(redFilter, 1.0); 
@@ -110,13 +98,15 @@ void Graphics::colorFilter(const std::string &texturePathName, double redFilter,
 	int greenMod = int(greenFilter * 255);
 	int blueMod = int(blueFilter * 255);
 
-	if (SDL_SetTextureColorMod(_textures[texturePathName], redMod, greenMod, blueMod)) {
-		LOG("ERROR, COLOR FILTERING NOT SUPPORTED"); throw(2);
-	}
+	SDL_SetTextureColorMod(_textures[texturePathName], redMod, greenMod, blueMod);
+
+	////if (SDL_SetTextureColorMod(_textures[texturePathName], redMod, greenMod, blueMod)) {
+		//NOEXCEPT LOG("ERROR, COLOR FILTERING NOT SUPPORTED"); throw(2);
+	//}
 	return;
 }
 
-std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const gameRectangle, bool screenLocked) {
+std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const gameRectangle, bool screenLocked)  noexcept {
 
 	std::vector<SDL_Rect> onScreenPositions;
 
@@ -152,7 +142,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 }
 
 bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions, 
-	double degreesRotated, bool mirrorH, bool mirrorV) {
+	double degreesRotated, bool mirrorH, bool mirrorV)  noexcept {
 
 	bool selectionFlag = false;
 
@@ -164,7 +154,7 @@ bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const so
 
 	for (SDL_Rect localDestRect : onScreenPositions) {
 		if (SDL_RenderCopyEx(_renderer, _textures[pathName], sourceRect, &localDestRect, degreesRotated, NULL, mirror)) {
-			LOG("Error rendering: "); LOG(pathName); throw(1);
+			//NOEXCEPT LOG("Error rendering: "); LOG(pathName); throw(1);
 		}
 		if (_selecting) {
 			SDL_Rect bullshit;
@@ -176,7 +166,7 @@ bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const so
 	return selectionFlag;
 }
 
-void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color color, bool screenLocked) {
+void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color color, bool screenLocked)  noexcept {
 	SDL_Rect localDestRect = *Rectangle;
 
 	//zoom/camera position transform
@@ -194,13 +184,12 @@ void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color c
 	if (onScreen) {
 
 		if(SDL_RenderFillRect(_renderer, &localDestRect)){
-			LOG("Error rendering my::Rectangle");
-			throw(1);
+			//NOEXCEPT LOG("Error rendering my::Rectangle"); throw(1);
 		}
 	}
 }
 
-my::Vector2 Graphics::blitText(std::string text, my::Vector2 Message_loc, SDL_Color color, bool screenLocked) {
+my::Vector2 Graphics::blitText(std::string text, my::Vector2 Message_loc, SDL_Color color, bool screenLocked)  noexcept {
 	
 	SDL_Rect localDestRect;
 	SDL_Texture *tempTexture;
@@ -228,11 +217,11 @@ my::Vector2 Graphics::blitText(std::string text, my::Vector2 Message_loc, SDL_Co
 
 
 
-void Graphics::flip() {
+void Graphics::flip()  noexcept {
 	SDL_RenderPresent(_renderer);
 }
 
-SDL_Renderer* Graphics::getRenderer() const {
+SDL_Renderer* Graphics::getRenderer() const noexcept {
 	return _renderer;
 }
 
@@ -240,7 +229,7 @@ SDL_Renderer* Graphics::getRenderer() const {
 
 
 
-my::Vector2 Graphics::getSurfaceSize( std::string pathName) const {
+my::Vector2 Graphics::getSurfaceSize( std::string pathName) const noexcept {
 	SDL_Surface temp;
 	my::Vector2 dimensions;
 	temp=*_spriteSheets.at(pathName);

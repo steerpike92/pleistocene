@@ -6,26 +6,26 @@
 //SOLID
 //===============================================================
 
-SolidMixture::SolidMixture(){}
+SolidMixture::SolidMixture() noexcept {}
 
-SolidMixture::SolidMixture(Element element, double temperature) : 
-	SolidMixture(std::vector<Element> {element}, temperature){}
+SolidMixture::SolidMixture(Element element, double temperature) noexcept : 
+	SolidMixture(std::vector<Element> {element}, temperature) {}
 
-SolidMixture::SolidMixture(std::vector<Element> theElements, double temperature) :
+SolidMixture::SolidMixture(std::vector<Element> theElements, double temperature) noexcept :
 	Mixture(theElements, temperature, elements::SOLID) 
 {
 	SolidMixture::calculateParameters();
 }
 
 
-void SolidMixture::calculateParameters() {
+void SolidMixture::calculateParameters() noexcept {
 	Mixture::calculateParameters();
 	calcualtePorosity();
 	calculatePermeability();
 	calculateGroundWaterFlow();
 }
 
-void SolidMixture::calcualtePorosity() {
+void SolidMixture::calcualtePorosity() noexcept {
 	using namespace elements;
 	_voidSpace = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -33,7 +33,7 @@ void SolidMixture::calcualtePorosity() {
 	}
 }
 
-void SolidMixture::calculatePermeability() {
+void SolidMixture::calculatePermeability() noexcept {
 	using namespace elements;
 	double totalPermeability = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -41,7 +41,7 @@ void SolidMixture::calculatePermeability() {
 	}
 	_permeability = totalPermeability / _totalVolume;
 }
-void SolidMixture::calculateGroundWaterFlow() {
+void SolidMixture::calculateGroundWaterFlow() noexcept {
 
 }
 
@@ -49,15 +49,15 @@ void SolidMixture::calculateGroundWaterFlow() {
 //PARTICULATE
 //===============================================================
 
-ParticulateMixture::ParticulateMixture(){}
+ParticulateMixture::ParticulateMixture() noexcept {}
 
-ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double temperature) :
+ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double temperature) noexcept :
 	Mixture(theElements,temperature,elements::PARTICULATE)
 {
 
 }
 
-Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity)
+Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity) noexcept
 {
 	return Mixture();
 }
@@ -68,30 +68,30 @@ Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity)
 //===============================================================
 
 
-LiquidMixture::LiquidMixture() {}
+LiquidMixture::LiquidMixture() noexcept {}
 
-LiquidMixture::LiquidMixture(Element element, double temperature) :
+LiquidMixture::LiquidMixture(Element element, double temperature) noexcept :
 	LiquidMixture(std::vector<Element> {element}, temperature) {}
 
-LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperature) :
+LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperature) noexcept :
 	Mixture(theElements, temperature, elements::LIQUID) {}
 
 //===============================================================
 //DROPLET
 //===============================================================
 
-DropletMixture::DropletMixture() {}
+DropletMixture::DropletMixture() noexcept {}
 
-DropletMixture::DropletMixture(Element element, double temperature) :
+DropletMixture::DropletMixture(Element element, double temperature) noexcept :
 	Mixture(element, temperature, elements::DROPLET){}
 
 //==============================================================
 //GAS
 //==============================================================
 
-GaseousMixture::GaseousMixture() {}
+GaseousMixture::GaseousMixture() noexcept {}
 
-GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) :
+GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) noexcept :
 	Mixture(element, temperature, elements::GAS, topElevation-bottomElevation),
 	_bottomElevation(bottomElevation),
 	_topElevation(topElevation)
@@ -101,7 +101,7 @@ GaseousMixture::GaseousMixture(Element element, double temperature, double botto
 
 
 
-GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) :
+GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) noexcept :
 	Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
 	_bottomElevation(bottomElevation),
 	_topElevation(topElevation)
@@ -109,17 +109,16 @@ GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temper
 	calculateParameters();
 }
 
-void GaseousMixture::simulateCondensation()
+void GaseousMixture::simulateCondensation() noexcept
 {
 
 }
 
-DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation)
-{
+DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation) noexcept{
 	return upperPrecipitation;
 }
 
-void GaseousMixture::calculateParameters() {
+void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
@@ -129,16 +128,16 @@ void GaseousMixture::calculateParameters() {
 }
 
 
-void GaseousMixture::calculateSpecificHeatCapacity() {
+void GaseousMixture::calculateSpecificHeatCapacity() noexcept {
 	_specificHeatCapacity = _totalHeatCapacity / _totalMass;
 }
 
-void GaseousMixture::calculateLapseRate() {
+void GaseousMixture::calculateLapseRate() noexcept {
 	//stub. different from moist air
 	_adiabaticLapseRate = 9.8 / _specificHeatCapacity;
 }
 
-void GaseousMixture::calculateSaturationDensity(){
+void GaseousMixture::calculateSaturationDensity() noexcept {
 	double Tc = _temperature - 273.15;
 	double saturationDensity;//g/m3
 	saturationDensity = 5.018 + 0.32321*Tc - 8.1841*pow(10, -3)*pow(Tc, 2) + 3.1243*pow(10, -4)*pow(Tc, 3);
@@ -147,10 +146,10 @@ void GaseousMixture::calculateSaturationDensity(){
 }
 
 
-double GaseousMixture::getSaturationDensity() const{
+double GaseousMixture::getSaturationDensity() const noexcept {
 	return _saturationDensity;
 }
 
-double GaseousMixture::getLapseRate() const {
+double GaseousMixture::getLapseRate() const noexcept {
 	return _adiabaticLapseRate;
 }

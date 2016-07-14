@@ -4,9 +4,9 @@
 #include "bios.h"
 #include "noise.h"
 
-Tile::Tile() {}
+Tile::Tile() noexcept {}
 
-Tile::Tile(my::Address tileAddress) {
+Tile::Tile(my::Address tileAddress) noexcept {
 
 	_Address = tileAddress;
 
@@ -28,14 +28,14 @@ std::vector<Tile> Tile::_tiles;
 std::vector<my::Address> Tile::_Addresses;
 
 
-void Tile::setupTiles(Graphics &graphics) {
+void Tile::setupTiles(Graphics &graphics) noexcept {
 	buildTileVector();
 	setupTextures(graphics);
 	buildTileNeighbors();
 }
 
 //initializes each tile at a default depth
-void Tile::buildTileVector() {
+void Tile::buildTileVector() noexcept {
 	//Tile constructor
 	for (int row = 0; row < my::Address::GetRows(); row++) {
 		for (int col = 0; col <  my::Address::GetCols(); col++) {
@@ -48,13 +48,13 @@ void Tile::buildTileVector() {
 	}
 }
 
-void Tile::buildTileNeighbors() {
+void Tile::buildTileNeighbors() noexcept {
 	for (Tile &T : _tiles) {
 		T.buildNeighborhood();
 	}
 }
 
-void Tile::buildNeighborhood() {
+void Tile::buildNeighborhood() noexcept {
 	my::Address neighborAddress;
 	for (int j = 0; j < 6; j++) {
 		neighborAddress = this->_Address.adjacent(j);
@@ -66,7 +66,7 @@ void Tile::buildNeighborhood() {
 
 Bios* Tile::_biosPtr;
 
-std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols){
+std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols) noexcept {
 
 	std::vector<double> noiseTable;
 
@@ -123,7 +123,7 @@ std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persista
 	return noiseTable;
 }
 
-std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) {
+std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) noexcept {
 
 	//blend map east/west edge together
 	double blend;
@@ -164,7 +164,7 @@ std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Ro
 
 }
 
-void Tile::generateTileElevation(int seed) {
+void Tile::generateTileElevation(int seed) noexcept {
 
 	int TileRows = my::Address::GetRows();
 	int TileCols = my::Address::GetCols();
@@ -216,7 +216,7 @@ void Tile::generateTileElevation(int seed) {
 
 			//determine tile to set
 			A = my::Address(row, col);
-			if (A.i == my::FakeIndex) {LOG("address index out of bounds");throw (2);}
+			//NOEXCEPT if (A.i == my::FakeIndex) {LOG("address index out of bounds");throw (2);}
 
 			//set elevation
 			double elevation = noiseValue * climate::land::amplitude;
@@ -226,7 +226,7 @@ void Tile::generateTileElevation(int seed) {
 }
 
 
-void Tile::setupTileClimateAdjacency() {
+void Tile::setupTileClimateAdjacency() noexcept {
 
 	std::map<my::Direction, TileClimate*>	adjacientTileClimates;
 	my::Direction				direction;
@@ -253,20 +253,20 @@ void Tile::setupTileClimateAdjacency() {
 
 
 
-void Tile::updateTiles(int elapsedTime) {
+void Tile::updateTiles(int elapsedTime) noexcept {
 	for (Tile &T : _tiles) {
 		T.update(elapsedTime);
 	}
 }
 
-void Tile::update(int elapsedTime) {
+void Tile::update(int elapsedTime) noexcept {
 
 }
 
 //SIMULATION
 //============================
 
-void Tile::simulateTiles() {
+void Tile::simulateTiles() noexcept {
 
 	TileClimate::beginNewHour();
 
@@ -277,7 +277,7 @@ void Tile::simulateTiles() {
 	}
 }
 
-void Tile::simulate() { 
+void Tile::simulate() noexcept { 
 	_tileClimate.simulateClimate(); 
 }
 
@@ -285,7 +285,7 @@ void Tile::simulate() {
 //GRAPHICS
 //=======================
 
-void Tile::setupTextures(Graphics &graphics) {
+void Tile::setupTextures(Graphics &graphics) noexcept {
 
 	TileClimate::setupTextures(graphics);
 
@@ -294,13 +294,13 @@ void Tile::setupTextures(Graphics &graphics) {
 	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
 }
 
-void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
+void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
 	for (Tile &tile : _tiles) {
 		tile.draw(graphics, drawType, cameraMovementFlag);
 	}
 }
 
-void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) {
+void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
 	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_Address.r % 2) + globals::TILE_WIDTH * _Address.c;
 	_gameRectangle.w = globals::TILE_WIDTH;
 	_gameRectangle.y = _Address.r * globals::EFFECTIVE_HEIGHT;
@@ -325,11 +325,11 @@ void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovem
 //GETTERS
 //=================
 
-my::Address Tile::getAddress()const {return _Address;}
+my::Address Tile::getAddress() const noexcept {return _Address;}
 
-SDL_Rect Tile::getGameRect() const {return _gameRectangle;}
+SDL_Rect Tile::getGameRect() const noexcept {return _gameRectangle;}
 
-std::vector<std::string> Tile::sendMessages() const {
+std::vector<std::string> Tile::sendMessages() const noexcept {
 
 	climate::DrawType messageType = Map::getDrawType();
 

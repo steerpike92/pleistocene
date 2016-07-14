@@ -4,9 +4,9 @@
 #include "tile.h"
 #include "map.h"
 
-Bios::Bios(){}
+Bios::Bios() noexcept {}
 
-Bios::Bios(Graphics &graphics) {
+Bios::Bios(Graphics &graphics) noexcept {
 
 	int screenMargin = 0;
 	int width = 250;
@@ -22,7 +22,7 @@ Bios::Bios(Graphics &graphics) {
 }
 
 
-void Bios::clear() {
+void Bios::clear() noexcept {
 	if (_selectedTile) {
 		_selectedTile = NULL;
 	}
@@ -30,7 +30,7 @@ void Bios::clear() {
 	_display = false;
 }
 
-void Bios::selectTile(Tile * const tile) {
+void Bios::selectTile(Tile * const tile) noexcept {
 	_selectedTile = tile;
 	_messages = _selectedTile->sendMessages();
 
@@ -40,13 +40,13 @@ void Bios::selectTile(Tile * const tile) {
 
 }
 
-void Bios::update() {
+void Bios::update() noexcept {
 	if (_selectedTile) {
 		_messages = _selectedTile->sendMessages();
 	}
 }
 
-void Bios::draw(Graphics &graphics) {
+void Bios::draw(Graphics &graphics) noexcept {
 
 
 	if (_display==NULL) return;
@@ -85,9 +85,9 @@ void Bios::draw(Graphics &graphics) {
 
 
 
-InfoBar::InfoBar(){}
+InfoBar::InfoBar() noexcept {}
 
-InfoBar::InfoBar(Graphics &graphics) {
+InfoBar::InfoBar(Graphics &graphics) noexcept {
 	int width = globals::SCREEN_WIDTH;
 	int height = 18;
 	_displayRect = { 0 ,0 ,width,height };
@@ -96,12 +96,12 @@ InfoBar::InfoBar(Graphics &graphics) {
 
 
 
-void InfoBar::update(){
+void InfoBar::update() noexcept {
 	_messages.clear();
 	_messages = my::SimulationTime::readGlobalTime();
 }
 
-void InfoBar::draw(Graphics &graphics) {
+void InfoBar::draw(Graphics &graphics) noexcept {
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
 	
 	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y);

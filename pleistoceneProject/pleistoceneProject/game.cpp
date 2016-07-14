@@ -1,11 +1,11 @@
 #include "game.h"
 
-Game::Game() {
+Game::Game() noexcept {
 	initialize();
 	gameLoop();
 }
 
-void Game::initialize() {
+void Game::initialize() noexcept {
 
 	_options = GameOptions();
 	_infoBar = InfoBar(_graphics);
@@ -26,7 +26,7 @@ void Game::initialize() {
 	srand(size_t(time(NULL)));
 }
 
-void Game::gameLoop() {
+void Game::gameLoop()  noexcept {
 	while (!_quitFlag) {
 		_input.beginNewFrame();	//Sorts input events into callable information
 		determineElapsedTime();
@@ -36,7 +36,7 @@ void Game::gameLoop() {
 	}
 }
 
-void Game::determineElapsedTime() {
+void Game::determineElapsedTime() noexcept {
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
 	size_t delay;
 
@@ -50,7 +50,7 @@ void Game::determineElapsedTime() {
 	_elapsedTime_MS = std::min(_elapsedTime_MS, globals::MAX_FRAME_TIME);
 }
 
-void Game::processInput(int elapsedTime) {
+void Game::processInput(int elapsedTime) noexcept {
 	_cameraMovementFlag=_camera.processCommands(_input, elapsedTime);
 
 	//Quit
@@ -74,6 +74,12 @@ void Game::processInput(int elapsedTime) {
 	//if (_input.wasKeyPressed(SDL_SCANCODE_5)) {_map.setDrawType(5);}
 	
 
+	if (_input.wasKeyPressed(SDL_SCANCODE_TAB)) {
+		if (_options._dailyDraw) _options._dailyDraw = false;
+		else _options._dailyDraw = true;
+	}
+
+
 
 	//selection
 	if (_input.wasButtonPressed(1)) {
@@ -90,19 +96,27 @@ void Game::processInput(int elapsedTime) {
 	}
 }
 
-void Game::update(int elapsedTime) {
+void Game::update(int elapsedTime)  noexcept {
 	_map.update(elapsedTime);
 	_bios.update();
 	_infoBar.update();
 }
 
-void Game::updateSimulation() {
+void Game::updateSimulation() noexcept {
 	my::SimulationTime::updateGlobalTime();
 	_map.simulate();
 }
 
-void Game::draw() {
-	if (true) {//STUB "daily draw"
+void Game::draw()  noexcept {
+	if (!_options._dailyDraw) {
+		_graphics.clear();
+		_map.draw(_graphics, _cameraMovementFlag);
+	}
+	else if (_cameraMovementFlag) {
+		_graphics.clear();
+		_map.draw(_graphics, _cameraMovementFlag);
+	}
+	else if (_graphics._selecting) {
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag);
 	}

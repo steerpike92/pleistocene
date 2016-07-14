@@ -66,29 +66,30 @@ class Element {
 	elements::State _state;
 
 public:
-	Element();
-	Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state = elements::NO_STATE);
+	Element() noexcept;
+	Element(elements::ConstructorType constructorType, elements::ElementType elementType,
+		double value, elements::State state = elements::NO_STATE) noexcept;
 
-	void combineLike(Element like);
-	void addMass(double mass);
-	double pullMass(double massRequested);
-	void resizeBy(double proportion);
+	void combineLike(Element like)noexcept;
+	void addMass(double mass)noexcept;
+	double pullMass(double massRequested)noexcept;
+	void resizeBy(double proportion)noexcept;
 
 	//getters
 	//================================
-	elements::ElementType getElementType() const;
-	elements::State getState() const;
+	elements::ElementType getElementType() const noexcept;
+	elements::State getState() const noexcept;
 
-	double getAlbedo() const;
-	double getSolarAbsorptivity() const;
-	double getInfraredAbsorptivity() const;
-	double getHeatCapacity() const;
-	double getVolume()const;
-	double getMass()const;
-	double getMols()const;
-	double getVoidSpace()const;
-	double getPermeability()const;
-	bool getStateConflict(elements::State state)const;
+	double getAlbedo() const noexcept;
+	double getSolarAbsorptivity() const noexcept;
+	double getInfraredAbsorptivity() const noexcept;
+	double getHeatCapacity() const noexcept;
+	double getVolume()const noexcept;
+	double getMass()const noexcept;
+	double getMols()const noexcept;
+	double getVoidSpace()const noexcept;
+	double getPermeability()const noexcept;
+	bool getStateConflict(elements::State state)const noexcept;
 
 private:
 	//======================================================
@@ -97,67 +98,67 @@ private:
 
 	//KJ/(kg*K)
 	static const elements::ElementPropertyMap _specificHeatMap;
-	static elements::ElementPropertyMap buildSpecificHeatMap();
+	static elements::ElementPropertyMap buildSpecificHeatMap() noexcept;
 
 	//KJ/kg
 	//heat released(+) or consumed(-) in transition from "first" to "second"
 	static const std::map<elements::ElementCoupling, double> _latentHeatMap;
-	static std::map<elements::ElementCoupling, double> buildLatentHeatMap();
+	static std::map<elements::ElementCoupling, double> buildLatentHeatMap() noexcept;
 
 
 
 	//kg/m3
 	static const elements::ElementPropertyMap _densityMap;//maybe add specific volume map (m3/kg)
-	static elements::ElementPropertyMap buildDensityMap();
+	static elements::ElementPropertyMap buildDensityMap() noexcept;
 
 	//kg/mol
 	static const elements::ElementPropertyMap _molarMassMap;//maybe add specific... mols? (mols/kg)
-	static elements::ElementPropertyMap buildMolarMassMap();
+	static elements::ElementPropertyMap buildMolarMassMap() noexcept;
 
 	//solid/liquid/gas (natural state for element)
 	static const std::map<elements::ElementType, elements::State> _stateMap;
-	static std::map<elements::ElementType, elements::State> buildStateMap();
+	static std::map<elements::ElementType, elements::State> buildStateMap() noexcept;
 
 	//permeability. Meters per hour per unit pressure gradient
 	static const elements::ElementPropertyMap _permeabilityMap;
-	static elements::ElementPropertyMap buildPermeabilityMap();
+	static elements::ElementPropertyMap buildPermeabilityMap() noexcept;
 
 	//porousness. Void Space per total volume
 	static const elements::ElementPropertyMap _porosityMap;
-	static elements::ElementPropertyMap buildPorosityMap();
+	static elements::ElementPropertyMap buildPorosityMap() noexcept;
 
 	//particle density, assuming spherical volume (so snow gets super low density) kg/m3
 	static const elements::ElementPropertyMap _particleDensityMap;
-	static elements::ElementPropertyMap buildParticleDensityMap();
+	static elements::ElementPropertyMap buildParticleDensityMap() noexcept;
 
 	//particle radius (m)
 	static const elements::ElementPropertyMap _particleRadiusMap;
-	static elements::ElementPropertyMap buildParticleRadiusMap();
+	static elements::ElementPropertyMap buildParticleRadiusMap() noexcept;
 
 	//Viscosity
 	static const elements::ElementPropertyMap _dynamicViscosityMap;
-	static elements::ElementPropertyMap buildDynamicViscosityMap();
+	static elements::ElementPropertyMap buildDynamicViscosityMap() noexcept;
 
 	//accepted type mixtures (can't add rocks to a gas)
 	static const std::map<elements::State, std::set<elements::ElementType>> _acceptedTypesMap;
-	static std::map<elements::State, std::set<elements::ElementType>> buildAcceptedTypesMap();
+	static std::map<elements::State, std::set<elements::ElementType>> buildAcceptedTypesMap() noexcept;
 
 
 	//reflective index for solids/water surface 
 	static const elements::ElementPropertyMap _albedoMap;
-	static elements::ElementPropertyMap buildAlbedoMap();
+	static elements::ElementPropertyMap buildAlbedoMap() noexcept;
 
 	//reflective index for diffuse elements (reflected/kg)
 	static const elements::ElementPropertyMap _reflectivityMap;
-	static elements::ElementPropertyMap buildReflectivityMap();
+	static elements::ElementPropertyMap buildReflectivityMap() noexcept;
 
 	//solar absorption rate (proportion absorbed/kg)
 	static const elements::ElementPropertyMap _solarAbsorptivityMap;
-	static elements::ElementPropertyMap buildSolarAbsorptivityMap();
+	static elements::ElementPropertyMap buildSolarAbsorptivityMap() noexcept;
 
 	//Infrared absorption rate (proportion absorbed/kg)
 	static const elements::ElementPropertyMap _infraredAbsorptivityMap;
-	static elements::ElementPropertyMap buildInfraredAbsorptivityMap();
+	static elements::ElementPropertyMap buildInfraredAbsorptivityMap() noexcept;
 
 
 };

@@ -1,29 +1,16 @@
 #include "gameOptions.h"
 #include "globals.h"
 
-GameOptions::GameOptions() {
+GameOptions::GameOptions() noexcept {
 	setMapSize(2);
 	my::Address::getOptions(*this);
 }
 
-void GameOptions::setLoopOption(bool loop) { _loopOption = loop; }
+int GameOptions::getRows() const noexcept {return Rows;}
 
-void GameOptions::setRestrictCameraOption(bool option) { _restrictCameraOption = option; }
+int GameOptions::getCols() const noexcept {return Cols; }
 
-void GameOptions::setMaxFramerateOption(bool option) { _maxFramerateOption = option; }
-
-int GameOptions::getRows()const{return Rows;}
-
-int GameOptions::getCols()const{return Cols; }
-
-
-bool GameOptions::getLoopOption()const{return _loopOption;}
-
-bool GameOptions::getRestrictCameraOption()const{return _restrictCameraOption;}
-
-bool GameOptions::getMaxFramerateOption()const{return _maxFramerateOption;}
-
-void GameOptions::setMapSize(int sizeOption) {
+void GameOptions::setMapSize(int sizeOption) noexcept {
 	switch (sizeOption) {
 	case(0) :
 		Rows = 1;

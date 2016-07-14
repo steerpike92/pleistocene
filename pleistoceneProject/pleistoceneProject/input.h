@@ -10,49 +10,49 @@ public:
 
 	//Call at beggining of every frame, handles all events,
 	//creates key maps
-	void beginNewFrame();
+	void beginNewFrame() noexcept;
 	
 	//report key states
-	bool wasKeyPressed(SDL_Scancode) const;
+	bool wasKeyPressed(SDL_Scancode) const noexcept;
 	//report key states
-	bool wasKeyHeld(SDL_Scancode) const;
+	bool wasKeyHeld(SDL_Scancode) const noexcept;
 	//report key states
-	bool wasKeyReleased(SDL_Scancode) const;
+	bool wasKeyReleased(SDL_Scancode) const noexcept;
 
 
 	//report mouse states
-	bool wasButtonPressed(int buttonIndex) const;
-	bool wasButtonHeld(int buttonIndex) const;
-	bool wasButtonReleased(int buttonIndex) const;
+	bool wasButtonPressed(int buttonIndex) const noexcept;
+	bool wasButtonHeld(int buttonIndex) const noexcept;
+	bool wasButtonReleased(int buttonIndex) const noexcept;
 
 	//report mouse location in game position
-	my::Vector2 getMouseLocation() const;
+	my::Vector2 getMouseLocation() const noexcept;
 
 	//Report mouse location in screen position
-	SDL_Point getMousePoint() const;
+	SDL_Point getMousePoint() const noexcept;
 
-	SDL_Rect* getSelectionRect();
+	SDL_Rect* getSelectionRect() noexcept;
 
 	//quit flag
 	bool _quitFlag=false;
 
-	void setCamera(Camera &camera);
+	void setCamera(Camera &camera) noexcept;
 
 private:
 
 	Camera *_cameraPtr;
 
 	//updates key maps
-	void keyUpEvent(const SDL_Event &event);
+	void keyUpEvent(const SDL_Event &event) noexcept;
 
 	//updates key maps
-	void keyDownEvent(const SDL_Event &event);
+	void keyDownEvent(const SDL_Event &event) noexcept;
 
 	//...but for mouse
-	void buttonDownEvent(const SDL_Event& event);
-	void buttonUpEvent(const SDL_Event& event);
-	void mouseMovementEvent(const SDL_Event& event);
-	void storeMousePositionData(const SDL_Event& event);
+	void buttonDownEvent(const SDL_Event& event) noexcept;
+	void buttonUpEvent(const SDL_Event& event) noexcept;
+	void mouseMovementEvent(const SDL_Event& event) noexcept;
+	void storeMousePositionData(const SDL_Event& event) noexcept;
 
 	//map of keys pressed this frame
 	std::map<SDL_Scancode, bool> _pressedKeys;
@@ -64,7 +64,7 @@ private:
 	std::map<SDL_Scancode, bool> _releasedKeys;
 
 	template<typename keyType>
-	bool checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const;
+	bool checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const noexcept;
 
 	//MOUSE BUTTON DATA
 	std::map<int, bool> _heldButtons;

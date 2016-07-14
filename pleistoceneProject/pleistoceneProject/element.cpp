@@ -4,15 +4,12 @@
 //ELEMENT
 //=====================================================================================================================
 
-Element::Element() {}
+Element::Element() noexcept {}
 
-Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) {
+Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) noexcept  {
 	using namespace elements;
 
-	if (value < 0) {
-		LOG("inappropriately small element construction value"); LOG(value);
-		throw(2);
-	}
+	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);throw(2);}
 
 	_elementType = elementType;
 
@@ -26,13 +23,13 @@ Element::Element(elements::ConstructorType constructorType, elements::ElementTyp
 	switch (constructorType) {
 	case(VOLUME) :
 		_volume = value;
-		if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); throw(2); }
+		//if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); throw(2); } //NOEXCEPT
 		if (_state == PARTICULATE) { _mass = _volume*_particleDensityMap.at(_elementType); }
 		else { _mass = _volume*_densityMap.at(_elementType); }
 		break;
 	case(MOLAR) :
 		_mols = value;
-		if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); throw(2); }
+		//if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); throw(2); } //NOEXCEPT
 		_mass = _mols*_molarMassMap.at(_elementType);
 		break;
 	case(MASS) :
@@ -55,14 +52,14 @@ Element::Element(elements::ConstructorType constructorType, elements::ElementTyp
 			break;
 		}
 		break;
-	default:
-		LOG("No mixture constructor type"); throw(2); return;
+	//default:
+		//LOG("No mixture constructor type"); throw(2); return; //NOEXCEPT
 	}
 }
 
-void Element::combineLike(Element like) {
+void Element::combineLike(Element like) noexcept {
 
-	if (_elementType != like._elementType) { LOG("DIFFERENT ELEMENT"); throw(2); return; }
+	//NOEXCEPT if (_elementType != like._elementType) { LOG("DIFFERENT ELEMENT"); throw(2); return; }
 
 	_mass += like._mass;
 
@@ -74,7 +71,7 @@ void Element::combineLike(Element like) {
 		_mols = _mass / _molarMassMap.at(_elementType);
 	}
 }
-void Element::addMass(double mass) {
+void Element::addMass(double mass) noexcept {
 	_mass += abs(mass);
 
 	if (_densityMap.count(_elementType)) {//if density defined
@@ -85,7 +82,7 @@ void Element::addMass(double mass) {
 		_mols = _mass / _molarMassMap.at(_elementType);
 	}
 }
-double Element::pullMass(double massRequested) {
+double Element::pullMass(double massRequested) noexcept {
 	double massContained = _mass;
 	_mass -= massRequested;
 	if (_mass <= 0) {
@@ -107,7 +104,7 @@ double Element::pullMass(double massRequested) {
 		return massRequested;
 	}
 }
-void Element::resizeBy(double proportion) {
+void Element::resizeBy(double proportion) noexcept {
 	if (proportion <= 0) {
 		_mass = 0;
 		_volume = 0;
@@ -130,33 +127,33 @@ void Element::resizeBy(double proportion) {
 //GETTER CALCULATORS
 //=====================================================================================
 
-elements::ElementType Element::getElementType() const { return _elementType; }
-elements::State Element::getState()const { return _state; }
-double Element::getHeatCapacity()const { return _mass*_specificHeatMap.at(_elementType); }
+elements::ElementType Element::getElementType() const noexcept { return _elementType; }
+elements::State Element::getState() const noexcept { return _state; }
+double Element::getHeatCapacity() const noexcept { return _mass*_specificHeatMap.at(_elementType); }
 
-double Element::getAlbedo()const {
+double Element::getAlbedo() const noexcept {
 	using namespace elements;
 	if (_state == SOLID || _state == LIQUID) { return _albedoMap.at(_elementType); }
 	else { return std::min(_reflectivityMap.at(_elementType)*_mass, 1.0); }
 }
-double Element::getSolarAbsorptivity() const {
+double Element::getSolarAbsorptivity() const noexcept {
 	using namespace elements;
 	if (_state == SOLID) { return 1; }
 	else { return std::min(_solarAbsorptivityMap.at(_elementType)*_mass, 1.0); }
 }
-double Element::getInfraredAbsorptivity() const {
+double Element::getInfraredAbsorptivity() const noexcept {
 	using namespace elements;
 	if (_state == SOLID) { return 1; }
 	else { return std::min(_infraredAbsorptivityMap.at(_elementType)*_mass, 1.0); }
 }
 
-double Element::getMass()const { return _mass; }
-double Element::getVolume()const { return _volume; }
-double Element::getMols()const { return _mols; }
-double Element::getVoidSpace()const { return _volume*_porosityMap.at(_elementType); }
-double Element::getPermeability()const { return _permeabilityMap.at(_elementType); }
+double Element::getMass() const noexcept { return _mass; }
+double Element::getVolume() const noexcept { return _volume; }
+double Element::getMols() const noexcept { return _mols; }
+double Element::getVoidSpace() const noexcept { return _volume*_porosityMap.at(_elementType); }
+double Element::getPermeability() const noexcept { return _permeabilityMap.at(_elementType); }
 
-bool Element::getStateConflict(elements::State state)const {
+bool Element::getStateConflict(elements::State state) const noexcept {
 	//check if this type is in the "state" list of accepted types 
 	if (_acceptedTypesMap.at(state).count(_elementType)) { return false; }//no conflict}
 	else { return true; }//conflict}
@@ -167,7 +164,7 @@ bool Element::getStateConflict(elements::State state)const {
 //PROPERTY MAPS
 //=====================================================================================================================
 
-elements::ElementPropertyMap Element::buildSpecificHeatMap() {
+elements::ElementPropertyMap Element::buildSpecificHeatMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap specificHeat;
 	specificHeat[DRY_AIR] = 1.00;
@@ -188,7 +185,7 @@ elements::ElementPropertyMap Element::buildSpecificHeatMap() {
 }
 const elements::ElementPropertyMap Element::_specificHeatMap = Element::buildSpecificHeatMap();
 
-std::map<elements::ElementCoupling, double> Element::buildLatentHeatMap() {
+std::map<elements::ElementCoupling, double> Element::buildLatentHeatMap() noexcept {
 	using namespace elements;
 	std::map<ElementCoupling, double> latentHeat;
 
@@ -220,7 +217,7 @@ std::map<elements::ElementCoupling, double> Element::buildLatentHeatMap() {
 }
 const std::map<elements::ElementCoupling, double> Element::_latentHeatMap = Element::buildLatentHeatMap();
 
-elements::ElementPropertyMap Element::buildDensityMap() {
+elements::ElementPropertyMap Element::buildDensityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap density;
 
@@ -239,7 +236,7 @@ elements::ElementPropertyMap Element::buildDensityMap() {
 }
 const elements::ElementPropertyMap Element::_densityMap = Element::buildDensityMap();
 
-elements::ElementPropertyMap Element::buildMolarMassMap() {
+elements::ElementPropertyMap Element::buildMolarMassMap() noexcept {
 	using namespace elements;
 	using namespace layers::air;
 	ElementPropertyMap molarMass;
@@ -255,7 +252,7 @@ elements::ElementPropertyMap Element::buildMolarMassMap() {
 }
 const elements::ElementPropertyMap Element::_molarMassMap = Element::buildMolarMassMap();
 
-std::map<elements::ElementType, elements::State> Element::buildStateMap() {
+std::map<elements::ElementType, elements::State> Element::buildStateMap() noexcept {
 	using namespace elements;
 	std::map<ElementType, State> stateMap;
 
@@ -280,7 +277,7 @@ std::map<elements::ElementType, elements::State> Element::buildStateMap() {
 }
 const std::map<elements::ElementType, elements::State> Element::_stateMap = Element::buildStateMap();
 
-elements::ElementPropertyMap Element::buildPermeabilityMap() {
+elements::ElementPropertyMap Element::buildPermeabilityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap permeabilityMap;
 
@@ -297,7 +294,7 @@ elements::ElementPropertyMap Element::buildPermeabilityMap() {
 }
 const elements::ElementPropertyMap Element::_permeabilityMap = Element::buildPermeabilityMap();
 
-elements::ElementPropertyMap Element::buildPorosityMap() {
+elements::ElementPropertyMap Element::buildPorosityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap porosityMap;
 
@@ -315,7 +312,7 @@ elements::ElementPropertyMap Element::buildPorosityMap() {
 }
 const elements::ElementPropertyMap Element::_porosityMap = Element::buildPorosityMap();
 
-elements::ElementPropertyMap Element::buildParticleDensityMap() {
+elements::ElementPropertyMap Element::buildParticleDensityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap particleDensityMap;
 
@@ -329,7 +326,7 @@ elements::ElementPropertyMap Element::buildParticleDensityMap() {
 }
 const elements::ElementPropertyMap Element::_particleDensityMap = Element::buildParticleDensityMap();
 
-elements::ElementPropertyMap Element::buildParticleRadiusMap() {
+elements::ElementPropertyMap Element::buildParticleRadiusMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap particleRadiusMap;
 
@@ -343,7 +340,7 @@ elements::ElementPropertyMap Element::buildParticleRadiusMap() {
 }
 const elements::ElementPropertyMap Element::_particleRadiusMap = Element::buildParticleRadiusMap();
 
-elements::ElementPropertyMap Element::buildDynamicViscosityMap() {
+elements::ElementPropertyMap Element::buildDynamicViscosityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap dynamicViscosityMap;
 
@@ -356,7 +353,7 @@ elements::ElementPropertyMap Element::buildDynamicViscosityMap() {
 }
 const elements::ElementPropertyMap Element::_dynamicViscosityMap = Element::buildDynamicViscosityMap();
 
-std::map<elements::State, std::set<elements::ElementType>> Element::buildAcceptedTypesMap() {
+std::map<elements::State, std::set<elements::ElementType>> Element::buildAcceptedTypesMap() noexcept {
 	using namespace elements;
 	std::map<State, std::set<ElementType>> acceptedTypesMap;
 
@@ -379,7 +376,7 @@ std::map<elements::State, std::set<elements::ElementType>> Element::buildAccepte
 }
 const std::map<elements::State, std::set<elements::ElementType>> Element::_acceptedTypesMap = Element::buildAcceptedTypesMap();
 
-elements::ElementPropertyMap Element::buildAlbedoMap() {
+elements::ElementPropertyMap Element::buildAlbedoMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap albedo;
 
@@ -396,7 +393,7 @@ elements::ElementPropertyMap Element::buildAlbedoMap() {
 }
 const elements::ElementPropertyMap Element::_albedoMap = Element::buildAlbedoMap();
 
-elements::ElementPropertyMap Element::buildReflectivityMap() {
+elements::ElementPropertyMap Element::buildReflectivityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap reflectivityMap;
 
@@ -419,7 +416,7 @@ elements::ElementPropertyMap Element::buildReflectivityMap() {
 }
 const elements::ElementPropertyMap Element::_reflectivityMap = Element::buildReflectivityMap();
 
-elements::ElementPropertyMap Element::buildSolarAbsorptivityMap() {
+elements::ElementPropertyMap Element::buildSolarAbsorptivityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap solarAbsorptivityMap;
 
@@ -440,7 +437,7 @@ elements::ElementPropertyMap Element::buildSolarAbsorptivityMap() {
 }
 const elements::ElementPropertyMap Element::_solarAbsorptivityMap = Element::buildSolarAbsorptivityMap();
 
-elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() {
+elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 	using namespace elements;
 	ElementPropertyMap infraredAbsorptivityMap;
 

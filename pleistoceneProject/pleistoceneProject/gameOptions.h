@@ -1,25 +1,42 @@
 #pragma once
 
+namespace options {
+
+	enum drawType{
+		STANDARD
+
+
+	};
+
+	enum drawLayer {
+
+
+
+	};
+
+
+}
+
 class GameOptions {
 public:
-	GameOptions();
+	GameOptions() noexcept;
 
-	void setMapSize(int sizeOption);
-	void setLoopOption(bool option);
-	void setRestrictCameraOption(bool option);
-	void setMaxFramerateOption(bool option);
+	void setMapSize(int sizeOption) noexcept;
 
-	int getRows()const;
-	int getCols()const;
-	bool getLoopOption()const;
-	bool getRestrictCameraOption()const;
-	bool getMaxFramerateOption()const;
+	int getRows() const noexcept;
+	int getCols() const noexcept;
+
+	bool _dailyDraw = true;
+
+	bool _solarShader = true;
+
+	bool _loopOption = true;
+	bool _restrictCameraOption = false;
+	bool _maxFramerateOption = false;
 
 private:
 
 	int Rows;
 	int Cols;
-	bool _loopOption = true;
-	bool _restrictCameraOption = false;
-	bool _maxFramerateOption = false;
+
 };

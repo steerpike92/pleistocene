@@ -12,7 +12,7 @@ class TileClimate {
 	my::Address _Address;
 	double _longitude_deg;
 	double _latitude_deg;
-	double calculateLocalInitialtemperature();
+	double calculateLocalInitialtemperature() noexcept;
 
 	SolarRadiation _solarRadiation;//local incident radiation
 	layers::MaterialColumn _materialColumn;
@@ -23,55 +23,55 @@ public:
 	//INIITIALIZATION
 	//==============================================
 
-	TileClimate();
+	TileClimate() noexcept;
 	
 
-	TileClimate(my::Address A, double landElevation);
+	TileClimate(my::Address A, double landElevation) noexcept;
 
-	void buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates);
+	void buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept;
 	
 
 	//=================================================
 	//GRAPHICS
 	//=================================================
-	static void setupTextures(Graphics &graphics);
+	static void setupTextures(Graphics &graphics) noexcept;
 
-	void updateClimate(int elapsedTime);//animation Update
+	void updateClimate(int elapsedTime) noexcept;//animation Update
 
 
-	bool drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType);
+	bool drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) noexcept;
 private:
 
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<climate::land::elevationType, std::string> _elevationTextures;
 
-	bool standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
+	bool standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
 
 	//Standard Draw Subroutine
-	void setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType);
+	void setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType)noexcept;
 
-	bool surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
-	bool surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions);
+	bool surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	bool surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
 public:
 	//=================================================
 	//SIMULATION
 	//=================================================
-	static void beginNewHour();
+	static void beginNewHour()noexcept;
 
 	static int _simulationStep;
-	static bool beginNextStep();
+	static bool beginNextStep()noexcept;
 
-	void simulateClimate();
+	void simulateClimate()noexcept;
 private:
 	static const int _totalSteps = 5;
 
-	double simulateSolarRadiation();
+	double simulateSolarRadiation()noexcept;
 
 
 public:
 	//GETTERS
 	//===========================================
-	std::vector<std::string> getMessages(climate::DrawType messageType) const;
+	std::vector<std::string> getMessages(climate::DrawType messageType) const noexcept;
 };
 
 

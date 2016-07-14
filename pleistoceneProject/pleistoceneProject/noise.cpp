@@ -1,7 +1,7 @@
 #include "noise.h"
 
 
-inline double findnoise2(double x, double y, int seed)
+inline double findnoise2(double x, double y, int seed) noexcept
 {
 	int n = (int)x*seed + (int)y * 57;
 	n = (n << 13) ^ n;
@@ -10,7 +10,7 @@ inline double findnoise2(double x, double y, int seed)
 }
 
 
-inline double interpolate1(double a, double b, double x)
+inline double interpolate1(double a, double b, double x) noexcept
 {
 	double ft = x * 3.1415927;
 	double f = (1.0 - cos(ft))* 0.5;
@@ -18,7 +18,7 @@ inline double interpolate1(double a, double b, double x)
 }
 
 
-double noise2(double x, double y, int seed)
+double noise2(double x, double y, int seed) noexcept
 {
 	double floorx = (double)((int)x);//This is kinda a cheap way to floor a double integer.
 	double floory = (double)((int)y);
@@ -33,7 +33,7 @@ double noise2(double x, double y, int seed)
 }
 
 
-double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int seed)
+double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int seed) noexcept
 //w and h speak for themselves, zoom wel zoom in and out on it, I usually
 {// use 75. P stands for persistence,
 

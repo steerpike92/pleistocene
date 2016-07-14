@@ -31,53 +31,53 @@ protected:
 	double _totalInfraredEmitted = 0;
 
 public:
-	Mixture();
-	Mixture(Element element, double temperature, elements::State state, double fixedVolume=my::FakeDouble);
-	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble);
+	Mixture() noexcept;
+	Mixture(Element element, double temperature, elements::State state, double fixedVolume=my::FakeDouble) noexcept;
+	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble) noexcept;
 
 	//PARAMETER CALCULATIONS
 	//=====================================================================================================================
-	virtual void calculateParameters();
+	virtual void calculateParameters() noexcept;
 protected:
-	virtual void calculateVolume();
-	virtual void calculateMass();
-	virtual void calculateMols();
-	virtual void calculateHeatCapacity();
+	virtual void calculateVolume() noexcept;
+	virtual void calculateMass() noexcept;
+	virtual void calculateMols() noexcept;
+	virtual void calculateHeatCapacity() noexcept;
 
-	virtual void calculateAlbedoIndex();
-	virtual void calculateSolarAbsorptionIndex();
-	virtual void calculateInfraredAbsorptionIndex();
+	virtual void calculateAlbedoIndex() noexcept;
+	virtual void calculateSolarAbsorptionIndex() noexcept;
+	virtual void calculateInfraredAbsorptionIndex() noexcept;
 
 public:
 	//MIXING MIXTURES
 	//=====================================================================================================================
-	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion);
-	void resizeBy(double proportion);
+	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept;
+	void resizeBy(double proportion) noexcept;
 
 protected:
-	void push(Mixture &addedMixture);
-	//Mixture pull(Mixture &subtractedMixture);
+	void push(Mixture &addedMixture) noexcept;
+	//Mixture pull(Mixture &subtractedMixture) noexcept;
 
-	Mixture copyProportion(double proportion) const;	
-	void pushSpecific(Element addedSpecificElement, double temperature=0.0, bool tempSpecified=false );
-	double pullSpecific(Element subtractedSpecificElement);
+	Mixture copyProportion(double proportion) const noexcept;	
+	void pushSpecific(Element addedSpecificElement, double temperature=0.0, bool tempSpecified=false ) noexcept;
+	double pullSpecific(Element subtractedSpecificElement) noexcept;
 
 public:
-	double filterSolarRadiation(double incidentSolarEnergyKJ);
-	double emitInfrared();
-	double filterInfrared(double infraredEnergyKJ);
-	static void conduction(Mixture &mixture1, Mixture &mixture2);
+	double filterSolarRadiation(double incidentSolarEnergyKJ) noexcept;
+	double emitInfrared() noexcept;
+	double filterInfrared(double infraredEnergyKJ) noexcept;
+	static void conduction(Mixture &mixture1, Mixture &mixture2) noexcept;
 
 	//=======================================
 	//GETTERS
 	//=======================================
 
-	std::vector<std::string> getMessages()const;
-	double getTemperature()const;
-	double getHeight()const;
-	double getAlbedo()const;
-	double getVolume()const;
-	double getMass()const;
-	double getMols()const;
+	std::vector<std::string> getMessages() const noexcept;
+	double getTemperature() const noexcept;
+	double getHeight() const noexcept;
+	double getAlbedo() const noexcept;
+	double getVolume() const noexcept;
+	double getMass() const noexcept;
+	double getMols() const noexcept;
 };
 

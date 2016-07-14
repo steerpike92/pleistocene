@@ -118,7 +118,7 @@ const double FakeDouble = -6666.0;
 const int FakeInt = -6666;
 const int FakeIndex = -6666;
 
-double uniformRandom();
+double uniformRandom() noexcept;
 
 enum Direction {
 	NORTH_EAST,
@@ -137,7 +137,7 @@ public:
 	int x; int y;
 	Vector2() { x = 0; y = 0; }
 	Vector2(int X, int Y) { x = X; y = Y; }
-	Vector2(Vector2d v2);
+	Vector2(Vector2d v2) noexcept;
 	Vector2(SDL_Point P) { x = P.x; y = P.y; }
 
 
@@ -312,27 +312,27 @@ public:
 
 class Rectangle {
 public:
-	Rectangle();
-	~Rectangle();
-	Rectangle(int x, int y, int w, int h);
-	Rectangle(SDL_Rect rect);
+	Rectangle() noexcept;
+	~Rectangle() noexcept;
+	Rectangle(int x, int y, int w, int h) noexcept;
+	Rectangle(SDL_Rect rect) noexcept;
 
-	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const;
+	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const noexcept;
 
-	const Vector2 getCenter() const;
+	const Vector2 getCenter() const noexcept;
 
 	//takes new position
-	void moveRect(const Vector2 &S);
+	void moveRect(const Vector2 &S) noexcept;
 
-	const int getLeft() const;
-	const int getRight() const;
-	const int getTop() const;
-	const int getBottom() const;
+	const int getLeft() const noexcept;
+	const int getRight() const noexcept;
+	const int getTop() const noexcept;
+	const int getBottom() const noexcept;
 
-	const int getWidth() const;
-	const int getHeight() const;
+	const int getWidth() const noexcept;
+	const int getHeight() const noexcept;
 
-	void print() const;
+	void print() const noexcept;
 
 	int x, y, w, h;
 
@@ -347,7 +347,7 @@ class Address {
 	static int Cols;
 
 public:
-	static void getOptions(GameOptions &options);
+	static void getOptions(GameOptions &options) noexcept;
 
 	int r;//row
 	int c;//column
@@ -356,49 +356,49 @@ public:
 	bool odd = false;//odd row flag
 
 	//default constructor
-	Address();
+	Address() noexcept;
 
 	//Normal constructor
-	Address(int R, int C);
+	Address(int R, int C) noexcept;
 
 	//call normal constructor
-	Address(Vector2 v);
+	Address(Vector2 v) noexcept;
 
 	//call spurious constructor, for sort of made up Address positions that don't correspond to a tile
-	Address(int R, int C, bool Spurious);
+	Address(int R, int C, bool Spurious) noexcept;
 
 	//gets game position at an Address
-	Vector2 getGamePos() const;
+	Vector2 getGamePos() const noexcept;
 
-	Vector2d getLatLonDeg() const;
+	Vector2d getLatLonDeg() const noexcept;
 
-	Address adjacent(Direction direction) const;
+	Address adjacent(Direction direction) const noexcept;
 
-	Address adjacent(int i) const;
+	Address adjacent(int i) const noexcept;
 
-	static int GetRows();
-	static int GetCols();
+	static int GetRows() noexcept;
+	static int GetCols() noexcept;
 };
 
 
 class SimulationTime {
 public:
 	//default constructor for 
-	SimulationTime();
+	SimulationTime() noexcept;
 
 	static SimulationTime _globalTime;
 
-	static void updateGlobalTime();
+	static void updateGlobalTime() noexcept;
 
-	static std::vector<std::string> readGlobalTime();
+	static std::vector<std::string> readGlobalTime() noexcept;
 
-	double getTotalYears() const;
-	double getTotalDays() const;
-	double getTotalHours() const;
+	double getTotalYears() const noexcept;
+	double getTotalDays() const noexcept;
+	double getTotalHours() const noexcept;
 
-	int getYear() const;
-	int getDay() const;
-	int getHour() const;
+	int getYear() const noexcept;
+	int getDay() const noexcept;
+	int getHour() const noexcept;
 
 private:
 	int _year;
@@ -410,8 +410,8 @@ private:
 };
 
 
-double degToRad(double deg);
-double radToDeg(double rad);
+double degToRad(double deg) noexcept;
+double radToDeg(double rad) noexcept;
 
 }//end namespace my
 

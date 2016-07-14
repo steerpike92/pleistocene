@@ -10,28 +10,28 @@
 
 class Game {
 public:
-	Game();
+	Game() noexcept;
 private:
-	void initialize();
-	void gameLoop();
+	void initialize() noexcept;
+	void gameLoop() noexcept;
 
-	void determineElapsedTime();//also delay
+	void determineElapsedTime() noexcept;//also delay
 	int _lastUpdateTime_MS;
 	int _elapsedTime_MS;
 
-	void processInput(int elapsedTime);
+	void processInput(int elapsedTime) noexcept;
 	bool _quitFlag = false;
 	bool _cameraMovementFlag = true;
 
 	//update for screen/animations. called each frame
-	void update(int elapsedTime);
+	void update(int elapsedTime) noexcept;
 
 	//update for simulation logic. 
 	//simulates an hour of the simulation.
-	void updateSimulation();
+	void updateSimulation() noexcept;
 
 	//Drawing to renderer and flip to window
-	void draw();
+	void draw() noexcept;
 
 	GameOptions _options;
 

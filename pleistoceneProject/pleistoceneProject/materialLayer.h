@@ -35,11 +35,11 @@ class SharedSurface {
 	SharedSurface() {}
 
 	//top shared surface constructor
-	/*SharedSurface(MaterialLayer *materialLayer, double topElevaton, ) :
+	/*SharedSurface(MaterialLayer *materialLayer, double topElevaton, ) noexcept :
 		_spatialDirection(UP), _materialLayer(materialLayer), _midpointElevation(topElevaton), _area(100 * 1000) {}*/
 
 	//side shared surface constructor
-	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) :
+	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept :
 		_spatialDirection(spatialDirection), _materialLayer(materialLayer)
 	{
 		_midpointElevation = (topElevation + bottomElevation) / 2;
@@ -139,29 +139,29 @@ protected:
 public:
 	//INITIALIZATION
 	//============================
-	MaterialLayer();
-	MaterialLayer(double baseElevation, double bottomElevation);
+	MaterialLayer() noexcept;
+	MaterialLayer(double baseElevation, double bottomElevation) noexcept;
 
 	MaterialLayer *_up = nullptr;
 	MaterialLayer *_down = nullptr;
 
-	void addSurface(layers::SharedSurface &surface);
-	void clearSurfaces();
+	void addSurface(layers::SharedSurface &surface) noexcept;
+	void clearSurfaces() noexcept;
 
 	//SIMULATION
 	//============================
 
 	//chains downward
-	void filterSolarRadiation(double energyKJ);
+	void filterSolarRadiation(double energyKJ) noexcept;
 
-	double emitInfraredRadiation();
-	double filterInfraredRadiation(double energyKJ);
+	double emitInfraredRadiation() noexcept;
+	double filterInfraredRadiation(double energyKJ) noexcept;
 
 	//GETTERS
 	//============================
-	double getTopElevation()const;
-	double getBottomElevation()const;
-	virtual double getTemperature()const;
+	double getTopElevation() const noexcept;
+	double getBottomElevation() const noexcept;
+	virtual double getTemperature() const noexcept;
 
 	virtual void simulateFlow() = 0;
 };
@@ -178,10 +178,10 @@ private:
 	std::unique_ptr<SolidMixture> _solidPtr;
 
 public:
-	EarthLayer();
-	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight);
+	EarthLayer() noexcept;
+	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept;
 
-	void simulateFlow();
+	void simulateFlow() noexcept;
 
 private:
 	//unique earth member functions
@@ -191,9 +191,9 @@ private:
 	//Groundwater flow
 
 	//Earth Material constructors
-	static std::vector<Element> generateSoil(double depth, double height);
-	static elements::ElementType determineEarthType(double depthIndex);
-	static elements::ElementType determineSoilType(double depthIndex);
+	static std::vector<Element> generateSoil(double depth, double height) noexcept;
+	static elements::ElementType determineEarthType(double depthIndex) noexcept;
+	static elements::ElementType determineSoilType(double depthIndex) noexcept;
 };
 
 //////////==================================
@@ -218,13 +218,13 @@ class HorizonLayer : public EarthLayer {
 
 
 public:
-	HorizonLayer();
-	//~HorizonLayer();
-	HorizonLayer(double baseElevation, double temperature, double bottomElevation);
+	HorizonLayer() noexcept;
+	//~HorizonLayer() noexcept;
+	HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept;
 
 private:
 	//unique horizon member functions
-	//void buildNeighbors();
+	//void buildNeighbors() noexcept;
 
 	//TO DO
 
@@ -265,12 +265,12 @@ class SeaLayer : public MaterialLayer {
 	std::unique_ptr<LiquidMixture> _liquidPtr;
 
 public:
-	SeaLayer();
-	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation);
+	SeaLayer() noexcept;
+	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) noexcept;
 
-	void simulateFlow();
+	void simulateFlow() noexcept;
 
-	//double getTemperature()const;
+	//double getTemperature() const noexcept;
 };
 
 
@@ -290,25 +290,25 @@ class AirLayer : public MaterialLayer {
 	double incidentDownRadiation;
 
 public:
-	AirLayer();
-	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation);
+	AirLayer() noexcept;
+	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept;
 
-	void simulateFlow();
+	void simulateFlow() noexcept;
 
 private:
 	//unique air member functions
 
-	static std::vector<Element> generateAirElements(double bottomElevation, double topElevation);
+	static std::vector<Element> generateAirElements(double bottomElevation, double topElevation) noexcept;
 
-	static double expectedHydrostaticPressureCalculator(double elevation);
-	static double expectedMolsCalculator(double bottomElevation, double topElevation);
-	static double expectedTemperatureCalculator(double elevation);
+	static double expectedHydrostaticPressureCalculator(double elevation) noexcept;
+	static double expectedMolsCalculator(double bottomElevation, double topElevation) noexcept;
+	static double expectedTemperatureCalculator(double elevation) noexcept;
 
-	double lapsedTemperatureCalculator(double elevation)const;
-	double truePressureCalculator(double elevation)const;
+	double lapsedTemperatureCalculator(double elevation) const noexcept;
+	double truePressureCalculator(double elevation) const noexcept;
 
 public:
-	double getTemperature()const;
+	double getTemperature() const noexcept;
 
 };
 

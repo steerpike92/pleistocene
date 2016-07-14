@@ -7,17 +7,17 @@
 //Constructors
 //======================
 
-Mixture::Mixture(){}
+Mixture::Mixture() noexcept {}
 
-Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume):
+Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume) noexcept :
 	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume){}
 
-Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume) :
+Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume) noexcept :
 	_temperature(temperature),
 	_state(state),
 	_fixedVolume(fixedVolume)
 {
-	if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin): "); LOG(temperature); throw(2); }
+	//NOEXCEPT if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin) noexcept : "); LOG(temperature); throw(2); }
 
 	if (_fixedVolume == my::FakeDouble) {_volumeIsFixed = false;}
 	else { _volumeIsFixed = true; }
@@ -35,7 +35,7 @@ Mixture::Mixture(std::vector<Element> compositionElements, double temperature, e
 //CALCULATIONS
 //=====================================================================================================================
 
-void Mixture::calculateParameters() {
+void Mixture::calculateParameters() noexcept {
 	calculateMass();
 	calculateVolume();
 	calculateMols();
@@ -45,7 +45,7 @@ void Mixture::calculateParameters() {
 	calculateInfraredAbsorptionIndex();
 }
 
-void Mixture::calculateMass() {
+void Mixture::calculateMass() noexcept {
 	using namespace elements;
 	_totalMass = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -54,7 +54,7 @@ void Mixture::calculateMass() {
 	//AUX
 }
 
-void Mixture::calculateVolume() {
+void Mixture::calculateVolume() noexcept {
 	using namespace elements;
 	if (_volumeIsFixed) {
 		_totalVolume = _fixedVolume;
@@ -69,7 +69,7 @@ void Mixture::calculateVolume() {
 	//AUX
 }
 
-void Mixture::calculateMols() {
+void Mixture::calculateMols() noexcept {
 	using namespace elements;
 
 	if (_state != GAS) {_totalMols = -1;return;}
@@ -80,7 +80,7 @@ void Mixture::calculateMols() {
 	}
 }
 
-void Mixture::calculateHeatCapacity() {
+void Mixture::calculateHeatCapacity() noexcept {
 	using namespace elements;
 	_totalHeatCapacity = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -89,7 +89,7 @@ void Mixture::calculateHeatCapacity() {
 	//AUX
 }
 
-void Mixture::calculateAlbedoIndex() {
+void Mixture::calculateAlbedoIndex() noexcept {
 	using namespace elements;
 
 	if (_state == SOLID || _state==LIQUID) {//for solids/liquids albedo is a volume average of the surface elements
@@ -111,7 +111,7 @@ void Mixture::calculateAlbedoIndex() {
 	}
 }
 
-void Mixture::calculateSolarAbsorptionIndex() {
+void Mixture::calculateSolarAbsorptionIndex() noexcept {
 	using namespace elements;
 
 	if (_state == SOLID) {//opaque
@@ -128,7 +128,7 @@ void Mixture::calculateSolarAbsorptionIndex() {
 	}
 }
 
-void Mixture::calculateInfraredAbsorptionIndex() {
+void Mixture::calculateInfraredAbsorptionIndex() noexcept {
 	using namespace elements;
 
 	if (_state == SOLID) {//opaque
@@ -150,25 +150,25 @@ void Mixture::calculateInfraredAbsorptionIndex() {
 //MIXING MIXTURES
 //=====================================================================================================================
 
-void Mixture::transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion){
+void Mixture::transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept {
 	Mixture pushMix = givingMixture.copyProportion(proportion);
 	givingMixture.resizeBy(1 - proportion);
 	receivingMixture.push(pushMix);
 }
 
-Mixture Mixture::copyProportion(double proportion) const{
+Mixture Mixture::copyProportion(double proportion) const noexcept {
 	Mixture copiedMixture = *this;
 	copiedMixture.resizeBy(proportion);
 	return copiedMixture;
 }
 
-void Mixture::resizeBy(double proportion) {
+void Mixture::resizeBy(double proportion) noexcept {
 	for (elements::ElementPair &elementPair : _elements) {
 		elementPair.second.resizeBy(proportion);
 	}
 }
 
-void Mixture::push(Mixture &addedMixture){
+void Mixture::push(Mixture &addedMixture) noexcept {
 	using namespace elements;
 	double totalHeat = this->_totalHeatCapacity*_temperature +
 		addedMixture._totalHeatCapacity*addedMixture._temperature;
@@ -181,13 +181,13 @@ void Mixture::push(Mixture &addedMixture){
 	calculateParameters();
 }
 
-void Mixture::pushSpecific(Element addedSpecificElement, double temperature, bool temperatureSpecified) {
+void Mixture::pushSpecific(Element addedSpecificElement, double temperature, bool temperatureSpecified) noexcept {
 	using namespace elements;
 
 	ElementType eType = addedSpecificElement.getElementType();
 
 	//check state conflict
-	if (addedSpecificElement.getStateConflict(_state)) {LOG("Element type not compatible with state");throw(2);}
+	//NOEXCEPT if (addedSpecificElement.getStateConflict(_state)) {LOG("Element type not compatible with state");throw(2);}
 
 	if (temperatureSpecified) {
 		Mixture temporaryMixture = Mixture(addedSpecificElement, temperature, _state);
@@ -206,7 +206,7 @@ void Mixture::pushSpecific(Element addedSpecificElement, double temperature, boo
 	}
 }
 
-double Mixture::pullSpecific(Element pulledElement) {
+double Mixture::pullSpecific(Element pulledElement) noexcept {
 	using namespace elements;
 	ElementType eType = pulledElement.getElementType();
 	double massPulled=0.0;
@@ -226,7 +226,7 @@ double Mixture::pullSpecific(Element pulledElement) {
 //SIMULATION
 //========================================================================================================
 
-double Mixture::filterSolarRadiation(double solarEnergyKJ){
+double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	if (solarEnergyKJ <= 0) { return 0; }
 
 	_totalSolarAbsorbed = 0;
@@ -234,9 +234,9 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ){
 	_totalInfraredEmitted = 0;
 	
 	int mixtureCount = _elements.size();
-	if (mixtureCount== 0) {LOG("NO COMPONENTS"); throw(2); return solarEnergyKJ;}
-	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); throw(2); return solarEnergyKJ; }
-	if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); throw(2); return solarEnergyKJ; }
+	//NOEXCEPT if (mixtureCount== 0) {LOG("NO COMPONENTS"); throw(2); return solarEnergyKJ;}
+	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); throw(2); return solarEnergyKJ; }
+	//NOEXCEPT if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); throw(2); return solarEnergyKJ; }
 
 	//reflection
 	solarEnergyKJ *= (1 - _albedo);
@@ -251,11 +251,11 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ){
 	return outputEnergyKJ;
 }
 
-double Mixture::emitInfrared() {
+double Mixture::emitInfrared() noexcept {
 
 	int mixtureCount = _elements.size();
-	if (mixtureCount == 0) { LOG("NO COMPONENTS"); throw(2); return 0; }
-	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return 0; }
+	//NOEXCEPT if (mixtureCount == 0) { LOG("NO COMPONENTS"); throw(2); return 0; }
+	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return 0; }
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
@@ -274,10 +274,10 @@ double Mixture::emitInfrared() {
 }
 
 
-double Mixture::filterInfrared(double infraredEnergy){
+double Mixture::filterInfrared(double infraredEnergy) noexcept {
 	int mixtureCount = _elements.size();
-	if (mixtureCount == 0) { LOG("NO COMPONENTS");  throw(2); return infraredEnergy; }
-	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return infraredEnergy; }
+	//NOEXCEPT if (mixtureCount == 0) { LOG("NO COMPONENTS");  throw(2); return infraredEnergy; }
+	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return infraredEnergy; }
 
 	//absorption heating
 	double infraredAbsorbed = _infraredAbsorptionIndex*infraredEnergy;
@@ -292,17 +292,17 @@ double Mixture::filterInfrared(double infraredEnergy){
 }
 
 
-void Mixture::conduction(Mixture &mixture1, Mixture &mixture2){//STUB
+void Mixture::conduction(Mixture &mixture1, Mixture &mixture2) noexcept {//STUB
 }
 
-double Mixture::getTemperature()const {return _temperature;}
-double Mixture::getHeight()const { return _totalVolume; }
-double Mixture::getAlbedo()const { return _albedo; }
-double Mixture::getVolume()const { return _totalVolume; }
-double Mixture::getMass()const { return _totalMass; }
-double Mixture::getMols()const { return _totalMols; }
+double Mixture::getTemperature() const noexcept {return _temperature;}
+double Mixture::getHeight() const noexcept { return _totalVolume; }
+double Mixture::getAlbedo() const noexcept { return _albedo; }
+double Mixture::getVolume() const noexcept { return _totalVolume; }
+double Mixture::getMass() const noexcept { return _totalMass; }
+double Mixture::getMols() const noexcept { return _totalMols; }
 
-std::vector<std::string> Mixture::getMessages() const {
+std::vector<std::string> Mixture::getMessages() const noexcept {
 	std::vector<std::string> messages;
 
 	std::stringstream stream;

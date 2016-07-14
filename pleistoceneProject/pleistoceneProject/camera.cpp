@@ -2,31 +2,31 @@
 #include "input.h"
 #include "gameOptions.h"
 
-Camera::Camera() {}
+Camera::Camera() noexcept {}
 
-Camera::Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options ) {
+Camera::Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options ) noexcept {
 	_cameraPosition = startingPosition;
 	_zoomScale = startingZoom;
 	_optionsPtr = options;
 	updateCameraOptions();
 }
 
-void Camera::updateCameraOptions() {
-	RESTRICT_CAMERA = _optionsPtr->getRestrictCameraOption();
-	LOOP = _optionsPtr->getLoopOption();
+void Camera::updateCameraOptions() noexcept {
+	RESTRICT_CAMERA = _optionsPtr->_restrictCameraOption;
+	LOOP = _optionsPtr->_restrictCameraOption;
 	_gameWidth_pixels = _optionsPtr->getCols()*globals::TILE_WIDTH;
 	_gameHeight_pixels = _optionsPtr->getRows()*globals::EFFECTIVE_HEIGHT;
 }
 
-my::Vector2 Camera::getCameraPosition() const {
+my::Vector2 Camera::getCameraPosition() const noexcept {
 	return _cameraPosition;
 }
 
-double Camera::getZoomScale() const {
+double Camera::getZoomScale() const noexcept {
 	return _zoomScale;
 }
 
-bool Camera::processCommands(const Input &input, int elapsedTime) {
+bool Camera::processCommands(const Input &input, int elapsedTime) noexcept {
 
 	bool movementflag = false;
 
@@ -116,7 +116,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime) {
 	return movementflag;
 }
 
-my::Vector2 Camera::screenPosToGamePos(my::Vector2 screenPos) const {
+my::Vector2 Camera::screenPosToGamePos(my::Vector2 screenPos) const noexcept {
 	my::Vector2 gamePos;
 	gamePos = (screenPos + _cameraPosition) * (1 / _zoomScale);
 	return gamePos;

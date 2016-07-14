@@ -3,16 +3,16 @@
 
 class SolarRadiation {
 public:
-	SolarRadiation();
-	SolarRadiation(double latitude_deg, double longitude_deg);
+	SolarRadiation() noexcept;
+	SolarRadiation(double latitude_deg, double longitude_deg) noexcept;
 
-	static void setupSolarRadiation();
+	static void setupSolarRadiation() noexcept;
 
 	//returns a proportion of the max radiation ([0,1]) at the lat,lon at that time 
-	double applySolarRadiation();
+	double applySolarRadiation() noexcept;
 
 	double _solarFraction;
-	double getRadiationShader();
+	double getRadiationShader() noexcept;
 
 private:
 	double _latitude_rad;
@@ -25,7 +25,7 @@ private:
 
 	//note, it might make more sense to just determine the hourly rotation matrix and then just keep applying it.
 
-	static void buildRotationMatrix(double radiansRotation);
+	static void buildRotationMatrix(double radiansRotation) noexcept;
 
 	static double _oldRotation;//check if we can reuse the old rotation matrix
 

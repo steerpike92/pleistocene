@@ -1,9 +1,9 @@
 #include "solarRadiation.h"
 
 
-SolarRadiation::SolarRadiation() {}
+SolarRadiation::SolarRadiation() noexcept {}
 
-SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
+SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) noexcept {
 	using namespace climate::planetary;
 
 	_latitude_rad=(my::degToRad(latitude_deg));
@@ -25,7 +25,7 @@ SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) {
 bool SolarRadiation::_axisExists = false;
 
 //Rotation matrix from sidereal angle
-void SolarRadiation::buildRotationMatrix(double angle_rad){
+void SolarRadiation::buildRotationMatrix(double angle_rad) noexcept {
 	using namespace climate::planetary;
 
 	if (!_axisExists) {//First time setup
@@ -54,7 +54,8 @@ void SolarRadiation::buildRotationMatrix(double angle_rad){
 
 double SolarRadiation::_oldRotation = -1.0;
 
-void SolarRadiation::setupSolarRadiation() {
+void SolarRadiation::setupSolarRadiation() noexcept
+{
 	using namespace climate::planetary;
 
 	//Setup Rotation Matrix
@@ -79,7 +80,7 @@ void SolarRadiation::setupSolarRadiation() {
 	_sunRayVector(2)=0;
 }
 
-double SolarRadiation::applySolarRadiation(){
+double SolarRadiation::applySolarRadiation() noexcept {
 	//setupRadiation needs to get called for the hour before these get called.
 
 	//rotated normal vector
@@ -102,7 +103,7 @@ Eigen::Matrix3d SolarRadiation::_rotationMatrix;//Rotation matrix from sidereal 
 
 
 
-double SolarRadiation::getRadiationShader() {
+double SolarRadiation::getRadiationShader() noexcept {
 	double solarShader = _solarFraction;
 	if (!1) { solarShader = 1; }//STUB "solar shade option"
 	return solarShader;

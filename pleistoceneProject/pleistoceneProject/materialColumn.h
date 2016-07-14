@@ -30,44 +30,44 @@ namespace layers {
 		//INITIALIZATION
 		//====================================================
 	public:
-		MaterialColumn();
-		MaterialColumn(double landElevation, double initialTemperature);
+		MaterialColumn() noexcept;
+		MaterialColumn(double landElevation, double initialTemperature) noexcept;
 
-		void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns);
+		void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept;
 
 	private:
 		//layer builders
-		double buildEarth();
-		double buildHorizon(double baseElevation);
-		double buildSea(double baseElevation, double seaSurfaceElevation);
-		void buildAir(double baseElevation);
+		double buildEarth() noexcept;
+		double buildHorizon(double baseElevation) noexcept;
+		double buildSea(double baseElevation, double seaSurfaceElevation) noexcept;
+		void buildAir(double baseElevation) noexcept;
 
-		void buildUniversalColumn();
+		void buildUniversalColumn() noexcept;
 
 		//layer relationship builders
-		void buildMaterialLayerSurfaces();
+		void buildMaterialLayerSurfaces() noexcept;
 
-		void buildVerticalSurfaces();
-		void buildNeighborSurfaces(my::Direction);
+		void buildVerticalSurfaces() noexcept;
+		void buildNeighborSurfaces(my::Direction) noexcept;
 
-		void buildEarthLayerSurfaces();
-		void buildHorizonNeighborhood();
+		void buildEarthLayerSurfaces() noexcept;
+		void buildHorizonNeighborhood() noexcept;
 
-		void elevationChangeProcedure();
+		void elevationChangeProcedure() noexcept;
 
 		//====================================================
 		//SIMULATION
 		//====================================================
 	public:
-		void filterSolarRadiation(double incidentSolarRadiation);
-		void simulateEvaporation();
-		void simulateInfraredRadiation();
-		void simulatePressure();
-		void simulateCondensation();
-		void simulatePrecipitation();
-		void simulateAirFlow();
-		void simulateWaterFlow();
-		void simulatePlants();
+		void filterSolarRadiation(double incidentSolarRadiation) noexcept;
+		void simulateEvaporation() noexcept;
+		void simulateInfraredRadiation() noexcept;
+		void simulatePressure() noexcept;
+		void simulateCondensation() noexcept;
+		void simulatePrecipitation() noexcept;
+		void simulateAirFlow() noexcept;
+		void simulateWaterFlow() noexcept;
+		void simulatePlants() noexcept;
 
 
 
@@ -76,11 +76,11 @@ namespace layers {
 		//GETTERS
 		//====================================================
 
-		double getLandElevation()const;
-		double getSurfaceTemperature()const;
-		double getBoundaryLayerTemperature()const;
+		double getLandElevation() const noexcept;
+		double getSurfaceTemperature() const noexcept;
+		double getBoundaryLayerTemperature() const noexcept;
 
-		std::vector<std::string> getMessages(climate::DrawType messageType)const;
+		std::vector<std::string> getMessages(climate::DrawType messageType) const noexcept;
 
 	};
 

@@ -7,9 +7,9 @@ namespace layers {
 ////////////INITIALIZATION
 ////////////==================================
 
-MaterialColumn::MaterialColumn() {}
+MaterialColumn::MaterialColumn()  noexcept {}
 
-MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) :
+MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) noexcept :
 	_landElevation(landElevation),
 	_initialTemperature(initialTemperature)
 {
@@ -29,7 +29,7 @@ MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) 
 	buildUniversalColumn();
 }
 
-double MaterialColumn::buildEarth()
+double MaterialColumn::buildEarth() noexcept
 {
 	using namespace layers::earth;
 
@@ -53,14 +53,14 @@ double MaterialColumn::buildEarth()
 }
 
 
-double MaterialColumn::buildHorizon(double baseElevation)
+double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
 	_horizon.emplace_back(_landElevation, _initialTemperature, baseElevation);
 	double currentElevation = _horizon.back().getTopElevation();
 	return currentElevation;
 }
 
-double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation)
+double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation) noexcept
 {
 
 	using namespace layers::sea;
@@ -71,7 +71,7 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 
 	while (seaBottomElevation < seaLayerElevations[i] + seaSurfaceElevation) { i++; } //determine number of layers
 
-	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return 0; }
+	//NOEXCEPT if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return 0; }
 
 	i--;
 
@@ -88,7 +88,7 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 	return topElevation;
 }
 
-void MaterialColumn::buildAir(double baseElevation)
+void MaterialColumn::buildAir(double baseElevation) noexcept
 {
 	using namespace layers::air;
 
@@ -116,7 +116,8 @@ void MaterialColumn::buildAir(double baseElevation)
 }
 
 //needs to be rebuilt after every insertion/deletion
-void MaterialColumn::buildUniversalColumn() {
+void MaterialColumn::buildUniversalColumn() noexcept
+{
 
 	_column.clear();
 	for (auto &layer : _earth) {
@@ -144,7 +145,7 @@ void MaterialColumn::buildUniversalColumn() {
 
 }
 
-void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns)
+void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept
 {
 	_adjacientColumns = adjacientColumns;
 
@@ -153,14 +154,15 @@ void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &ad
 	buildHorizonNeighborhood();
 }
 
-void MaterialColumn::buildMaterialLayerSurfaces()
+void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 {
 	for (my::Direction direction : ownedDirections) {
 		buildNeighborSurfaces(direction);
 	}
 }
 
-void MaterialColumn::buildVerticalSurfaces() {
+void MaterialColumn::buildVerticalSurfaces() noexcept
+{
 	/*SharedSurface surface;
 	for (MaterialLayer *layer : _column) {
 		surface.area = climate::planetary::tileArea;
@@ -170,7 +172,7 @@ void MaterialColumn::buildVerticalSurfaces() {
 	}*/
 }
 
-void MaterialColumn::buildNeighborSurfaces(my::Direction direction)
+void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 {
 
 	//SharedSurface surface;
@@ -207,7 +209,7 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction)
 }
 
 
-void MaterialColumn::buildEarthLayerSurfaces()
+void MaterialColumn::buildEarthLayerSurfaces() noexcept
 {
 	//the jumps between elevations of adjacient tiles does not represent water flow through the crust very well.
 	//equilize the bedrock layer elevations and build earth pair surfaces so corresponding earth layers flow into each other
@@ -216,14 +218,15 @@ void MaterialColumn::buildEarthLayerSurfaces()
 
 }
 
-void MaterialColumn::buildHorizonNeighborhood()
+void MaterialColumn::buildHorizonNeighborhood() noexcept
 {
 	//rivers, plants, animals are restricted to the horizon layer,
 	//need neighboring horizons
 }
 
 
-void MaterialColumn::elevationChangeProcedure() {
+void MaterialColumn::elevationChangeProcedure() noexcept
+{
 	//my primary concerns are:
 	//a) basins filling with water and becoming seas
 	//b) inland seas drying out
@@ -242,17 +245,17 @@ void MaterialColumn::elevationChangeProcedure() {
 ////////////SIMULATION
 ////////////==================================
 
-void MaterialColumn::filterSolarRadiation(double energyKJ)
+void MaterialColumn::filterSolarRadiation(double energyKJ) noexcept
 {
 	_column.back()->filterSolarRadiation(energyKJ);
 }
 
-void MaterialColumn::simulateEvaporation()
+void MaterialColumn::simulateEvaporation() noexcept
 {
 	//STUB
 }
 
-void MaterialColumn::simulateInfraredRadiation()
+void MaterialColumn::simulateInfraredRadiation() noexcept
 {
 	MaterialLayer* surfaceLayer;
 
@@ -290,24 +293,24 @@ void MaterialColumn::simulateInfraredRadiation()
 
 }
 
-void MaterialColumn::simulatePressure()
+void MaterialColumn::simulatePressure() noexcept
 {
 	//STUB
 }
 
-void MaterialColumn::simulateCondensation()
+void MaterialColumn::simulateCondensation() noexcept
 {
 	//STUB
 }
 
-void MaterialColumn::simulatePrecipitation()
+void MaterialColumn::simulatePrecipitation() noexcept
 {
 	//STUB
 }
 
-void MaterialColumn::simulateAirFlow() {}
-void MaterialColumn::simulateWaterFlow() {}
-void MaterialColumn::simulatePlants() {}
+void MaterialColumn::simulateAirFlow()  noexcept {}
+void MaterialColumn::simulateWaterFlow() noexcept {}
+void MaterialColumn::simulatePlants()  noexcept {}
 
 
 
@@ -315,16 +318,16 @@ void MaterialColumn::simulatePlants() {}
 ////////////GETTERS
 ////////////==================================
 
-double MaterialColumn::getLandElevation()const { return _horizon.back().getTopElevation(); }
-double MaterialColumn::getSurfaceTemperature()const
+double MaterialColumn::getLandElevation() const noexcept { return _horizon.back().getTopElevation(); }
+double MaterialColumn::getSurfaceTemperature()const noexcept
 {
 	if (_submerged) { return _sea.back().getTemperature(); }
 
 	else { return _horizon.back().getTemperature(); }
 }
-double MaterialColumn::getBoundaryLayerTemperature()const { return _air.front().getTemperature(); }
+double MaterialColumn::getBoundaryLayerTemperature() const noexcept { return _air.front().getTemperature(); }
 
-std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageType) const
+std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageType) const noexcept
 {
 	std::vector<std::string> messages;
 

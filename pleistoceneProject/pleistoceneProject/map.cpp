@@ -4,9 +4,9 @@
 #include "noise.h"
 #include "tile.h"
 
-Map::Map(){}
+Map::Map() noexcept {}
 
-Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) {
+Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) noexcept {
 	srand((unsigned int) time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions
@@ -22,23 +22,23 @@ Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) {
 }
 
 
-void Map::generateMap(int seed) {
+void Map::generateMap(int seed) noexcept {
 	Tile::generateTileElevation(seed);
 	Tile::setupTileClimateAdjacency();
 }
 
 
-void Map::update(int elapsedTime) {
+void Map::update(int elapsedTime) noexcept {
 	Tile::updateTiles(elapsedTime);
 }
 
-void Map::simulate() {
+void Map::simulate() noexcept {
 	Tile::simulateTiles();
 }
 
 climate::DrawType Map::_drawType = climate::STANDARD_DRAW;
 
-void Map::setDrawType(int drawNumber) {
+void Map::setDrawType(int drawNumber)  noexcept {
 	using namespace climate;
 	switch (drawNumber) {
 	case(1) : _drawType = STANDARD_DRAW;
@@ -51,10 +51,10 @@ void Map::setDrawType(int drawNumber) {
 	}
 }
 
-climate::DrawType Map::getDrawType() {
+climate::DrawType Map::getDrawType() noexcept {
 	return _drawType;
 }
 
-void Map::draw(Graphics &graphics, bool cameraMovementFlag) {
+void Map::draw(Graphics &graphics, bool cameraMovementFlag) noexcept {
 	Tile::drawTiles(graphics, _drawType, cameraMovementFlag);
 }

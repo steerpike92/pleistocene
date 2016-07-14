@@ -13,8 +13,8 @@ class GameOptions;
 //Iterated through row by row to draw (so tiles can be drawn on top of each other)
 class Tile {
 public:
-	Tile();
-	Tile(my::Address tileAddress);
+	Tile()noexcept;
+	Tile(my::Address tileAddress)noexcept;
 
 	//=====================================================================
 	//SETUP
@@ -25,12 +25,12 @@ public:
 private:
 	static std::vector <Tile> _tiles;
 
-	static void buildTileVector();
+	static void buildTileVector()noexcept;
 
-	static void buildTileNeighbors();//all tiles
-	void buildNeighborhood();//individual tile
+	static void buildTileNeighbors()noexcept;//all tiles
+	void buildNeighborhood()noexcept;//individual tile
 
-	static void setupTextures(Graphics &graphics);
+	static void setupTextures(Graphics &graphics)noexcept;
 
 	static std::vector<my::Address> _Addresses;
 
@@ -39,42 +39,43 @@ private:
 
 public:
 	//Calls other constructors
-	static void setupTiles(Graphics &graphics);
+	static void setupTiles(Graphics &graphics)noexcept;
 
 	//Elevation noise creator
-	static void generateTileElevation(int seed);
+	static void generateTileElevation(int seed)noexcept;
 private:
 	static std::vector<double> buildNoiseTable(int seed, double zoom, double persistance, int octaves, 
-		int Rows, int Cols);
+		int Rows, int Cols)noexcept;
 
-	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable,int Rows, int Cols, int vBlendDistance, int  hBlendDistance);
+	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable,int Rows, int Cols, 
+		int vBlendDistance, int  hBlendDistance)noexcept;
 
 	
 public:
 	//construct surface relationships 
-	static void setupTileClimateAdjacency();
+	static void setupTileClimateAdjacency()noexcept;
 
 
 
 	//GRAPHICS
 	//====================
 
-	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//all
+	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//all
 private: 
-	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag);//one
+	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//one
 	std::vector<SDL_Rect> _onScreenPositions;
 
 	//update animations
 public:
-	static void updateTiles(int elapsedTime);
+	static void updateTiles(int elapsedTime)noexcept;
 private:
-	void update(int elapsedTime);
+	void update(int elapsedTime)noexcept;
 
 	//run hour simulation
 public:
-	static void simulateTiles();
+	static void simulateTiles()noexcept;
 private:
-	void simulate();
+	void simulate()noexcept;
 
 public:
 	static Bios* _biosPtr;
@@ -86,9 +87,9 @@ private:
 public:
 	//GETTERS
 	//===================
-	my::Address getAddress() const;
-	SDL_Rect getGameRect() const;
-	std::vector<std::string> sendMessages() const;//communicates with bios
+	my::Address getAddress() const noexcept;
+	SDL_Rect getGameRect() const noexcept;
+	std::vector<std::string> sendMessages() const noexcept;//communicates with bios
 
 private:
 	//==================================================================================

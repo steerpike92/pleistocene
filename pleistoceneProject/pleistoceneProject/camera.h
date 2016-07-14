@@ -6,19 +6,19 @@ class Input;
 
 class Camera {
 public:
-	Camera();
+	Camera() noexcept;
 
-	Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options);
+	Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options) noexcept;
 
-	void updateCameraOptions();
+	void updateCameraOptions() noexcept;
 
-	my::Vector2 getCameraPosition() const;
-	double getZoomScale() const;
+	my::Vector2 getCameraPosition() const noexcept;
+	double getZoomScale() const noexcept;
 
 	//returns true iff camera moved
-	bool processCommands(const Input &input, int elapsedTime);
+	bool processCommands(const Input &input, int elapsedTime) noexcept;
 
-	my::Vector2 screenPosToGamePos(my::Vector2 screenPosition) const;
+	my::Vector2 screenPosToGamePos(my::Vector2 screenPosition) const noexcept;
 
 private:
 	my::Vector2 _cameraPosition;
