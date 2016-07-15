@@ -286,4 +286,7 @@ paket-files/
 *.out
 *.app
 *.ttf
+
+# Like.. other
+*.txt
 *.png
