@@ -11,13 +11,16 @@ namespace options {
 
 enum DrawType {
 	ELEVATION,		//1
-	SUNLIT_ELEVATION,	//2
 
-	SURFACE_MATERIAL,	//3
-	LAYER_MATERIAL,		//4
+	TEMPERATURE,		//2
 
-	SURFACE_TEMPERATURE,	//5
-	LAYER_TEMPERATURE	//6
+	MATERIAL_PROPERTIES,	//3. Component names, Albedo, Heat Capacity, Porousness, Permeability, Salinity, Pressure
+
+	FLOW,			//4. Surface water flow, groundwater flow, currents, airflow
+	
+	MOISTURE		//5. soil moisture, groundwater, ---, humidity.
+
+	
 };
 
 enum DrawSection {
@@ -42,25 +45,22 @@ public:
 	bool _dailyDraw = false;
 	int _drawHour = 0;
 
-	bool _solarShader = true;
-
 	bool _loopOption = true;
 	bool _restrictCameraOption = false;
 	bool _maxFramerateOption = false;
 
-
+	DrawType _drawType = ELEVATION;
+	bool _sunlit = true;
+	DrawSection _drawSection = SURFACE;
+	int _drawLayer = 0;
 
 	void processInput(Input &input);
 
+	bool _continuousSimulation=false;
 private:
 
-	int _Rows;
-	int _Cols;
-
-
-
-
-
+	int _rows;
+	int _cols;
 
 };
 

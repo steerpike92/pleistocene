@@ -1,6 +1,7 @@
 #pragma once
 #include "globals.h"
 #include "tileClimate.h"
+#include "noise.h"
 
 namespace pleistocene {
 
@@ -47,8 +48,7 @@ public:
 	//Elevation noise creator
 	static void generateTileElevation(int seed)noexcept;
 private:
-	static std::vector<double> buildNoiseTable(int seed, double zoom, double persistance, int octaves,
-		int Rows, int Cols)noexcept;
+	static std::vector<double> buildNoiseTable(int Rows, int Cols, int seed) noexcept;
 
 	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols,
 		int vBlendDistance, int  hBlendDistance)noexcept;
@@ -63,9 +63,9 @@ public:
 	//GRAPHICS
 	//====================
 
-	static void drawTiles(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//all
+	static void drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options)noexcept;//all
 private:
-	void draw(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//one
+	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options)noexcept;//one
 	std::vector<SDL_Rect> _onScreenPositions;
 
 	//update animations
@@ -92,7 +92,7 @@ public:
 	//===================
 	my::Address getAddress() const noexcept;
 	SDL_Rect getGameRect() const noexcept;
-	std::vector<std::string> sendMessages() const noexcept;//communicates with bios
+	std::vector<std::string> sendMessages(const options::GameOptions &options) const noexcept;//communicates with bios
 
 private:
 	//==================================================================================

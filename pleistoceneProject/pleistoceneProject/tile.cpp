@@ -2,7 +2,6 @@
 #include "graphics.h"
 #include "map.h"
 #include "bios.h"
-#include "noise.h"
 
 namespace pleistocene {
 
@@ -68,61 +67,33 @@ void Tile::buildNeighborhood() noexcept {
 
 user_interface::Bios* Tile::_biosPtr;
 
-std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols) noexcept {
+std::vector<double> Tile::buildNoiseTable(int Rows, int Cols, int seed) noexcept {
 
-	std::vector<double> noiseTable;
+	noise::NoiseParameters noise_parameters;
+	noise_parameters.octaves = 8;			//number of noise octaves. (each octave has twice the frequency of the previous octave, and (persistance) the amplitude
+	noise_parameters.seed = seed;			//seed for pseudorandom number generation
+	noise_parameters.zoom = 4000;			//determines wavelength of first octave
+	noise_parameters.persistance = 0.55;		//amplitude lost acending each octave
 
-	//helps determine noise amplitude (this is a dummy value to be updated)
-	double maximum = 0.01;
+	//create vector containing position pairs for each tile
+	std::vector<std::pair<double, double>> positions;
 
-	double X;//x position noise variable
-	double Y;//y position noise variable
+	my::Address A;
+	my::Vector2 V;
+	std::pair<double, double> position;
 
-	my::Address A;//spurious my::Address
-
-	//Build noise table
 	for (int row = 0; row < Rows; row++) {
 		for (int col = 0; col < Cols; col++) {
-
-			bool spurious = true;
-			A = my::Address(row, col, spurious);
-			double getNoise = 0;
-
-			//loop through octaves
-			for (int a = 0; a < octaves - 1; a++)
-			{
-				//double frequency with each octave.
-				double frequency = pow(2, a);
-
-				//scale down amplitude with each octave.
-				double amplitude = pow(persistance, a);
-
-				X = double(A.getGamePos().x)*frequency / zoom;
-				Y = double(A.getGamePos().y)*frequency / zoom;
-
-				//call noise function at (X,Y)
-				getNoise += noise2(X, Y, seed)*amplitude;
-
-			}//end octave loop
-
-			 //update noiseTable
-			noiseTable.emplace_back(getNoise);
-
-			//update maximum
-			if (abs(getNoise) > maximum) maximum = abs(getNoise);
-
+			A = my::Address(row, col, true);
+			V = A.getGamePos();
+			position.first = V.x;
+			position.second = V.y;
+			positions.push_back(position);
 		}
 	}
 
-
-	//Rescale with maximum so ranges in noiseTable are from -1 to 1. 
-	for (int row = 0; row < Rows; row++) {
-		for (int col = 0; col < Cols; col++) {
-			noiseTable[row*Cols + col] /= maximum;
-		}
-	}
-
-	return noiseTable;
+	//return noise for each position
+	return noise::PerlinNoise(positions, noise_parameters);
 }
 
 std::vector<double> Tile::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) noexcept {
@@ -171,21 +142,21 @@ void Tile::generateTileElevation(int seed) noexcept {
 	int TileRows = my::Address::GetRows();
 	int TileCols = my::Address::GetCols();
 
-	//Noise building parameters
-	double			zoom = 4000;
-	double			persistance = .55;
-	const int		octaves = 8;
 
 	const int		hBlendDistance = TileCols / 10;			//horizontal blend distance for east west map edge blending
 	const int		vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
-	int Cols = TileCols + hBlendDistance;					//columns in noise table
-	int Rows = TileRows;							//rows in noise table
+	int Cols = TileCols + hBlendDistance;					//columns needed in noise table
+	int Rows = TileRows;							//rows needed in noise table
+
+
+	
 
 	//noise generator;
-	std::vector<double> noiseTable = buildNoiseTable(seed, zoom, persistance, octaves, Rows, Cols);
+	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols, seed);
 
 	//noise edge blender
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
+
 
 
 	//Elevation shape parameters
@@ -292,13 +263,13 @@ void Tile::setupTextures(graphics::Graphics &graphics) noexcept {
 	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
 }
 
-void Tile::drawTiles(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
+void Tile::drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
 	for (Tile &tile : _tiles) {
-		tile.draw(graphics, drawType, cameraMovementFlag);
+		tile.draw(graphics, cameraMovementFlag, options);
 	}
 }
 
-void Tile::draw(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
+void Tile::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
 	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_Address.r % 2) + globals::TILE_WIDTH * _Address.c;
 	_gameRectangle.w = globals::TILE_WIDTH;
 	_gameRectangle.y = _Address.r * globals::EFFECTIVE_HEIGHT;
@@ -315,7 +286,7 @@ void Tile::draw(graphics::Graphics &graphics, climate::DrawType drawType, bool c
 	}
 
 	//draw and check selection
-	selectionValue = _tileClimate.drawClimate(graphics, _onScreenPositions, drawType);
+	selectionValue = _tileClimate.drawClimate(graphics, _onScreenPositions, options);
 	if (selectionValue) { _biosPtr->selectTile(this); }
 }
 
@@ -327,9 +298,9 @@ my::Address Tile::getAddress() const noexcept { return _Address; }
 
 SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
-std::vector<std::string> Tile::sendMessages() const noexcept {
+std::vector<std::string> Tile::sendMessages(const options::GameOptions &options) const noexcept {
 
-	climate::DrawType messageType = Map::getDrawType();
+	
 
 	std::vector<std::string> messages;
 
@@ -337,7 +308,7 @@ std::vector<std::string> Tile::sendMessages() const noexcept {
 	stream << "(Lat,Lon): (" << int(this->_latitude_deg) << "," << int(this->_longitude_deg) << ")";
 	messages.push_back(stream.str());
 
-	std::vector<std::string> climateMessages = _tileClimate.getMessages(messageType);
+	std::vector<std::string> climateMessages = _tileClimate.getMessages(options);
 
 	for (std::string &str : climateMessages) {
 		messages.push_back(str);

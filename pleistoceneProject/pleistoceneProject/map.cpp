@@ -8,7 +8,7 @@ namespace pleistocene {
 
 Map::Map() noexcept {}
 
-Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, options::GameOptions &options) noexcept {
+Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept {
 	srand((unsigned int)time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions
@@ -20,11 +20,11 @@ Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, options::Game
 
 	//Map generating algorithm
 	int seed = 21;//starting with a determined seed gives a pseudorandom intial map
-	generateMap(seed);
+	generateMap(seed, options);
 }
 
 
-void Map::generateMap(int seed) noexcept {
+void Map::generateMap(int seed, const options::GameOptions &options) noexcept {
 	Tile::generateTileElevation(seed);
 	Tile::setupTileClimateAdjacency();
 }
@@ -38,26 +38,8 @@ void Map::simulate() noexcept {
 	Tile::simulateTiles();
 }
 
-climate::DrawType Map::_drawType = climate::STANDARD_DRAW;
 
-void Map::setDrawType(int drawNumber)  noexcept {
-	using namespace climate;
-	switch (drawNumber) {
-	case(1) : _drawType = STANDARD_DRAW;
-		break;
-	case(2) : _drawType = SURFACE_TEMPERATURE_DRAW;
-		break;
-	case(3) : _drawType = SURFACE_AIR_TEMPERATURE_DRAW;
-		break;
-	default: _drawType = STANDARD_DRAW;
-	}
-}
-
-climate::DrawType Map::getDrawType() noexcept {
-	return _drawType;
-}
-
-void Map::draw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept {
-	Tile::drawTiles(graphics, _drawType, cameraMovementFlag);
+void Map::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
+	Tile::drawTiles(graphics, cameraMovementFlag, options);
 }
 }//namespace pleistocene

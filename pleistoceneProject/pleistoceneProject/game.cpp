@@ -21,7 +21,7 @@ void Game::initialize() noexcept {
 	_input.setCamera(_camera);
 
 	_map.simulate();//one initial call to simulate for graphical setup
-	_map.draw(_graphics, true);//one guaranteed call checking draw positions
+	_map.draw(_graphics, true, _options);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
 	srand(size_t(time(NULL)));
@@ -70,21 +70,12 @@ void Game::processInput(int elapsedTime) noexcept {
 
 	//New map (resets all simulation data and generates new tile elevations with a random seed
 	if (_input.wasKeyPressed(SDL_SCANCODE_G)) {
-		_map.generateMap(rand());
+		_map.generateMap(rand(), _options);
 		_map.simulate();
 	}
 
-	//Map Draw Type
-	//if (_input.wasKeyPressed(SDL_SCANCODE_0)) {_map.setDrawType(0);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_1)) { _map.setDrawType(1); }
-	if (_input.wasKeyPressed(SDL_SCANCODE_2)) { _map.setDrawType(2); }
-	if (_input.wasKeyPressed(SDL_SCANCODE_3)) { _map.setDrawType(3); }
-	//if (_input.wasKeyPressed(SDL_SCANCODE_4)) {_map.setDrawType(4);}
-	//if (_input.wasKeyPressed(SDL_SCANCODE_5)) {_map.setDrawType(5);}
-
 	//Update options
 	_options.processInput(_input);
-
 
 	//selection
 	if (_input.wasButtonPressed(1)) {
@@ -95,7 +86,7 @@ void Game::processInput(int elapsedTime) noexcept {
 	if (_input.wasButtonPressed(3)) { _bios.clear(); }
 
 	//simulation
-	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) || _input.wasKeyHeld(SDL_SCANCODE_BACKSLASH))
+	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) || _input.wasKeyHeld(SDL_SCANCODE_BACKSLASH) || _options._continuousSimulation)
 	{
 		updateSimulation();
 	}
@@ -103,7 +94,7 @@ void Game::processInput(int elapsedTime) noexcept {
 
 void Game::update(int elapsedTime)  noexcept {
 	_map.update(elapsedTime);
-	_bios.update();
+	_bios.update(_options);
 	_infoBar.update();
 }
 
@@ -115,19 +106,19 @@ void Game::updateSimulation() noexcept {
 void Game::draw()  noexcept {
 
 	//Low/High framerate draw control structure
-	if (!_options._dailyDraw) {//draw each hour when daily draw off
+	if (!_options._dailyDraw) {//draw each hour if daily draw off
 		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag);
+		_map.draw(_graphics, _cameraMovementFlag, _options);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 	else if (_graphics._selecting) {
 		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag);
+		_map.draw(_graphics, _cameraMovementFlag, _options);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 	else if (my::SimulationTime::_globalTime.getHour() == _options._drawHour) {//draw on draw hour
 		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag);
+		_map.draw(_graphics, _cameraMovementFlag, _options);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 

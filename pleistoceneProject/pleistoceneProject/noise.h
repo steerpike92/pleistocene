@@ -1,16 +1,22 @@
 #pragma once
-#include "math.h"
+#include <vector>
 
 namespace pleistocene {
-
-inline double findnoise2(double x, double y, int seed) noexcept;
-
-
-inline double interpolate1(double a, double b, double x) noexcept;
-
-double noise2(double x, double y, int seed) noexcept;
+namespace noise {
 
 
-double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int seed) noexcept;
+inline double Pseudorandom2D(double x, double y, int seed) noexcept;
 
+inline double Interpolate(double a, double b, double x) noexcept;
+
+double Noise2D(double x, double y, int seed) noexcept;
+
+struct NoiseParameters {
+	int seed, octaves; 
+	double zoom, persistance;
+};
+
+std::vector<double> PerlinNoise(std::vector<std::pair<double, double>> positions, NoiseParameters parameters) noexcept;
+
+}//namespace noise
 }//namespace pleistocene

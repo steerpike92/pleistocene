@@ -1,69 +1,108 @@
 #include "noise.h"
+#include <math.h>
+#include <limits>
+#include "utility.h"
 
 namespace pleistocene {
+namespace noise {
 
-inline double findnoise2(double x, double y, int seed) noexcept
+//not written by me
+double Pseudorandom2D(double x, double y, int seed) noexcept
 {
 	int n = (int)x*seed + (int)y * 57;
 	n = (n << 13) ^ n;
-	int nn = (n*(n*n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
+	int nn = (n*(n*n * 60493 + 19990303) + 1376312589) & INT_MAX;
 	return 1.0 - ((double)nn / 1073741824.0);
 }
 
-
-inline double interpolate1(double a, double b, double x) noexcept
+//not written by me
+double Interpolate(double a, double b, double x) noexcept
 {
 	double ft = x * 3.1415927;
 	double f = (1.0 - cos(ft))* 0.5;
 	return a*(1.0 - f) + b*f;
 }
 
-
-double noise2(double x, double y, int seed) noexcept
+//not written by me
+double Noise2D(double x, double y, int seed) noexcept
 {
-	double floorx = (double)((int)x);//This is kinda a cheap way to floor a double integer.
-	double floory = (double)((int)y);
-	double s, t, u, v;//Integer declaration
-	s = findnoise2(floorx, floory, seed);
-	t = findnoise2(floorx + 1, floory, seed);
-	u = findnoise2(floorx, floory + 1, seed);//Get the surrounding pixels to calculate the transition.
-	v = findnoise2(floorx + 1, floory + 1, seed);
-	double int1 = interpolate1(s, t, x - floorx);//Interpolate between the values.
-	double int2 = interpolate1(u, v, x - floorx);//Here we use x-floorx, to get 1st dimension. Don't mind the x-floorx thingie, it's part of the cosine formula.
-	return interpolate1(int1, int2, y - floory);//Here we use y-floory, to get the 2nd dimension.
+	int floor_x = int(x);
+	int floor_y = int(y);
+
+	//Box for interpolation
+	double bottom_left, bottom_right, upper_left, upper_right;
+	bottom_left = Pseudorandom2D(floor_x, floor_y, seed);
+	bottom_right = Pseudorandom2D(floor_x + 1, floor_y, seed);
+	upper_left = Pseudorandom2D(floor_x, floor_y + 1, seed);
+	upper_right = Pseudorandom2D(floor_x + 1, floor_y + 1, seed);
+
+	//Interpolate between the values.
+	double interpolation1 = Interpolate(bottom_left, bottom_right, x - floor_x);
+	double interpolation2 = Interpolate(upper_left, upper_right, x - floor_x);
+	return Interpolate(interpolation1, interpolation2, y - floor_y);
 }
 
 
-double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int seed) noexcept
-//w and h speak for themselves, zoom wel zoom in and out on it, I usually
-{// use 75. P stands for persistence,
+std::vector<double> PerlinNoise(std::vector<std::pair<double, double>> positions, NoiseParameters parameters) noexcept 
+{
+	using namespace utility;
 
-	double** noiseTable;
+	//returned noise vector
+	std::vector<double> noise_table;
 
-	noiseTable = new double *[Rows];
-	for (int row = 0; row < Rows; row++) {
-		noiseTable[row] = new double[Cols];
+	//parameter unpacking
+	int seed = parameters.seed;
+	int octave_count= parameters.octaves;
+	double zoom= parameters.zoom;
+	double persistance = parameters.persistance;
+
+
+	//build frequency and amplitude vectors
+	std::vector<double> frequencies;
+	std::vector<double> amplitudes;
+
+	for (int octave : range( 0, octave_count)) {
+		frequencies.push_back(pow(2, octave));		//double frequency with each octave.
+
+		amplitudes.push_back(pow(persistance, octave)); //scale down amplitude with each octave.
+
 	}
 
-	for (int r = 0; r < Rows; r++)
-	{//Loops to loop trough all the pixels
-		for (int c = 0; c < Cols; c++)
-		{
-			double getnoise = 0;
-			for (int a = 0; a < octaves - 1; a++)//This loops trough the octaves.
-			{
-				double frequency = pow(2, a);//This increases the frequency with every loop of the octave.
-				double amplitude = pow(p, a);//This decreases the amplitude with every loop of the octave.
+	//helps determine noise amplitude (this is a dummy value to be updated)
+	double maximum = 0.01;
 
-											 //This uses our perlin noise functions. It calculates all our zoom and frequency and amplitude
-				getnoise += noise2(((double)c)*frequency / zoom, ((double)r) / zoom*frequency, seed)*amplitude;
-			}//	
-			noiseTable[r][c] = getnoise;
-		}//														   
+	double X;  //x position variable (related to, but not the same as the literal tile position)
+	double Y;  //y position variable
+	
+
+	for (auto position : positions) {
+		double getNoise = 0;
+
+		//loop through octaves
+		for (int octave : range(0, octave_count)) {
+			double frequency = frequencies[octave];
+			double amplitude = amplitudes[octave];
+
+			X = double(position.first)*frequency / zoom;
+			Y = double(position.second)*frequency / zoom;
+
+			getNoise += noise::Noise2D(X, Y, seed)*amplitude;
+		}
+
+		noise_table.emplace_back(getNoise);
+
+		//update maximum
+		if (abs(getNoise) > maximum) maximum = abs(getNoise);
 	}
 
-	return noiseTable;
+	//Rescale with maximum so ranges in noiseTable are from -1 to 1. 
+	for (double &noise_value : noise_table) {
+		noise_value /= maximum;
+	}
 
+	return noise_table;
 }
 
+
+}//namespace noise
 }//namespace pleistocene

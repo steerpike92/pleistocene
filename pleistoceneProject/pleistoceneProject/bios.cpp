@@ -3,6 +3,7 @@
 
 #include "tile.h"
 #include "map.h"
+#include "gameOptions.h"
 
 namespace pleistocene {
 namespace user_interface {
@@ -35,17 +36,15 @@ void Bios::clear() noexcept {
 
 void Bios::selectTile(Tile * const tile) noexcept {
 	_selectedTile = tile;
-	_messages = _selectedTile->sendMessages();
 
 	_selectionDrawPos = _selectedTile->getGameRect();
 
 	this->_display = true;
-
 }
 
-void Bios::update() noexcept {
+void Bios::update(const options::GameOptions &options) noexcept {
 	if (_selectedTile) {
-		_messages = _selectedTile->sendMessages();
+		_messages = _selectedTile->sendMessages(options);
 	}
 }
 

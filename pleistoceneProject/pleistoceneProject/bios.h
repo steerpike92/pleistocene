@@ -4,6 +4,7 @@
 namespace pleistocene {
 
 namespace graphics { class Graphics; }
+namespace options { class GameOptions; }
 
 class Tile;
 
@@ -17,7 +18,7 @@ public:
 	Bios(graphics::Graphics &graphics)  noexcept;
 
 	void clear()  noexcept;
-	void update() noexcept;
+	void update(const options::GameOptions &options) noexcept;
 	void draw(graphics::Graphics &graphics) noexcept;
 
 	void selectTile(Tile * const tile) noexcept;

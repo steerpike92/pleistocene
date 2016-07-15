@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "SDL_ttf.h"
 #include <sstream>
 #include <fstream>
-#include <stdlib.h>
 #include <Eigen/Dense>//linear algebra
 #include <memory>
 
@@ -73,13 +73,6 @@ const double emmisionConstantPerHour = stephanBoltzmanConstant * hour_s;
 const double initialTemperatureK = 295.0;
 }
 
-
-enum DrawType {
-	STANDARD_DRAW,
-	SURFACE_TEMPERATURE_DRAW,
-	SURFACE_AIR_TEMPERATURE_DRAW
-};
-
 namespace land {
 
 enum elevationType {
@@ -106,7 +99,8 @@ const double amplitude = 5 * gaps;
 
 }
 
-class GameOptions;
+
+class options::GameOptions;
 
 namespace my {
 

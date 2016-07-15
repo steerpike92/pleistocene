@@ -10,24 +10,24 @@ GameOptions::GameOptions() noexcept {
 	my::Address::getOptions(*this);
 }
 
-int GameOptions::getRows() const noexcept { return _Rows; }
+int GameOptions::getRows() const noexcept { return _rows; }
 
-int GameOptions::getCols() const noexcept { return _Cols; }
+int GameOptions::getCols() const noexcept { return _cols; }
 
 
 void GameOptions::setMapSize(int sizeOption) noexcept {
 	switch (sizeOption) {
 	case(0) :
-		_Rows = 1;
-		_Cols = 1;
+		_rows = 1;
+		_cols = 1;
 		break;
 	case(1) :
-		_Rows = 31;
-		_Cols = 30;
+		_rows = 31;
+		_cols = 30;
 		break;
 	case(2) :
-		_Rows = 121;
-		_Cols = 90;
+		_rows = 121;
+		_cols = 90;
 		break;
 	}
 
@@ -36,13 +36,30 @@ void GameOptions::setMapSize(int sizeOption) noexcept {
 
 void GameOptions::processInput(Input &input) {
 
+	//toggle low frequency redraw
 	if (input.wasKeyPressed(SDL_SCANCODE_TAB)) {
-		if (_dailyDraw) _dailyDraw = false;
-		else {
-			_dailyDraw = true;
-			_drawHour = my::SimulationTime::_globalTime.getHour();
-		}
+		_dailyDraw = !_dailyDraw;
+		_drawHour = my::SimulationTime::_globalTime.getHour();
 	}
+
+	//toggle solar shading
+	if (input.wasKeyPressed(SDL_SCANCODE_GRAVE)) _sunlit = !_sunlit;
+
+	//play/pause toggle
+	if (input.wasKeyPressed(SDL_SCANCODE_SPACE)) _continuousSimulation = !_continuousSimulation;
+
+	//draw type selection
+	if (input.wasKeyPressed(SDL_SCANCODE_1)) _drawType = ELEVATION;
+	if (input.wasKeyPressed(SDL_SCANCODE_2)) _drawType = TEMPERATURE;
+	if (input.wasKeyPressed(SDL_SCANCODE_3)) _drawType = MATERIAL_PROPERTIES;
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) _drawType = FLOW;
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) _drawType = MOISTURE;
+	//if (input.wasKeyPressed(SDL_SCANCODE_6)) _drawType = LAYER_TEMPERATURE;
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) _drawSection = SURFACE;
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) _drawSection = EARTH;
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) _drawSection = SEA;
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) _drawSection = AIR;
+
 
 }
 

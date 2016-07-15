@@ -10,11 +10,11 @@ namespace options { class GameOptions; }
 class Map {
 public:
 	Map() noexcept;
-	Map(graphics::Graphics &graphics, user_interface::Bios *bios, options::GameOptions &options) noexcept;
+	Map(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept;
 
-	void generateMap(int seed) noexcept;
+	void generateMap(int seed, const options::GameOptions &options) noexcept;
 
-	void draw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept;
+	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept;
 	void update(int elapsedTime) noexcept;
 
 	void simulate() noexcept;
@@ -23,13 +23,7 @@ public:
 
 	bool _exists = false;
 
-	static climate::DrawType getDrawType() noexcept;
-	void setDrawType(int drawNumber) noexcept;
 private:
 
-	static climate::DrawType _drawType;
-
-	//tracks sea level rise and fall
-	int _totalElevationChange = 0;
 };
 }//namespace pleistocene

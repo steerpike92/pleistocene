@@ -5,6 +5,9 @@
 #include "element.h"
 
 namespace pleistocene {
+
+namespace options { class GameOptions; }
+
 namespace climate {
 namespace layers {
 
@@ -81,7 +84,7 @@ public:
 	double getSurfaceTemperature() const noexcept;
 	double getBoundaryLayerTemperature() const noexcept;
 
-	std::vector<std::string> getMessages(climate::DrawType messageType) const noexcept;
+	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
 
 };
 

@@ -1,6 +1,7 @@
 #include "materialColumn.h"
 #include "materialLayer.h"
 #include "globals.h"
+#include "gameOptions.h"
 
 namespace pleistocene {
 namespace climate {
@@ -330,9 +331,25 @@ double MaterialColumn::getSurfaceTemperature()const noexcept
 }
 double MaterialColumn::getBoundaryLayerTemperature() const noexcept { return _air.front().getTemperature(); }
 
-std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageType) const noexcept
+std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions &options) const noexcept
 {
 	std::vector<std::string> messages;
+
+	switch (options._drawType){
+	case(options::ELEVATION) :
+		break;
+	case(options::TEMPERATURE) :
+		break;
+	case(options::MATERIAL_PROPERTIES) :
+		break;
+	case(options::FLOW) :
+		break;
+	case(options::MOISTURE) :
+		break;
+
+
+	}
+
 
 	std::stringstream stream;
 	stream << "Land Elevation: " << int(_landElevation);
@@ -347,7 +364,8 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 	messages.push_back(stream.str());
 
 
-	switch (messageType) {
+
+	/*switch (messageType) {
 	case(climate::STANDARD_DRAW) :
 
 		stream = std::stringstream();
@@ -357,8 +375,6 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 		stream = std::stringstream();
 		stream << "Horizon Elevation: " << int(_earth.back().getTopElevation());
 		messages.push_back(stream.str());
-
-
 
 		break;
 	case(climate::SURFACE_TEMPERATURE_DRAW) :
@@ -378,7 +394,7 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 		stream << "Air Surface Temp: " << int(_air.front().getTemperature() - 273) << "°C";
 		messages.push_back(stream.str());
 		break;
-	}
+	}*/
 
 
 	return messages;

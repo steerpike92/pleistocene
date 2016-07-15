@@ -8,6 +8,8 @@
 namespace pleistocene {
 
 namespace graphics { class Graphics; }
+namespace options { class GameOptions; }
+
 class Tile;
 
 namespace climate {
@@ -45,19 +47,23 @@ public:
 	void updateClimate(int elapsedTime) noexcept;//animation Update
 
 
-	bool drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) noexcept;
+	bool drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
 private:
 
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<climate::land::elevationType, std::string> _elevationTextures;
 
-	bool standardDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, bool sunlit)noexcept;
 
 	//Standard Draw Subroutine
 	void setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType)noexcept;
 
-	bool surfaceTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
-	bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+
+	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+
+
 public:
 	//=================================================
 	//SIMULATION
@@ -77,7 +83,7 @@ private:
 public:
 	//GETTERS
 	//===========================================
-	std::vector<std::string> getMessages(climate::DrawType messageType) const noexcept;
+	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
 };
 
 }//namespace climate

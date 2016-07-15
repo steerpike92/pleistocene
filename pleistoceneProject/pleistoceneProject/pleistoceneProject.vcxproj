@@ -151,6 +151,7 @@
     <ClInclude Include="stateMixture.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileClimate.h" />
+    <ClInclude Include="utility.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="june13notes.txt" />
