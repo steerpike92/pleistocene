@@ -1,12 +1,13 @@
 #include "element.h"
 #include "materialLayer.h"
+namespace pleistocene {
 //=====================================================================================================================
 //ELEMENT
 //=====================================================================================================================
 
 Element::Element() noexcept {}
 
-Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) noexcept  {
+Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) noexcept {
 	using namespace elements;
 
 	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);throw(2);}
@@ -52,8 +53,8 @@ Element::Element(elements::ConstructorType constructorType, elements::ElementTyp
 			break;
 		}
 		break;
-	//default:
-		//LOG("No mixture constructor type"); throw(2); return; //NOEXCEPT
+		//default:
+			//LOG("No mixture constructor type"); throw(2); return; //NOEXCEPT
 	}
 }
 
@@ -241,7 +242,7 @@ elements::ElementPropertyMap Element::buildMolarMassMap() noexcept {
 	using namespace layers::air;
 	ElementPropertyMap molarMass;
 
-	molarMass[DRY_AIR] =Md;
+	molarMass[DRY_AIR] = Md;
 	molarMass[WATER_VAPOR] = Mv;
 	molarMass[CLOUD] = Mv;
 	molarMass[WATER] = Mv;
@@ -459,3 +460,5 @@ elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 	return infraredAbsorptivityMap;
 }
 const elements::ElementPropertyMap Element::_infraredAbsorptivityMap = Element::buildInfraredAbsorptivityMap();
+
+}//namespace pleistocene

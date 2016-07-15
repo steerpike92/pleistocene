@@ -1,9 +1,10 @@
 #pragma once
 #include "globals.h"
-
+namespace pleistocene {
 class Camera;
 class Game;
 class Input;
+class GameOptions;
 
 class Graphics {
 public:
@@ -13,7 +14,7 @@ public:
 
 	void loadImage(const std::string pathName) noexcept;
 	my::Vector2 imageDimensions(const std::string pathName) noexcept;
-				
+
 	void freeImage(const std::string pathName) noexcept;
 	void freeAll() noexcept;
 
@@ -22,23 +23,23 @@ public:
 
 	void setInput(Input &input) noexcept;
 	Input *_inputPtr;
-	
+
 	//preps/clears screen
 	void clear() noexcept;
-	
+
 	void darkenTexture(const std::string &texturePathName, double filter) noexcept;
 
-	void colorFilter(const std::string &texturePathName, double redFilter, 
+	void colorFilter(const std::string &texturePathName, double redFilter,
 		double greenFilter, double blueFilter) noexcept;
 
 	//flag for mouse selection
 	bool _selecting;
 
-	std::vector<SDL_Rect> getOnScreenPositions(const SDL_Rect * constgameRectangle, bool screenLocked=false) noexcept;
+	std::vector<SDL_Rect> getOnScreenPositions(const SDL_Rect * constgameRectangle, bool screenLocked = false) noexcept;
 
 	//draws to renderer and uses draw position to detect selection
-	bool blitSurface(std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions, 
-		double degreesRotated=0.0, bool mirrorH=false, bool mirrorV=false) noexcept;
+	bool blitSurface(std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions,
+		double degreesRotated = 0.0, bool mirrorH = false, bool mirrorV = false) noexcept;
 
 	void blitRectangle(const SDL_Rect *const Rect, const SDL_Color color, bool screenLocked = false) noexcept;
 
@@ -46,8 +47,8 @@ public:
 
 	//Colors
 	SDL_Color Black = { 0,0,0,255 };
-	SDL_Color Grey= { 100,100,100,255 };
-	SDL_Color White={ 255,255,255,255 };
+	SDL_Color Grey = { 100,100,100,255 };
+	SDL_Color White = { 255,255,255,255 };
 
 	//renders to screen
 	void flip() noexcept;
@@ -68,3 +69,4 @@ private:
 	std::map <std::string, SDL_Texture*> _textures;
 	std::vector <std::string> _pathNames;
 };
+}//namespace pleistocene

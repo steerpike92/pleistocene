@@ -1,18 +1,18 @@
 #include "stateMixture.h"
 #include "mixture.h"
 
-
+namespace pleistocene {
 //===============================================================
 //SOLID
 //===============================================================
 
 SolidMixture::SolidMixture() noexcept {}
 
-SolidMixture::SolidMixture(Element element, double temperature) noexcept : 
-	SolidMixture(std::vector<Element> {element}, temperature) {}
+SolidMixture::SolidMixture(Element element, double temperature) noexcept :
+SolidMixture(std::vector<Element> {element}, temperature) {}
 
 SolidMixture::SolidMixture(std::vector<Element> theElements, double temperature) noexcept :
-	Mixture(theElements, temperature, elements::SOLID) 
+	Mixture(theElements, temperature, elements::SOLID)
 {
 	SolidMixture::calculateParameters();
 }
@@ -52,7 +52,7 @@ void SolidMixture::calculateGroundWaterFlow() noexcept {
 ParticulateMixture::ParticulateMixture() noexcept {}
 
 ParticulateMixture::ParticulateMixture(std::vector<Element> theElements, double temperature) noexcept :
-	Mixture(theElements,temperature,elements::PARTICULATE)
+Mixture(theElements, temperature, elements::PARTICULATE)
 {
 
 }
@@ -71,7 +71,7 @@ Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity) 
 LiquidMixture::LiquidMixture() noexcept {}
 
 LiquidMixture::LiquidMixture(Element element, double temperature) noexcept :
-	LiquidMixture(std::vector<Element> {element}, temperature) {}
+LiquidMixture(std::vector<Element> {element}, temperature) {}
 
 LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperature) noexcept :
 	Mixture(theElements, temperature, elements::LIQUID) {}
@@ -83,7 +83,7 @@ LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperatur
 DropletMixture::DropletMixture() noexcept {}
 
 DropletMixture::DropletMixture(Element element, double temperature) noexcept :
-	Mixture(element, temperature, elements::DROPLET){}
+Mixture(element, temperature, elements::DROPLET) {}
 
 //==============================================================
 //GAS
@@ -92,9 +92,9 @@ DropletMixture::DropletMixture(Element element, double temperature) noexcept :
 GaseousMixture::GaseousMixture() noexcept {}
 
 GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) noexcept :
-	Mixture(element, temperature, elements::GAS, topElevation-bottomElevation),
-	_bottomElevation(bottomElevation),
-	_topElevation(topElevation)
+Mixture(element, temperature, elements::GAS, topElevation - bottomElevation),
+_bottomElevation(bottomElevation),
+_topElevation(topElevation)
 {
 	calculateParameters();
 }
@@ -102,9 +102,9 @@ GaseousMixture::GaseousMixture(Element element, double temperature, double botto
 
 
 GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) noexcept :
-	Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
-	_bottomElevation(bottomElevation),
-	_topElevation(topElevation)
+Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
+_bottomElevation(bottomElevation),
+_topElevation(topElevation)
 {
 	calculateParameters();
 }
@@ -114,7 +114,8 @@ void GaseousMixture::simulateCondensation() noexcept
 
 }
 
-DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation) noexcept{
+DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation) noexcept
+{
 	return upperPrecipitation;
 }
 
@@ -153,3 +154,5 @@ double GaseousMixture::getSaturationDensity() const noexcept {
 double GaseousMixture::getLapseRate() const noexcept {
 	return _adiabaticLapseRate;
 }
+
+}//namespace pleistocene

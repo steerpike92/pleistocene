@@ -1,4 +1,5 @@
 #include "game.h"
+namespace pleistocene {
 
 Game::Game() noexcept {
 	initialize();
@@ -11,7 +12,7 @@ void Game::initialize() noexcept {
 	_infoBar = InfoBar(_graphics);
 	_bios = Bios(_graphics);
 	_map = Map(_graphics, &_bios, _options);
-	
+
 
 	_camera = Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
 
@@ -26,6 +27,7 @@ void Game::initialize() noexcept {
 	srand(size_t(time(NULL)));
 }
 
+
 void Game::gameLoop()  noexcept {
 	while (!_quitFlag) {
 		_input.beginNewFrame();	//Sorts input events into callable information
@@ -35,6 +37,7 @@ void Game::gameLoop()  noexcept {
 		draw();
 	}
 }
+
 
 void Game::determineElapsedTime() noexcept {
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
@@ -51,7 +54,13 @@ void Game::determineElapsedTime() noexcept {
 }
 
 void Game::processInput(int elapsedTime) noexcept {
-	_cameraMovementFlag=_camera.processCommands(_input, elapsedTime);
+
+
+	if (_camera.processCommands(_input, elapsedTime)) {
+		_cameraMovementFlag = true;
+	}
+
+	 
 
 	//Quit
 	if (_input._quitFlag || _input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
@@ -67,18 +76,14 @@ void Game::processInput(int elapsedTime) noexcept {
 
 	//Map Draw Type
 	//if (_input.wasKeyPressed(SDL_SCANCODE_0)) {_map.setDrawType(0);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_1)) {_map.setDrawType(1);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_2)) {_map.setDrawType(2);}
-	if (_input.wasKeyPressed(SDL_SCANCODE_3)) {_map.setDrawType(3);}
+	if (_input.wasKeyPressed(SDL_SCANCODE_1)) { _map.setDrawType(1); }
+	if (_input.wasKeyPressed(SDL_SCANCODE_2)) { _map.setDrawType(2); }
+	if (_input.wasKeyPressed(SDL_SCANCODE_3)) { _map.setDrawType(3); }
 	//if (_input.wasKeyPressed(SDL_SCANCODE_4)) {_map.setDrawType(4);}
 	//if (_input.wasKeyPressed(SDL_SCANCODE_5)) {_map.setDrawType(5);}
-	
 
-	if (_input.wasKeyPressed(SDL_SCANCODE_TAB)) {
-		if (_options._dailyDraw) _options._dailyDraw = false;
-		else _options._dailyDraw = true;
-	}
-
+	//Update options
+	_options.processInput(_input);
 
 
 	//selection
@@ -86,11 +91,11 @@ void Game::processInput(int elapsedTime) noexcept {
 		_bios.clear();
 		_graphics._selecting = true;
 	}
-	else {_graphics._selecting = false;}
-	if (_input.wasButtonPressed(3)) {_bios.clear();}
+	else { _graphics._selecting = false; }
+	if (_input.wasButtonPressed(3)) { _bios.clear(); }
 
 	//simulation
-	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) || _input.wasKeyHeld(SDL_SCANCODE_BACKSLASH)) 
+	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) || _input.wasKeyHeld(SDL_SCANCODE_BACKSLASH))
 	{
 		updateSimulation();
 	}
@@ -108,24 +113,27 @@ void Game::updateSimulation() noexcept {
 }
 
 void Game::draw()  noexcept {
-	if (!_options._dailyDraw) {
+
+	//Low/High framerate draw control structure
+	if (!_options._dailyDraw) {//draw each hour when daily draw off
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag);
-	}
-	else if (_cameraMovementFlag) {
-		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag);
+		_cameraMovementFlag = false;//i.e. processed
 	}
 	else if (_graphics._selecting) {
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag);
+		_cameraMovementFlag = false;//i.e. processed
 	}
-	else if (my::SimulationTime::_globalTime.getHour() == 0) {
+	else if (my::SimulationTime::_globalTime.getHour() == _options._drawHour) {//draw on draw hour
 		_graphics.clear();
-		_map.draw(_graphics,_cameraMovementFlag);
+		_map.draw(_graphics, _cameraMovementFlag);
+		_cameraMovementFlag = false;//i.e. processed
 	}
 
 	_infoBar.draw(_graphics);
 	_bios.draw(_graphics);
 	_graphics.flip();
 }
+
+}//namespace pleistocene

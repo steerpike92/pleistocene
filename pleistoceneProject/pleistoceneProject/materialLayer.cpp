@@ -1,5 +1,5 @@
 #include "materialLayer.h"
-
+namespace pleistocene {
 namespace layers {
 
 
@@ -10,9 +10,9 @@ namespace layers {
 MaterialLayer::MaterialLayer() noexcept {}
 
 MaterialLayer::MaterialLayer(double baseElevation, double bottomElevation) noexcept :
-	_baseElevation(baseElevation),
-	_bottomElevation(bottomElevation),
-	_bottomRelativeElevation(_bottomElevation - _baseElevation)
+_baseElevation(baseElevation),
+_bottomElevation(bottomElevation),
+_bottomRelativeElevation(_bottomElevation - _baseElevation)
 {
 
 }
@@ -71,8 +71,8 @@ double MaterialLayer::getTemperature() const noexcept { return _mixture->getTemp
 EarthLayer::EarthLayer() noexcept {}
 
 EarthLayer::EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept :
-	MaterialLayer(baseElevation, bottomElevation),
-	_solidPtr(new SolidMixture())
+MaterialLayer(baseElevation, bottomElevation),
+_solidPtr(new SolidMixture())
 {//normal constructor
 	using namespace elements;
 	using namespace layers;
@@ -117,7 +117,7 @@ std::vector<Element> EarthLayer::generateSoil(double depth, double height) noexc
 		element = Element(VOLUME, ROCK, height, SOLID);
 		elementVector.push_back(element);
 		return elementVector;
-	default ://"CLAY" is stand in for soil layer
+	default://"CLAY" is stand in for soil layer
 
 		//up to three types of soil mixed together
 		for (int i = 0; i < 3; i++) {
@@ -126,8 +126,8 @@ std::vector<Element> EarthLayer::generateSoil(double depth, double height) noexc
 			elementVector.push_back(element);
 		}
 		return elementVector;
-	//default:
-		//NOEXCEPT LOG("not a layer type"); throw(2); return elementVector;
+		//default:
+			//NOEXCEPT LOG("not a layer type"); throw(2); return elementVector;
 	}
 }
 
@@ -179,7 +179,7 @@ void EarthLayer::simulateFlow() noexcept {}//STUB
 HorizonLayer::HorizonLayer() noexcept {}
 
 HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept :
-	EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)//calls constructor specifically for horizon
+EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)//calls constructor specifically for horizon
 {
 	using namespace elements;
 	using namespace layers;
@@ -194,8 +194,8 @@ HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bott
 SeaLayer::SeaLayer() noexcept {}
 
 SeaLayer::SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) noexcept :
-	MaterialLayer(baseElevation, bottomElevation),
-	_liquidPtr(new LiquidMixture())
+MaterialLayer(baseElevation, bottomElevation),
+_liquidPtr(new LiquidMixture())
 {
 	using namespace elements;
 	using namespace layers;
@@ -234,8 +234,8 @@ void SeaLayer::simulateFlow() noexcept {} //STUB
 AirLayer::AirLayer() noexcept {}
 
 AirLayer::AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept :
-	MaterialLayer(baseElevation, bottomElevation),
-	_gasPtr(new GaseousMixture)
+MaterialLayer(baseElevation, bottomElevation),
+_gasPtr(new GaseousMixture)
 {
 	using namespace elements;
 	using namespace layers;
@@ -381,4 +381,6 @@ double AirLayer::truePressureCalculator(double elevation) const noexcept
 double AirLayer::getTemperature() const noexcept { return _gasPtr->getTemperature(); }
 
 
-}
+}//namespace layers
+
+}//namespace pleistocene

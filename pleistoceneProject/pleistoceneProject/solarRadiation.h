@@ -1,6 +1,8 @@
 #pragma once
 #include "globals.h"
 
+namespace pleistocene {
+
 class SolarRadiation {
 public:
 	SolarRadiation() noexcept;
@@ -40,3 +42,5 @@ private:
 	//Transformed by _rotationMatrix to determine hourly position before dotted with _sunRayVector
 	Eigen::Vector3d _normalVector;
 };
+
+}//namespace pleistocene

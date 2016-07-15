@@ -1,5 +1,6 @@
 #include "noise.h"
 
+namespace pleistocene {
 
 inline double findnoise2(double x, double y, int seed) noexcept
 {
@@ -44,12 +45,12 @@ double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int
 		noiseTable[row] = new double[Cols];
 	}
 
-	for (int r = 0; r<Rows; r++)
+	for (int r = 0; r < Rows; r++)
 	{//Loops to loop trough all the pixels
-		for (int c = 0; c<Cols; c++)
+		for (int c = 0; c < Cols; c++)
 		{
 			double getnoise = 0;
-			for (int a = 0; a<octaves - 1; a++)//This loops trough the octaves.
+			for (int a = 0; a < octaves - 1; a++)//This loops trough the octaves.
 			{
 				double frequency = pow(2, a);//This increases the frequency with every loop of the octave.
 				double amplitude = pow(p, a);//This decreases the amplitude with every loop of the octave.
@@ -64,3 +65,5 @@ double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int
 	return noiseTable;
 
 }
+
+}//namespace pleistocene

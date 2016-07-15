@@ -28,84 +28,80 @@
 #define LOG(x)
 #endif
 
+namespace pleistocene {
+
 namespace globals {
-	const int SCREEN_WIDTH = 1000;
-	const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 600;
 
-	const int TILE_WIDTH = 256;
+const int TILE_WIDTH = 256;
 
-	const int TILE_HEIGHT = 256;
+const int TILE_HEIGHT = 256;
 
-	const int EFFECTIVE_HEIGHT = 190;
-	
-	const int FPS = 50;//target FPS (20 MS)
-	const int MAX_FRAME_TIME = 5*1000/FPS;//cutoff frame time after 100 MS 
+const int EFFECTIVE_HEIGHT = 190;
+
+const int FPS = 50;//target FPS (20 MS)
+const int MAX_FRAME_TIME = 5 * 1000 / FPS;//cutoff frame time after 100 MS 
 
 }
 
 
 namespace climate {
 
-	namespace planetary {
-		const double tileArea = 100000000.0; //m^2
+namespace planetary {
+const double tileArea = 100000000.0; //m^2
 
-		const double g = 9.81;		//acceleration of gravity (m/s/s)
-		const int maxLatitude = 70;
-		const int solarYear_d = 40;	//Length of a solar year in days
-		const int solarDay_h = 24;	//length of a solar day in hours
-		const int hour_s = 3600;
-		//const int hour_s = 14400;
+const double g = 9.81;		//acceleration of gravity (m/s/s)
+const int maxLatitude = 70;
+const int solarYear_d = 40;	//Length of a solar year in days
+const int solarDay_h = 24;	//length of a solar day in hours
+const int hour_s = 3600;
+//const int hour_s = 14400;
 
-		const double siderealDay_h = double(solarDay_h*solarYear_d) / double(solarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
-		const double tilt_rad = 0.4101524;//radians of axial tilt
-		//const double tilt_rad = (M_PI / 2)*.6;
+const double siderealDay_h = double(solarDay_h*solarYear_d) / double(solarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
+const double tilt_rad = 0.4101524;//radians of axial tilt
+//const double tilt_rad = (M_PI / 2)*.6;
 
-		const double solarIntensity = 1.360;//kilo-watts per m2
-		const double solarEnergyPerHour = solarIntensity * hour_s;// Kilo-Joules per hour per m2
+const double solarIntensity = 1.360;//kilo-watts per m2
+const double solarEnergyPerHour = solarIntensity * hour_s;// Kilo-Joules per hour per m2
 
-		const double stephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
-		const double emmisionConstantPerHour = stephanBoltzmanConstant * hour_s;
+const double stephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
+const double emmisionConstantPerHour = stephanBoltzmanConstant * hour_s;
 
-		const double initialTemperatureK = 295.0;
-	}
-
-	
-	enum DrawType {
-		STANDARD_DRAW,
-		SURFACE_TEMPERATURE_DRAW,
-		SURFACE_AIR_TEMPERATURE_DRAW
-	};
-
-	namespace land {
-		
-		enum elevationType {
-			SUBMERGED,
-			LOW_LAND,
-			MID_LAND,
-			HIGH_LAND
-		};
-
-		const double gaps = 1000;
-
-		const double landCutoff = 0;
-		const double midCutoff = gaps;
-		const double highCutoff = 2 * gaps;
-
-		//if unititilized, -3000 meter depth (average sea depth)
-		const double defaultDepth = -3 * gaps;
-
-		//high point of 5000 meters above and below sea level
-		//rarely realized due to peaking adjustment to noise function
-		const double amplitude = 5 * gaps;
-
-	}
+const double initialTemperatureK = 295.0;
+}
 
 
-	namespace air {
-		
+enum DrawType {
+	STANDARD_DRAW,
+	SURFACE_TEMPERATURE_DRAW,
+	SURFACE_AIR_TEMPERATURE_DRAW
+};
 
+namespace land {
 
-	}
+enum elevationType {
+	SUBMERGED,
+	LOW_LAND,
+	MID_LAND,
+	HIGH_LAND
+};
+
+const double gaps = 1000;
+
+const double landCutoff = 0;
+const double midCutoff = gaps;
+const double highCutoff = 2 * gaps;
+
+//if unititilized, -3000 meter depth (average sea depth)
+const double defaultDepth = -3 * gaps;
+
+//high point of 5000 meters above and below sea level
+//rarely realized due to peaking adjustment to noise function
+const double amplitude = 5 * gaps;
+
+}
+
 }
 
 class GameOptions;
@@ -323,7 +319,7 @@ public:
 
 	//takes new position
 	void moveRect(const Vector2 &S) noexcept;
-
+	
 	const int getLeft() const noexcept;
 	const int getRight() const noexcept;
 	const int getTop() const noexcept;
@@ -342,7 +338,7 @@ public:
 
 
 class Address {
-		
+
 	static int Rows;
 	static int Cols;
 
@@ -413,5 +409,6 @@ private:
 double degToRad(double deg) noexcept;
 double radToDeg(double rad) noexcept;
 
-}//end namespace my
+}//namespace my
 
+}//namespace pleistocene

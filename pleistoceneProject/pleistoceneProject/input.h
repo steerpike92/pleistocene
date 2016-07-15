@@ -1,6 +1,7 @@
 #pragma once
 #include "globals.h"
 
+namespace pleistocene {
 class Camera;
 
 class Input {
@@ -11,7 +12,7 @@ public:
 	//Call at beggining of every frame, handles all events,
 	//creates key maps
 	void beginNewFrame() noexcept;
-	
+
 	//report key states
 	bool wasKeyPressed(SDL_Scancode) const noexcept;
 	//report key states
@@ -34,7 +35,7 @@ public:
 	SDL_Rect* getSelectionRect() noexcept;
 
 	//quit flag
-	bool _quitFlag=false;
+	bool _quitFlag = false;
 
 	void setCamera(Camera &camera) noexcept;
 
@@ -79,3 +80,4 @@ private:
 	SDL_Point _points[2];
 	SDL_Rect _selectionRect;
 };
+}//namespace pleistocene

@@ -1,6 +1,7 @@
 #pragma once
 #include "globals.h"
 
+namespace pleistocene {
 class Tile;
 class Graphics;
 class Bios;
@@ -31,3 +32,4 @@ private:
 	//tracks sea level rise and fall
 	int _totalElevationChange = 0;
 };
+}//namespace pleistocene

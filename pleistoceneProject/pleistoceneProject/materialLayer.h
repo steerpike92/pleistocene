@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "stateMixture.h"
 
+namespace pleistocene {
+
 class MaterialLayer;
 class EarthLayer;
 class HorizonLayer;
@@ -38,9 +40,9 @@ class SharedSurface {
 	/*SharedSurface(MaterialLayer *materialLayer, double topElevaton, ) noexcept :
 		_spatialDirection(UP), _materialLayer(materialLayer), _midpointElevation(topElevaton), _area(100 * 1000) {}*/
 
-	//side shared surface constructor
+		//side shared surface constructor
 	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept :
-		_spatialDirection(spatialDirection), _materialLayer(materialLayer)
+	_spatialDirection(spatialDirection), _materialLayer(materialLayer)
 	{
 		_midpointElevation = (topElevation + bottomElevation) / 2;
 		_area = (topElevation - bottomElevation)*10.75 * 1000;
@@ -61,22 +63,22 @@ struct NeighborHorizon {
 };
 
 namespace earth {
-	const double bedrockDepth = 201; //201 m of simulated subterranian activity
+const double bedrockDepth = 201; //201 m of simulated subterranian activity
 
-	const int earthLayers = 6;//if changed, update earthLayerHeights
-	const double earthLayerHeight = (bedrockDepth - 2) / (double(earthLayers - 1));
-	const double subSoilHeight = 0.8; //80 cm of subsoil
-	const double topSoilHeight = 1; //20 cm of topsoil in horizon
-	//const double topSoilHeight = 1; //1 m of topsoil in horizon
+const int earthLayers = 6;//if changed, update earthLayerHeights
+const double earthLayerHeight = (bedrockDepth - 2) / (double(earthLayers - 1));
+const double subSoilHeight = 0.8; //80 cm of subsoil
+const double topSoilHeight = 1; //20 cm of topsoil in horizon
+//const double topSoilHeight = 1; //1 m of topsoil in horizon
 
-	const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
-		earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight };
+const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
+	earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight };
 }
 
 
 namespace sea {
 
-	const double seaLayerElevations[] = { 0,-2,-20,-200,-2000,-20000 };
+const double seaLayerElevations[] = { 0,-2,-20,-200,-2000,-20000 };
 
 }
 
@@ -84,26 +86,26 @@ namespace sea {
 
 namespace air {
 
-	const double boundaryLayerHeight = 200;
-	const double tropopauseElevation = 11000;
+const double boundaryLayerHeight = 200;
+const double tropopauseElevation = 11000;
 
-	const double troposphereLayerHeight = tropopauseElevation / 4.0;
+const double troposphereLayerHeight = tropopauseElevation / 4.0;
 
-	const double stratopauseElevation = 32000;
+const double stratopauseElevation = 32000;
 
-	const double airElevations[] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
-		3 * troposphereLayerHeight, 4 * troposphereLayerHeight, stratopauseElevation };
+const double airElevations[] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
+	3 * troposphereLayerHeight, 4 * troposphereLayerHeight, stratopauseElevation };
 
 
-	const double R = 8.31432;	//universal gas constant (J/(k*mol))
-	const double Md = 0.0289644;	//Molar mass of dry air
-	const double Mv = 0.0180153;	//Molar mass of water vapor
-	const double g = 9.80665;
+const double R = 8.31432;	//universal gas constant (J/(k*mol))
+const double Md = 0.0289644;	//Molar mass of dry air
+const double Mv = 0.0180153;	//Molar mass of water vapor
+const double g = 9.80665;
 
-	const double StandardElevation[2] = { 0,11000 };
-	const double StandardPressure[2] = { 101325, 22632 };
-	const double StandardTemperature[2] = { 288.15, 216.65 };
-	const double StandardLapseRate[2] = { -0.0065, 0 };
+const double StandardElevation[2] = { 0,11000 };
+const double StandardPressure[2] = { 101325, 22632 };
+const double StandardTemperature[2] = { 288.15, 216.65 };
+const double StandardLapseRate[2] = { -0.0065, 0 };
 }
 
 
@@ -316,3 +318,5 @@ public:
 
 
 }//end namespace my
+
+}//namespace pleistocene

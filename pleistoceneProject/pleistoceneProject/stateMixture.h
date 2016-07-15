@@ -2,13 +2,15 @@
 #include "globals.h"
 #include "mixture.h"
 
+namespace pleistocene {
+
 //===============================================================
 //SOLID
 //===============================================================
 
 class SolidMixture : public Mixture {
 	//Mixture _suspendedLiquid;//ground water
-	
+
 	double _saturation;//portion of void space occupied
 	double _voidSpace;
 	double _permeability;
@@ -34,7 +36,7 @@ class ParticulateMixture : public Mixture {
 public:
 	ParticulateMixture() noexcept;
 	ParticulateMixture(std::vector<Element> theElements, double temperature) noexcept;
-	
+
 	Mixture settle(double fluidViscosity, double fluidVelocity) noexcept;
 };
 
@@ -65,8 +67,8 @@ class DropletMixture : public Mixture {
 public:
 	DropletMixture() noexcept;
 	DropletMixture(Element element, double temperature) noexcept;
-	
-	
+
+
 
 };
 
@@ -81,11 +83,11 @@ class GaseousMixture : public Mixture {
 	double _bottomElevation;
 	double _topElevation;
 
-	double _specificHeatCapacity=0;
+	double _specificHeatCapacity = 0;
 
-	double _adiabaticLapseRate=0;
+	double _adiabaticLapseRate = 0;
 
-	double _saturationDensity=0;
+	double _saturationDensity = 0;
 
 public:
 	GaseousMixture() noexcept;
@@ -96,7 +98,7 @@ public:
 	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation) noexcept;
 
 	void calculateParameters() noexcept;
-	
+
 private:
 	void calculateSpecificHeatCapacity() noexcept;
 	void calculateLapseRate() noexcept;
@@ -109,3 +111,4 @@ public:
 };
 
 
+}

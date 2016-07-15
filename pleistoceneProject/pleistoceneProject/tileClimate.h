@@ -5,6 +5,8 @@
 #include "mixture.h"
 #include "materialColumn.h"
 
+namespace pleistocene {
+
 class Tile;
 class Graphics;
 
@@ -18,18 +20,18 @@ class TileClimate {
 	layers::MaterialColumn _materialColumn;
 
 	std::map<my::Direction, TileClimate*> _adjacientTileClimates;
-	
+
 public:
 	//INIITIALIZATION
 	//==============================================
 
 	TileClimate() noexcept;
-	
+
 
 	TileClimate(my::Address A, double landElevation) noexcept;
 
 	void buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept;
-	
+
 
 	//=================================================
 	//GRAPHICS
@@ -74,5 +76,4 @@ public:
 	std::vector<std::string> getMessages(climate::DrawType messageType) const noexcept;
 };
 
-
-
+}//namespace pleistocene

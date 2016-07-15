@@ -1,6 +1,8 @@
 #pragma once
 #include "globals.h"
 
+namespace pleistocene {
+
 class GameOptions;
 class Input;
 
@@ -36,3 +38,4 @@ private:
 
 
 };
+}//namespace pleistocene

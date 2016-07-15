@@ -1,6 +1,7 @@
 #pragma once
 #include "globals.h"
 
+namespace pleistocene {
 class Graphics;
 class Tile;
 
@@ -28,7 +29,7 @@ private:
 	int _textMargin;
 	int _textHeight;
 
-	std::string blackPath="../../content/simpleTerrain/blackOutline.png";
+	std::string blackPath = "../../content/simpleTerrain/blackOutline.png";
 
 	SDL_Rect _selectionDrawPos;
 
@@ -54,3 +55,4 @@ private:
 
 
 };
+}//namespace pleistocene

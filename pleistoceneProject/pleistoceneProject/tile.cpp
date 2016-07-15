@@ -3,7 +3,7 @@
 #include "map.h"
 #include "bios.h"
 #include "noise.h"
-
+namespace pleistocene {
 Tile::Tile() noexcept {}
 
 Tile::Tile(my::Address tileAddress) noexcept {
@@ -38,7 +38,7 @@ void Tile::setupTiles(Graphics &graphics) noexcept {
 void Tile::buildTileVector() noexcept {
 	//Tile constructor
 	for (int row = 0; row < my::Address::GetRows(); row++) {
-		for (int col = 0; col <  my::Address::GetCols(); col++) {
+		for (int col = 0; col < my::Address::GetCols(); col++) {
 			_tiles.emplace_back(my::Address(row, col));
 			_Addresses.emplace_back(row, col);
 			if (_Addresses.back().i == my::FakeIndex) {
@@ -79,15 +79,15 @@ std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persista
 	my::Address A;//spurious my::Address
 
 	//Build noise table
-	for (int row = 0; row<Rows; row++) {
-		for (int col = 0; col<Cols; col++) {
+	for (int row = 0; row < Rows; row++) {
+		for (int col = 0; col < Cols; col++) {
 
 			bool spurious = true;
 			A = my::Address(row, col, spurious);
 			double getNoise = 0;
 
 			//loop through octaves
-			for (int a = 0; a<octaves - 1; a++)
+			for (int a = 0; a < octaves - 1; a++)
 			{
 				//double frequency with each octave.
 				double frequency = pow(2, a);
@@ -119,7 +119,7 @@ std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persista
 			noiseTable[row*Cols + col] /= maximum;
 		}
 	}
-	
+
 	return noiseTable;
 }
 
@@ -172,10 +172,10 @@ void Tile::generateTileElevation(int seed) noexcept {
 	//Noise building parameters
 	double			zoom = 4000;
 	double			persistance = .55;
-	const int		octaves = 8;					
+	const int		octaves = 8;
 
 	const int		hBlendDistance = TileCols / 10;			//horizontal blend distance for east west map edge blending
-	const int		vBlendDistance = std::min(10, TileRows/10);	//vertical blend distance for blending poles into sea
+	const int		vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
 	int Cols = TileCols + hBlendDistance;					//columns in noise table
 	int Rows = TileRows;							//rows in noise table
 
@@ -185,7 +185,7 @@ void Tile::generateTileElevation(int seed) noexcept {
 	//noise edge blender
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
-	
+
 	//Elevation shape parameters
 	const double shelfPower = 1.5;
 	const double slopePower = 1;
@@ -199,7 +199,7 @@ void Tile::generateTileElevation(int seed) noexcept {
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
-			if (noiseValue>0) {
+			if (noiseValue > 0) {
 				noiseValue = pow(noiseValue, landPower);
 			}
 			else {
@@ -277,8 +277,8 @@ void Tile::simulateTiles() noexcept {
 	}
 }
 
-void Tile::simulate() noexcept { 
-	_tileClimate.simulateClimate(); 
+void Tile::simulate() noexcept {
+	_tileClimate.simulateClimate();
 }
 
 
@@ -317,17 +317,17 @@ void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovem
 	}
 
 	//draw and check selection
-	selectionValue=_tileClimate.drawClimate(graphics, _onScreenPositions, drawType);
-	if (selectionValue) {_biosPtr->selectTile(this);}
+	selectionValue = _tileClimate.drawClimate(graphics, _onScreenPositions, drawType);
+	if (selectionValue) { _biosPtr->selectTile(this); }
 }
 
 
 //GETTERS
 //=================
 
-my::Address Tile::getAddress() const noexcept {return _Address;}
+my::Address Tile::getAddress() const noexcept { return _Address; }
 
-SDL_Rect Tile::getGameRect() const noexcept {return _gameRectangle;}
+SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
 std::vector<std::string> Tile::sendMessages() const noexcept {
 
@@ -339,7 +339,7 @@ std::vector<std::string> Tile::sendMessages() const noexcept {
 	stream << "(Lat,Lon): (" << int(this->_latitude_deg) << "," << int(this->_longitude_deg) << ")";
 	messages.push_back(stream.str());
 
-	std::vector<std::string> climateMessages=_tileClimate.getMessages(messageType);
+	std::vector<std::string> climateMessages = _tileClimate.getMessages(messageType);
 
 	for (std::string &str : climateMessages) {
 		messages.push_back(str);
@@ -348,4 +348,4 @@ std::vector<std::string> Tile::sendMessages() const noexcept {
 	return messages;
 }
 
-
+}//namespace pleistocene

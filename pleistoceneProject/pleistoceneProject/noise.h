@@ -1,6 +1,8 @@
 #pragma once
 #include "math.h"
 
+namespace pleistocene {
+
 inline double findnoise2(double x, double y, int seed) noexcept;
 
 
@@ -10,3 +12,5 @@ double noise2(double x, double y, int seed) noexcept;
 
 
 double** perlinNoise(int Cols, int Rows, double zoom, double p, int octaves, int seed) noexcept;
+
+}//namespace pleistocene

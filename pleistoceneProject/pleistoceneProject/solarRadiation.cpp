@@ -1,18 +1,19 @@
 #include "solarRadiation.h"
 
+namespace pleistocene {
 
 SolarRadiation::SolarRadiation() noexcept {}
 
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) noexcept {
 	using namespace climate::planetary;
 
-	_latitude_rad=(my::degToRad(latitude_deg));
+	_latitude_rad = (my::degToRad(latitude_deg));
 	_longitude_rad = (my::degToRad(longitude_deg));
 
 	//Longitude=0 normalVector setup
 	_normalVector(0) = cos(_latitude_rad + tilt_rad);
-	_normalVector(1)=0;
-	_normalVector(2)= sin(_latitude_rad + tilt_rad);
+	_normalVector(1) = 0;
+	_normalVector(2) = sin(_latitude_rad + tilt_rad);
 
 	//longitude shift
 	buildRotationMatrix(_longitude_rad);
@@ -45,7 +46,7 @@ void SolarRadiation::buildRotationMatrix(double angle_rad) noexcept {
 	}
 
 	//Rotation Matrix calculation
-	_rotationMatrix = Eigen::Matrix3d::Identity() + sin(angle_rad)*_intermediateMatrix+(1.0-cos(angle_rad))*(_intermediateMatrix*_intermediateMatrix);
+	_rotationMatrix = Eigen::Matrix3d::Identity() + sin(angle_rad)*_intermediateMatrix + (1.0 - cos(angle_rad))*(_intermediateMatrix*_intermediateMatrix);
 	_oldRotation = angle_rad;
 
 	//LOG("ROTATION MATRIX");
@@ -72,12 +73,12 @@ void SolarRadiation::setupSolarRadiation() noexcept
 
 	//Setup Sun Ray Vector
 	//sun vector rotates in circle once per solar year
-	angle_rad = 2 * M_PI*(double(my::SimulationTime::_globalTime.getDay()+
-		double(my::SimulationTime::_globalTime.getHour())/double(solarDay_h)) /(double)solarYear_d);
+	angle_rad = 2 * M_PI*(double(my::SimulationTime::_globalTime.getDay() +
+		double(my::SimulationTime::_globalTime.getHour()) / double(solarDay_h)) / (double)solarYear_d);
 
 	_sunRayVector(0) = cos(angle_rad);
 	_sunRayVector(1) = sin(angle_rad);
-	_sunRayVector(2)=0;
+	_sunRayVector(2) = 0;
 }
 
 double SolarRadiation::applySolarRadiation() noexcept {
@@ -107,4 +108,6 @@ double SolarRadiation::getRadiationShader() noexcept {
 	double solarShader = _solarFraction;
 	if (!1) { solarShader = 1; }//STUB "solar shade option"
 	return solarShader;
+}
+
 }

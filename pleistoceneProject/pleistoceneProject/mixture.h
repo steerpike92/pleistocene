@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "element.h"
 
+namespace pleistocene {
+
 class Mixture;
 
 //======================================================================================
@@ -32,7 +34,7 @@ protected:
 
 public:
 	Mixture() noexcept;
-	Mixture(Element element, double temperature, elements::State state, double fixedVolume=my::FakeDouble) noexcept;
+	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::FakeDouble) noexcept;
 	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble) noexcept;
 
 	//PARAMETER CALCULATIONS
@@ -58,8 +60,8 @@ protected:
 	void push(Mixture &addedMixture) noexcept;
 	//Mixture pull(Mixture &subtractedMixture) noexcept;
 
-	Mixture copyProportion(double proportion) const noexcept;	
-	void pushSpecific(Element addedSpecificElement, double temperature=0.0, bool tempSpecified=false ) noexcept;
+	Mixture copyProportion(double proportion) const noexcept;
+	void pushSpecific(Element addedSpecificElement, double temperature = 0.0, bool tempSpecified = false) noexcept;
 	double pullSpecific(Element subtractedSpecificElement) noexcept;
 
 public:
@@ -81,3 +83,4 @@ public:
 	double getMols() const noexcept;
 };
 
+}//namespace pleistocene

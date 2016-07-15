@@ -1,18 +1,22 @@
 #pragma once
+#include "globals.h"
 
-namespace options {
+namespace pleistocene {
+class Input;
 
-	enum drawType{
-		STANDARD
+namespace option {
 
+enum DrawType {
+	ELEVATION,		//Q
+	SUNLIT_ELEVATION,	//W
 
-	};
+	SURFACE_MATERIAL,
+	LAYER_MATERIAL,
 
-	enum drawLayer {
+	SURFACE_TEMPERATURE,
+	LAYER_TEMPERATURE
+};
 
-
-
-	};
 
 
 }
@@ -26,7 +30,8 @@ public:
 	int getRows() const noexcept;
 	int getCols() const noexcept;
 
-	bool _dailyDraw = true;
+	bool _dailyDraw = false;
+	int _drawHour = 0;
 
 	bool _solarShader = true;
 
@@ -34,9 +39,14 @@ public:
 	bool _restrictCameraOption = false;
 	bool _maxFramerateOption = false;
 
+
+
+	void processInput(Input &input);
+
 private:
 
-	int Rows;
-	int Cols;
+	int _Rows;
+	int _Cols;
 
 };
+}//namespace pleistocene

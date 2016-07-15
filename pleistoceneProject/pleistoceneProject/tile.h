@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "tileClimate.h"
 
+namespace pleistocene {
+
 class Map;
 class Graphics;
 class Bios;
@@ -44,13 +46,13 @@ public:
 	//Elevation noise creator
 	static void generateTileElevation(int seed)noexcept;
 private:
-	static std::vector<double> buildNoiseTable(int seed, double zoom, double persistance, int octaves, 
+	static std::vector<double> buildNoiseTable(int seed, double zoom, double persistance, int octaves,
 		int Rows, int Cols)noexcept;
 
-	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable,int Rows, int Cols, 
+	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols,
 		int vBlendDistance, int  hBlendDistance)noexcept;
 
-	
+
 public:
 	//construct surface relationships 
 	static void setupTileClimateAdjacency()noexcept;
@@ -61,7 +63,7 @@ public:
 	//====================
 
 	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//all
-private: 
+private:
 	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//one
 	std::vector<SDL_Rect> _onScreenPositions;
 
@@ -111,3 +113,5 @@ private:
 	//all simulation happens in TileClimate
 	TileClimate _tileClimate;
 };
+
+}//namespace pleistocene

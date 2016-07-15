@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "game.h"
 #include "camera.h"
-
+namespace pleistocene {
 void Input::beginNewFrame() noexcept {
 	_pressedKeys.clear();
 	_releasedKeys.clear();
@@ -28,17 +28,17 @@ void Input::beginNewFrame() noexcept {
 			buttonUpEvent(event);
 			break;
 
-		case(SDL_QUIT): 
-			_quitFlag = true; 
+		case(SDL_QUIT) :
+			_quitFlag = true;
 			return;
 
 		case(SDL_KEYDOWN) :
 			if (event.key.repeat == 0) {
 				keyDownEvent(event);
 			}
-			break;
-		case(SDL_KEYUP) : 
-			keyUpEvent(event); 
+				  break;
+		case(SDL_KEYUP) :
+			keyUpEvent(event);
 			break;
 		}
 
@@ -76,7 +76,7 @@ void Input::buttonDownEvent(const SDL_Event& event) noexcept {
 
 
 	storeMousePositionData(event);
-	
+
 
 	if (event.button.button == 1) _points[0] = _mousePoint;
 
@@ -105,7 +105,7 @@ bool Input::checkBoolMap(keyType key, std::map<keyType, bool> boolMap) const noe
 	return boolMap.at(key);
 }
 
-bool Input::wasKeyPressed(SDL_Scancode key) const noexcept {	
+bool Input::wasKeyPressed(SDL_Scancode key) const noexcept {
 	return checkBoolMap(key, _pressedKeys);
 }
 bool Input::wasKeyHeld(SDL_Scancode key) const noexcept {
@@ -140,5 +140,6 @@ SDL_Rect* Input::getSelectionRect() noexcept {
 }
 
 void Input::setCamera(Camera &camera) noexcept {
-		_cameraPtr = &camera;
+	_cameraPtr = &camera;
 }
+}//namespace pleistocene

@@ -7,6 +7,7 @@
 #include "map.h"
 #include "camera.h"
 
+namespace pleistocene {
 
 class Game {
 public:
@@ -55,3 +56,5 @@ private:
 
 
 };
+
+}//namespace pleistocene

@@ -4,6 +4,8 @@
 #include "tile.h"
 #include "map.h"
 
+namespace pleistocene {
+
 Bios::Bios() noexcept {}
 
 Bios::Bios(Graphics &graphics) noexcept {
@@ -49,27 +51,27 @@ void Bios::update() noexcept {
 void Bios::draw(Graphics &graphics) noexcept {
 
 
-	if (_display==NULL) return;
+	if (_display == NULL) return;
 
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);//background
 
 	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y + _textMargin);
 	my::Vector2 textDimensions;
 
-	textDimensions=graphics.blitText("Bios:", textPos, graphics.White, true);
+	textDimensions = graphics.blitText("Bios:", textPos, graphics.White, true);
 
-	textPos.y += textDimensions.y+_textMargin;
-	
+	textPos.y += textDimensions.y + _textMargin;
+
 	for (std::string &message : _messages) {
 		graphics.blitText(message, textPos, graphics.White, true);
-		textPos.y+= textDimensions.y + _textMargin;;
+		textPos.y += textDimensions.y + _textMargin;;
 	}
-	
+
 	SDL_Rect sourceRect = { 0,0,255,255 };
 	SDL_Rect dest;
 
 	if (_selectedTile) {
-		
+
 		dest = _selectionDrawPos;
 
 		std::vector<SDL_Rect> onScreenPositions = graphics.getOnScreenPositions(&dest);
@@ -79,7 +81,7 @@ void Bios::draw(Graphics &graphics) noexcept {
 		}
 
 		graphics.blitSurface(blackPath, &sourceRect, onScreenPositions);
-		
+
 	}
 }
 
@@ -103,14 +105,15 @@ void InfoBar::update() noexcept {
 
 void InfoBar::draw(Graphics &graphics) noexcept {
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
-	
+
 	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y);
 
 	my::Vector2 textDimensions;
 
 	for (std::string &message : _messages) {
-		textDimensions=graphics.blitText(message, textPos, graphics.White, true);
-		textPos.x += textDimensions.x+_textMargin;
+		textDimensions = graphics.blitText(message, textPos, graphics.White, true);
+		textPos.x += textDimensions.x + _textMargin;
 	}
 
 }
+}//namespace pleistocene

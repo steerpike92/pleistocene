@@ -6,16 +6,16 @@
 #include "bios.h"
 #include "input.h"
 
-
+namespace pleistocene {
 Graphics::Graphics() noexcept {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		//NOEXCEPT LOG("ERROR SDL FAILED TO INIT");throw(0);
 	}
 	else LOG("SDL RUNNING");
 
-	if (TTF_Init() == -1) {LOG("ERROR: could not initialize TTF");}
-	
-	_window=SDL_CreateWindow("Tribe", 50, 50, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, 0); 
+	if (TTF_Init() == -1) { LOG("ERROR: could not initialize TTF"); }
+
+	_window = SDL_CreateWindow("Tribe", 50, 50, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, 0);
 	_renderer = SDL_CreateRenderer(_window, 0, 0);
 
 	_windowRect = { 0,0,globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT };
@@ -83,9 +83,9 @@ void Graphics::darkenTexture(const std::string &texturePathName, double filter) 
 
 void Graphics::colorFilter(const std::string &texturePathName, double redFilter,
 	double greenFilter, double blueFilter)  noexcept {
-	
+
 	//cull stupid values
-	redFilter = std::min(redFilter, 1.0); 
+	redFilter = std::min(redFilter, 1.0);
 	redFilter = std::max(redFilter, 0.0);
 
 	greenFilter = std::min(greenFilter, 1.0);
@@ -141,7 +141,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 	return onScreenPositions;
 }
 
-bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions, 
+bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions,
 	double degreesRotated, bool mirrorH, bool mirrorV)  noexcept {
 
 	bool selectionFlag = false;
@@ -179,29 +179,29 @@ void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color c
 	SDL_Rect bullshit;
 	SDL_bool onScreen = SDL_IntersectRect(&localDestRect, &_windowRect, &bullshit);
 
-	SDL_SetRenderDrawColor(_renderer,color.r,color.g,color.b,color.a);
+	SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
 
 	if (onScreen) {
 
-		if(SDL_RenderFillRect(_renderer, &localDestRect)){
+		if (SDL_RenderFillRect(_renderer, &localDestRect)) {
 			//NOEXCEPT LOG("Error rendering my::Rectangle"); throw(1);
 		}
 	}
 }
 
 my::Vector2 Graphics::blitText(std::string text, my::Vector2 Message_loc, SDL_Color color, bool screenLocked)  noexcept {
-	
+
 	SDL_Rect localDestRect;
 	SDL_Texture *tempTexture;
 	my::Vector2 textDimensions = my::Vector2(0, 0);
-	if(text=="") { return textDimensions; }
+	if (text == "") { return textDimensions; }
 
 	SDL_Surface* textSurface = TTF_RenderText_Solid(_font, text.c_str(), color);
 	textDimensions = my::Vector2(textSurface->w, textSurface->h);
 	tempTexture = SDL_CreateTextureFromSurface(_renderer, textSurface);
 	localDestRect = { Message_loc.x,Message_loc.y,textDimensions.x,textDimensions.y };
 	SDL_FreeSurface(textSurface);
-	
+
 	if (!screenLocked) {
 		my::Rectangle dest(localDestRect);
 		localDestRect = dest.cameraTransform(_cameraPtr->getZoomScale(), _cameraPtr->getCameraPosition());
@@ -229,11 +229,13 @@ SDL_Renderer* Graphics::getRenderer() const noexcept {
 
 
 
-my::Vector2 Graphics::getSurfaceSize( std::string pathName) const noexcept {
+my::Vector2 Graphics::getSurfaceSize(std::string pathName) const noexcept {
 	SDL_Surface temp;
 	my::Vector2 dimensions;
-	temp=*_spriteSheets.at(pathName);
+	temp = *_spriteSheets.at(pathName);
 	dimensions.x = temp.w;
 	dimensions.y = temp.h;
 	return dimensions;
 }
+
+}//namespace pleistocenes

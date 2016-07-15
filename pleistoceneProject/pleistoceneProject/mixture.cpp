@@ -1,5 +1,5 @@
 #include "mixture.h"
-
+namespace pleistocene {
 //=====================================================================================================================
 //MIXTURE
 //=====================================================================================================================
@@ -10,7 +10,7 @@
 Mixture::Mixture() noexcept {}
 
 Mixture::Mixture(Element element, double temperature, elements::State state, double fixedVolume) noexcept :
-	Mixture(std::vector<Element> {element}, temperature, state, fixedVolume){}
+Mixture(std::vector<Element> {element}, temperature, state, fixedVolume) {}
 
 Mixture::Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume) noexcept :
 	_temperature(temperature),
@@ -19,7 +19,7 @@ Mixture::Mixture(std::vector<Element> compositionElements, double temperature, e
 {
 	//NOEXCEPT if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin) noexcept : "); LOG(temperature); throw(2); }
 
-	if (_fixedVolume == my::FakeDouble) {_volumeIsFixed = false;}
+	if (_fixedVolume == my::FakeDouble) { _volumeIsFixed = false; }
 	else { _volumeIsFixed = true; }
 
 	_elements.clear();
@@ -72,7 +72,7 @@ void Mixture::calculateVolume() noexcept {
 void Mixture::calculateMols() noexcept {
 	using namespace elements;
 
-	if (_state != GAS) {_totalMols = -1;return;}
+	if (_state != GAS) { _totalMols = -1; return; }
 
 	_totalMols = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -92,7 +92,7 @@ void Mixture::calculateHeatCapacity() noexcept {
 void Mixture::calculateAlbedoIndex() noexcept {
 	using namespace elements;
 
-	if (_state == SOLID || _state==LIQUID) {//for solids/liquids albedo is a volume average of the surface elements
+	if (_state == SOLID || _state == LIQUID) {//for solids/liquids albedo is a volume average of the surface elements
 		double weightedAlbedo = 0;
 		for (const ElementPair &elementPair : _elements) {
 			weightedAlbedo += elementPair.second.getAlbedo()*elementPair.second.getVolume();
@@ -174,7 +174,7 @@ void Mixture::push(Mixture &addedMixture) noexcept {
 		addedMixture._totalHeatCapacity*addedMixture._temperature;
 	double newTotalHeatCapacity = this->_totalHeatCapacity + addedMixture._totalHeatCapacity;
 	_temperature = totalHeat / newTotalHeatCapacity;
-	
+
 	for (ElementPair &elementPair : addedMixture._elements) {
 		pushSpecific(elementPair.second);
 	}
@@ -209,12 +209,12 @@ void Mixture::pushSpecific(Element addedSpecificElement, double temperature, boo
 double Mixture::pullSpecific(Element pulledElement) noexcept {
 	using namespace elements;
 	ElementType eType = pulledElement.getElementType();
-	double massPulled=0.0;
+	double massPulled = 0.0;
 	double massRequested = pulledElement.getMass();
 	if (_elements.count(eType)) {
 		massPulled = _elements[eType].pullMass(massRequested);
-		
-		if (_elements[eType].getMass()<=0) {//you took everything
+
+		if (_elements[eType].getMass() <= 0) {//you took everything
 			auto iterator = _elements.find(eType);
 			_elements.erase(iterator);
 		}
@@ -232,7 +232,7 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	_totalSolarAbsorbed = 0;
 	_totalInfraredAbsorbed = 0;
 	_totalInfraredEmitted = 0;
-	
+
 	int mixtureCount = _elements.size();
 	//NOEXCEPT if (mixtureCount== 0) {LOG("NO COMPONENTS"); throw(2); return solarEnergyKJ;}
 	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); throw(2); return solarEnergyKJ; }
@@ -266,7 +266,7 @@ double Mixture::emitInfrared() noexcept {
 	}
 
 	_totalInfraredEmitted += emissionEnergy;
-	
+
 	//TEMPERATURE CHANGE!!!!
 	_temperature -= emissionEnergy / _totalHeatCapacity; //emmision cooling
 
@@ -295,7 +295,7 @@ double Mixture::filterInfrared(double infraredEnergy) noexcept {
 void Mixture::conduction(Mixture &mixture1, Mixture &mixture2) noexcept {//STUB
 }
 
-double Mixture::getTemperature() const noexcept {return _temperature;}
+double Mixture::getTemperature() const noexcept { return _temperature; }
 double Mixture::getHeight() const noexcept { return _totalVolume; }
 double Mixture::getAlbedo() const noexcept { return _albedo; }
 double Mixture::getVolume() const noexcept { return _totalVolume; }
@@ -306,7 +306,7 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 	std::vector<std::string> messages;
 
 	std::stringstream stream;
-	stream << "Temperature: " << round(_temperature-273.15) << " °C";
+	stream << "Temperature: " << round(_temperature - 273.15) << " °C";
 	messages.push_back(stream.str());
 
 	/*stream = std::stringstream();
@@ -316,7 +316,7 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 	stream = std::stringstream();
 	stream << "Mass: " << int(_totalMass);
 	messages.push_back(stream.str());*/
-	
+
 	stream = std::stringstream();
 	stream << "Heat Capacity: " << int(_totalHeatCapacity);
 	messages.push_back(stream.str());
@@ -341,3 +341,4 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 
 }
 
+}//namespace pleistocene

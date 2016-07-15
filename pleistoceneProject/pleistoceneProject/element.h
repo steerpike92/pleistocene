@@ -2,52 +2,53 @@
 #include "globals.h"
 #include <set>
 
+namespace pleistocene {
 class Element;
 
 namespace elements {
-	enum ElementType {
-		DRY_AIR,//GAS
-		WATER_VAPOR,//GAS
+enum ElementType {
+	DRY_AIR,//GAS
+	WATER_VAPOR,//GAS
 
-		CLOUD,//DROPLET
+	CLOUD,//DROPLET
 
-		WATER,//LIQUID
+	WATER,//LIQUID
 
-		ICE,//LIQUID/ SOLID / PARTICULATE (glacial flow, ice pack, hail)
+	ICE,//LIQUID/ SOLID / PARTICULATE (glacial flow, ice pack, hail)
 
-		SNOW,//SOLID / PARTICULATE (snow pack, suspended ice crystals)
+	SNOW,//SOLID / PARTICULATE (snow pack, suspended ice crystals)
 
-		SAND,//SOLID / PARTICULATE
-		SILT,//SOLID / PARTICULATE
-		CLAY,//SOLID / PARTICULATE
+	SAND,//SOLID / PARTICULATE
+	SILT,//SOLID / PARTICULATE
+	CLAY,//SOLID / PARTICULATE
 
-		ROCK,//SOLID
-		BEDROCK//SOLID
+	ROCK,//SOLID
+	BEDROCK//SOLID
 
-	};
+};
 
-	typedef std::map<const ElementType, double> ElementPropertyMap;
-	typedef std::pair<const ElementType, const ElementType> ElementCoupling;
-	typedef std::pair<const ElementType, Element> ElementPair;
-	typedef std::map<const ElementType, Element> ElementMap;
-
-
-	enum ConstructorType {
-		VOLUME,
-		MOLAR,
-		MASS
-	};
+typedef std::map<const ElementType, double> ElementPropertyMap;
+typedef std::pair<const ElementType, const ElementType> ElementCoupling;
+typedef std::pair<const ElementType, Element> ElementPair;
+typedef std::map<const ElementType, Element> ElementMap;
 
 
-	enum State {
-		NO_STATE,//for initialization with inferred state
-		SOLID,
-		PARTICULATE,//suspended solid (silt in river, dust in air). fixed particle size
-		LIQUID,
-		DROPLET,//suspended liquid (cloud). variable particle size
-		GAS
-	};
-}
+enum ConstructorType {
+	VOLUME,
+	MOLAR,
+	MASS
+};
+
+
+enum State {
+	NO_STATE,//for initialization with inferred state
+	SOLID,
+	PARTICULATE,//suspended solid (silt in river, dust in air). fixed particle size
+	LIQUID,
+	DROPLET,//suspended liquid (cloud). variable particle size
+	GAS
+};
+}//namespace elements
 
 
 
@@ -162,3 +163,4 @@ private:
 
 
 };
+}//namespace pleistocene

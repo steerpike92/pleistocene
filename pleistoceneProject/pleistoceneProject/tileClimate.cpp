@@ -1,6 +1,7 @@
 #include "tileClimate.h"
 #include "graphics.h"
 
+namespace pleistocene {
 //======================================
 //INITIALIALIZATION
 //======================================
@@ -8,7 +9,7 @@
 TileClimate::TileClimate() noexcept {}
 
 TileClimate::TileClimate(my::Address A, double landElevation) noexcept {
-	
+
 	_Address = A;
 
 	my::Vector2d latLonDeg = _Address.getLatLonDeg();
@@ -16,10 +17,10 @@ TileClimate::TileClimate(my::Address A, double landElevation) noexcept {
 	_longitude_deg = latLonDeg.y;
 	_solarRadiation = SolarRadiation(_latitude_deg, _longitude_deg);
 
-	double initialTemperature= calculateLocalInitialtemperature();
+	double initialTemperature = calculateLocalInitialtemperature();
 
 	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
-	
+
 }
 
 double TileClimate::calculateLocalInitialtemperature() noexcept {
@@ -64,13 +65,13 @@ bool TileClimate::beginNextStep() noexcept {
 }
 
 void TileClimate::simulateClimate() noexcept {
-	
+
 	double solarEnergyPerHour;
 
 	switch (_simulationStep) {
 	case(1) :
-		solarEnergyPerHour=simulateSolarRadiation();
-		if (solarEnergyPerHour > 0) {_materialColumn.filterSolarRadiation(solarEnergyPerHour);}
+		solarEnergyPerHour = simulateSolarRadiation();
+		if (solarEnergyPerHour > 0) { _materialColumn.filterSolarRadiation(solarEnergyPerHour); }
 		_materialColumn.simulateEvaporation();
 		_materialColumn.simulateInfraredRadiation();
 		break;
@@ -90,13 +91,13 @@ void TileClimate::simulateClimate() noexcept {
 		_materialColumn.simulateWaterFlow();
 		_materialColumn.simulatePlants();
 		break;
-	//default:
-		//NOEXCEPT LOG("Error: Simulation step out of bounds");throw(2);break;
+		//default:
+			//NOEXCEPT LOG("Error: Simulation step out of bounds");throw(2);break;
 	}
 }
 
 double TileClimate::simulateSolarRadiation() noexcept {
-	double solarFraction=_solarRadiation.applySolarRadiation();
+	double solarFraction = _solarRadiation.applySolarRadiation();
 	double incidentSolarEnergyPerHour = solarFraction*climate::planetary::solarEnergyPerHour;
 	return incidentSolarEnergyPerHour;
 }
@@ -122,10 +123,10 @@ bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreen
 		return surfaceTemperatureDraw(graphics, onScreenPositions);
 	case(SURFACE_AIR_TEMPERATURE_DRAW) :
 		return surfaceAirTemperatureDraw(graphics, onScreenPositions);
-	default :
+	default:
 		return standardDraw(graphics, onScreenPositions);
-	//default:
-		//NOEXCEPT LOG("NO DRAW TYPE");throw(2);return false;
+		//default:
+			//NOEXCEPT LOG("NO DRAW TYPE");throw(2);return false;
 	}
 }
 
@@ -138,7 +139,7 @@ bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScree
 	climate::land::elevationType elevationDrawType;
 
 	setElevationDrawSpecs(elevation, elevationShader, elevationDrawType);
-	
+
 	double solarShader = _solarRadiation.getRadiationShader();
 
 	double textureShader = solarShader*elevationShader;
@@ -150,15 +151,15 @@ bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScree
 }
 
 
-void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, 
+void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader,
 	climate::land::elevationType &computedElevationType) noexcept {
 
-	if (elevation< climate::land::landCutoff) {
+	if (elevation < climate::land::landCutoff) {
 		computedElevationType = climate::land::SUBMERGED;
 		computedElevationShader = abs(double(elevation + 6 * climate::land::gaps)) / double(6 * climate::land::gaps);
 		return;
 	}
-	if (elevation <climate::land::midCutoff) {
+	if (elevation < climate::land::midCutoff) {
 		computedElevationType = climate::land::LOW_LAND;
 		computedElevationShader = abs(0.6 + 2 * double(climate::land::gaps - elevation) / double(5 * climate::land::gaps));
 		return;
@@ -200,10 +201,10 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 	double temperature = _materialColumn.getBoundaryLayerTemperature();
 	const double airFudge = 20;
 
-	double colorIntensity = std::min(abs(airFudge+temperature - planetary::initialTemperatureK) / 20.0, 1.0);
+	double colorIntensity = std::min(abs(airFudge + temperature - planetary::initialTemperatureK) / 20.0, 1.0);
 	double filter = 1.0 - colorIntensity;
 
-	if (airFudge+temperature < planetary::initialTemperatureK) {//Cold
+	if (airFudge + temperature < planetary::initialTemperatureK) {//Cold
 		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
 	}
 	else {//Hot
@@ -255,3 +256,4 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 	return messages;
 
 }
+}//namespace pleistocene

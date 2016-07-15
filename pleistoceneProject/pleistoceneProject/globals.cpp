@@ -1,6 +1,6 @@
 #include "globals.h"
 #include "gameOptions.h"
-
+namespace pleistocene {
 namespace my {
 Vector2::Vector2(Vector2d v2) noexcept {
 	x = int(v2.x);
@@ -12,13 +12,13 @@ Vector2::Vector2(Vector2d v2) noexcept {
 //////////////=======================================
 
 Rectangle::Rectangle() noexcept :
-	x(-1), y(-1), w(0), h(0) {}
+x(-1), y(-1), w(0), h(0) {}
 
 Rectangle::~Rectangle() noexcept {}
 
 
 Rectangle::Rectangle(int x, int y, int w, int h) noexcept :
-	x(x), y(y), w(w), h(h) {}
+x(x), y(y), w(w), h(h) {}
 
 Rectangle::Rectangle(SDL_Rect rect) noexcept :
 	x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
@@ -167,8 +167,8 @@ Address Address::adjacent(Direction direction) const noexcept {
 		return Address(r, c - 1);
 	case(NORTH_WEST) :
 		return Address(r - 1, c + colMod - 1);
-	//default:
-		//NOEXCEPT LOG("NOT A VALID DIRECTION");throw(2);return Address(r, c);
+		//default:
+			//NOEXCEPT LOG("NOT A VALID DIRECTION");throw(2);return Address(r, c);
 	default:
 		return Address();
 
@@ -337,4 +337,6 @@ double uniformRandom() noexcept
 	return double(rand()) / double(RAND_MAX + 1.0);
 }
 
-}//end namespace my
+}//namespace my
+
+}//namespace pleistocene

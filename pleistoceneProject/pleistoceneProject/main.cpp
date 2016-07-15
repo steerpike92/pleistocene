@@ -1,12 +1,11 @@
 #include "game.h"
 
-
 int main(int argc, char* args[]) {
 
 	if (EXCEPTION_HANDLING) {//Closes SDL at exception and prints catch message
 		try
 		{
-			Game game = Game();
+			pleistocene::Game game = pleistocene::Game();
 		}
 		catch (int exception_num)
 		{
@@ -26,7 +25,7 @@ int main(int argc, char* args[]) {
 	}
 
 	else {//Breaks at exception for debugging
-		Game game = Game();
+		pleistocene::Game game = pleistocene::Game();
 	}
 
 	return 0;

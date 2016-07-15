@@ -1,10 +1,10 @@
 #include "camera.h"
 #include "input.h"
 #include "gameOptions.h"
-
+namespace pleistocene {
 Camera::Camera() noexcept {}
 
-Camera::Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options ) noexcept {
+Camera::Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options) noexcept {
 	_cameraPosition = startingPosition;
 	_zoomScale = startingZoom;
 	_optionsPtr = options;
@@ -55,7 +55,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime) noexcept {
 
 		if (_zoomScale > 0.01 || (RESTRICT_CAMERA == 0)) {
 
-			if ((_gameWidth_pixels * _zoomScale  > globals::SCREEN_WIDTH) &&
+			if ((_gameWidth_pixels * _zoomScale > globals::SCREEN_WIDTH) &&
 				(_gameHeight_pixels * _zoomScale > globals::SCREEN_HEIGHT)
 				|| (RESTRICT_CAMERA == 0)) {
 
@@ -92,7 +92,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime) noexcept {
 
 	if (input.wasKeyHeld(SDL_SCANCODE_D)) {
 		_cameraPosition.x += elapsedTime / 2;
-		if (_cameraPosition.x >(globals::TILE_WIDTH * _zoomScale*my::Address::GetCols()*1.5 - globals::SCREEN_WIDTH) && LOOP) {
+		if (_cameraPosition.x > (globals::TILE_WIDTH * _zoomScale*my::Address::GetCols()*1.5 - globals::SCREEN_WIDTH) && LOOP) {
 			_cameraPosition.x -= int(globals::TILE_WIDTH * _zoomScale*my::Address::GetCols());
 		}
 		movementflag = true;
@@ -100,14 +100,14 @@ bool Camera::processCommands(const Input &input, int elapsedTime) noexcept {
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_W)) {
-		if (_cameraPosition.y > -(globals::EFFECTIVE_HEIGHT*3) * _zoomScale) {
+		if (_cameraPosition.y > -(globals::EFFECTIVE_HEIGHT * 3) * _zoomScale) {
 			_cameraPosition.y -= elapsedTime / 2;
 			movementflag = true;
 		}
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_S)) {
-		if (_cameraPosition.y < ((_gameHeight_pixels) * _zoomScale - globals::SCREEN_HEIGHT)) {
+		if (_cameraPosition.y < ((_gameHeight_pixels)* _zoomScale - globals::SCREEN_HEIGHT)) {
 			_cameraPosition.y += elapsedTime / 2;
 			movementflag = true;
 		}
@@ -121,3 +121,5 @@ my::Vector2 Camera::screenPosToGamePos(my::Vector2 screenPos) const noexcept {
 	gamePos = (screenPos + _cameraPosition) * (1 / _zoomScale);
 	return gamePos;
 }
+
+}//namespace pleistocene

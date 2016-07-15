@@ -1,7 +1,7 @@
 #include "materialColumn.h"
 #include "materialLayer.h"
 #include "globals.h"
-
+namespace pleistocene {
 namespace layers {
 ////////////==================================
 ////////////INITIALIZATION
@@ -10,8 +10,8 @@ namespace layers {
 MaterialColumn::MaterialColumn()  noexcept {}
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) noexcept :
-	_landElevation(landElevation),
-	_initialTemperature(initialTemperature)
+_landElevation(landElevation),
+_initialTemperature(initialTemperature)
 {
 
 	double baseElevation = buildEarth();
@@ -381,4 +381,5 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 	return messages;
 }
 
-}
+}//namespace layers
+}//namespace pleistocene
