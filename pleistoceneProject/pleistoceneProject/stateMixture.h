@@ -4,6 +4,7 @@
 
 namespace pleistocene {
 namespace climate {
+namespace elements {
 
 //===============================================================
 //SOLID
@@ -111,5 +112,6 @@ public:
 	double getSaturationDensity() const noexcept;
 };
 
+}//namespace elements
 }//namespace climate
 }//namespace pleistocene

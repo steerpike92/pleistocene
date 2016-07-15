@@ -4,6 +4,8 @@
 
 namespace pleistocene {
 namespace climate {
+namespace elements {
+
 class Mixture;
 
 //======================================================================================
@@ -83,5 +85,6 @@ public:
 	double getMols() const noexcept;
 };
 
+}//namespace elements
 }//namespace climate
 }//namespace pleistocene

@@ -3,6 +3,7 @@
 
 namespace pleistocene {
 namespace climate {
+namespace elements {
 //===============================================================
 //SOLID
 //===============================================================
@@ -155,5 +156,7 @@ double GaseousMixture::getSaturationDensity() const noexcept {
 double GaseousMixture::getLapseRate() const noexcept {
 	return _adiabaticLapseRate;
 }
+
+}//namespace elements
 }//namespace climate
 }//namespace pleistocene

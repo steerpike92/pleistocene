@@ -14,7 +14,6 @@ namespace climate {
 
 
 
-
 class TileClimate {
 	my::Address _Address;
 	double _longitude_deg;

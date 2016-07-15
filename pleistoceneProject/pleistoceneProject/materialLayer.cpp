@@ -1,4 +1,5 @@
 #include "materialLayer.h"
+
 namespace pleistocene {
 namespace climate {
 namespace layers {
@@ -73,7 +74,7 @@ EarthLayer::EarthLayer() noexcept {}
 
 EarthLayer::EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept :
 MaterialLayer(baseElevation, bottomElevation),
-_solidPtr(new SolidMixture())
+_solidPtr(new elements::SolidMixture())
 {//normal constructor
 	using namespace elements;
 	using namespace layers;
@@ -96,7 +97,7 @@ _solidPtr(new SolidMixture())
 }
 
 
-std::vector<Element> EarthLayer::generateSoil(double depth, double height) noexcept
+std::vector<elements::Element> EarthLayer::generateSoil(double depth, double height) noexcept
 {
 	using namespace elements;
 	using namespace layers::earth;
@@ -196,7 +197,7 @@ SeaLayer::SeaLayer() noexcept {}
 
 SeaLayer::SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) noexcept :
 MaterialLayer(baseElevation, bottomElevation),
-_liquidPtr(new LiquidMixture())
+_liquidPtr(new elements::LiquidMixture())
 {
 	using namespace elements;
 	using namespace layers;
@@ -236,7 +237,7 @@ AirLayer::AirLayer() noexcept {}
 
 AirLayer::AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept :
 MaterialLayer(baseElevation, bottomElevation),
-_gasPtr(new GaseousMixture)
+_gasPtr(new elements::GaseousMixture)
 {
 	using namespace elements;
 	using namespace layers;
@@ -256,7 +257,7 @@ _gasPtr(new GaseousMixture)
 	_topRelativeElevation = _bottomRelativeElevation + _height;
 }
 
-std::vector<Element> AirLayer::generateAirElements(double bottomElevation, double topElevation) noexcept
+std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevation, double topElevation) noexcept
 {
 	using namespace elements;
 	using namespace layers::air;

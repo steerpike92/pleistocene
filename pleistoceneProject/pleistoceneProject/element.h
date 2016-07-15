@@ -4,10 +4,10 @@
 
 namespace pleistocene {
 namespace climate {
+namespace elements {
 
 class Element;
 
-namespace elements {
 enum ElementType {
 	DRY_AIR,//GAS
 	WATER_VAPOR,//GAS
@@ -50,7 +50,6 @@ enum State {
 	DROPLET,//suspended liquid (cloud). variable particle size
 	GAS
 };
-}//namespace elements
 
 
 
@@ -60,13 +59,13 @@ enum State {
 
 class Element {
 
-	elements::ElementType _elementType;
+	ElementType _elementType;
 	double _volume = 0;
 	double _mols = 0;
 	double _mass = 0;
 
 	bool _waterForm = false;
-	elements::State _state;
+	State _state;
 
 public:
 	Element() noexcept;
@@ -166,5 +165,6 @@ private:
 
 };
 
+}//namespace elements
 }//namespace climate
 }//namespace pleistocene

@@ -2,6 +2,7 @@
 
 namespace pleistocene {
 namespace climate {
+namespace elements {
 
 //=====================================================================================================================
 //MIXTURE
@@ -341,7 +342,8 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 	messages.push_back(stream.str());
 
 	return messages;
-
 }
+
+}//namespace elements
 }//namespace climate
 }//namespace pleistocene

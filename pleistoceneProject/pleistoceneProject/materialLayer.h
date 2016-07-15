@@ -4,12 +4,12 @@
 
 namespace pleistocene {
 namespace climate {
+namespace layers {
 
 class MaterialLayer;
 class EarthLayer;
 class HorizonLayer;
 
-namespace layers {
 enum LayerType {
 	EARTH,
 	SEA,
@@ -123,7 +123,7 @@ const double StandardLapseRate[2] = { -0.0065, 0 };
 class MaterialLayer {
 protected:
 	//MaterialLayer is basically just a wrapper for a Mixture
-	Mixture *_mixture;
+	elements::Mixture *_mixture;
 
 	double _bottomElevation;//Elevation above sea level (of bottom of layer)
 	double _height;
@@ -178,7 +178,7 @@ private:
 	//unique earth member variables
 	//std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
 
-	std::unique_ptr<SolidMixture> _solidPtr;
+	std::unique_ptr<elements::SolidMixture> _solidPtr;
 
 public:
 	EarthLayer() noexcept;
@@ -194,7 +194,7 @@ private:
 	//Groundwater flow
 
 	//Earth Material constructors
-	static std::vector<Element> generateSoil(double depth, double height) noexcept;
+	static std::vector<elements::Element> generateSoil(double depth, double height) noexcept;
 	static elements::ElementType determineEarthType(double depthIndex) noexcept;
 	static elements::ElementType determineSoilType(double depthIndex) noexcept;
 };
@@ -265,7 +265,7 @@ class SeaLayer : public MaterialLayer {
 	//unique sea member variables
 	Eigen::Vector3d inertialCurrentVector;
 
-	std::unique_ptr<LiquidMixture> _liquidPtr;
+	std::unique_ptr<elements::LiquidMixture> _liquidPtr;
 
 public:
 	SeaLayer() noexcept;
@@ -287,7 +287,7 @@ class AirLayer : public MaterialLayer {
 	//unique air member variables
 	Eigen::Vector3d inertialWindVector;
 
-	std::unique_ptr<GaseousMixture> _gasPtr;
+	std::unique_ptr<elements::GaseousMixture> _gasPtr;
 
 	double incidentUpRadiation;
 	double incidentDownRadiation;
@@ -301,7 +301,7 @@ public:
 private:
 	//unique air member functions
 
-	static std::vector<Element> generateAirElements(double bottomElevation, double topElevation) noexcept;
+	static std::vector<elements::Element> generateAirElements(double bottomElevation, double topElevation) noexcept;
 
 	static double expectedHydrostaticPressureCalculator(double elevation) noexcept;
 	static double expectedMolsCalculator(double bottomElevation, double topElevation) noexcept;

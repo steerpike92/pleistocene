@@ -18,7 +18,6 @@ class MaterialColumn {
 	//non owning vector with pointers to all layers
 	std::vector<MaterialLayer*> _column;
 
-
 	double _landElevation;
 	bool _submerged;
 	double _initialTemperature;
