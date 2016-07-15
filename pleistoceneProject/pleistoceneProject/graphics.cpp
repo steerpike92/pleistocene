@@ -7,6 +7,8 @@
 #include "input.h"
 
 namespace pleistocene {
+namespace graphics {
+
 Graphics::Graphics() noexcept {
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		//NOEXCEPT LOG("ERROR SDL FAILED TO INIT");throw(0);
@@ -238,4 +240,5 @@ my::Vector2 Graphics::getSurfaceSize(std::string pathName) const noexcept {
 	return dimensions;
 }
 
+}//namespace graphics
 }//namespace pleistocenes

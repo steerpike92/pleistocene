@@ -3,10 +3,12 @@
 #include "graphics.h"
 #include "noise.h"
 #include "tile.h"
+
 namespace pleistocene {
+
 Map::Map() noexcept {}
 
-Map::Map(Graphics &graphics, Bios *bios, GameOptions &options) noexcept {
+Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, options::GameOptions &options) noexcept {
 	srand((unsigned int)time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions
@@ -55,7 +57,7 @@ climate::DrawType Map::getDrawType() noexcept {
 	return _drawType;
 }
 
-void Map::draw(Graphics &graphics, bool cameraMovementFlag) noexcept {
+void Map::draw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept {
 	Tile::drawTiles(graphics, _drawType, cameraMovementFlag);
 }
 }//namespace pleistocene

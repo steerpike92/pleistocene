@@ -1,7 +1,9 @@
 #include "gameOptions.h"
 #include "globals.h"
 #include "input.h"
+
 namespace pleistocene {
+namespace options {
 
 GameOptions::GameOptions() noexcept {
 	setMapSize(2);
@@ -43,4 +45,6 @@ void GameOptions::processInput(Input &input) {
 	}
 
 }
+
+}//namespace options
 }//namespace pleistocene

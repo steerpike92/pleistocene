@@ -3,6 +3,7 @@
 #include "mixture.h"
 
 namespace pleistocene {
+namespace climate {
 
 //===============================================================
 //SOLID
@@ -110,5 +111,5 @@ public:
 	double getSaturationDensity() const noexcept;
 };
 
-
-}
+}//namespace climate
+}//namespace pleistocene

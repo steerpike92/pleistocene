@@ -34,25 +34,27 @@ private:
 	//Drawing to renderer and flip to window
 	void draw() noexcept;
 
-	GameOptions _options;
+	options::GameOptions _options;
 
 	//Holds input information (key maps, mouse info)
 	Input _input;
 
 	//Displays debug info
-	Bios _bios;
+	user_interface::Bios _bios;
 
 	//displays date
-	InfoBar _infoBar;
+	user_interface::InfoBar _infoBar;
 
 	//holds textures, rederer, window. Performs rendering
-	Graphics _graphics;
+	graphics::Graphics _graphics;
+
+	//holds camera position, 
+	graphics::Camera _camera;
 
 	//holds and updates and draws simulation
 	Map _map;
 
-	//holds camera position, 
-	Camera _camera;
+	
 
 
 };

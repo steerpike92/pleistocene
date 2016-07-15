@@ -2,6 +2,7 @@
 #include "globals.h"
 
 namespace pleistocene {
+namespace climate {
 
 class SolarRadiation {
 public:
@@ -43,4 +44,5 @@ private:
 	Eigen::Vector3d _normalVector;
 };
 
+}//namespace climate
 }//namespace pleistocene

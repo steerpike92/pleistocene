@@ -1,8 +1,11 @@
 #include "materialColumn.h"
 #include "materialLayer.h"
 #include "globals.h"
+
 namespace pleistocene {
+namespace climate {
 namespace layers {
+
 ////////////==================================
 ////////////INITIALIZATION
 ////////////==================================
@@ -382,4 +385,5 @@ std::vector<std::string> MaterialColumn::getMessages(climate::DrawType messageTy
 }
 
 }//namespace layers
+}//namespace climate
 }//namespace pleistocene

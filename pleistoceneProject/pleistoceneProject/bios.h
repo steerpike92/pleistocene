@@ -2,18 +2,23 @@
 #include "globals.h"
 
 namespace pleistocene {
-class Graphics;
+
+namespace graphics { class Graphics; }
+
 class Tile;
+
+namespace user_interface {
+
 
 class Bios {
 public:
 	Bios() noexcept;
 
-	Bios(Graphics &graphics)  noexcept;
+	Bios(graphics::Graphics &graphics)  noexcept;
 
 	void clear()  noexcept;
 	void update() noexcept;
-	void draw(Graphics &graphics) noexcept;
+	void draw(graphics::Graphics &graphics) noexcept;
 
 	void selectTile(Tile * const tile) noexcept;
 
@@ -40,9 +45,9 @@ class InfoBar {
 public:
 	InfoBar() noexcept;
 
-	InfoBar(Graphics &graphics) noexcept;
+	InfoBar(graphics::Graphics &graphics) noexcept;
 
-	void draw(Graphics &graphics) noexcept;
+	void draw(graphics::Graphics &graphics) noexcept;
 	void update() noexcept;
 
 private:
@@ -55,4 +60,7 @@ private:
 
 
 };
+
+}//user_interface
+
 }//namespace pleistocene

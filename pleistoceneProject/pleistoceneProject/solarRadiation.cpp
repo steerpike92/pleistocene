@@ -1,6 +1,7 @@
 #include "solarRadiation.h"
 
 namespace pleistocene {
+namespace climate {
 
 SolarRadiation::SolarRadiation() noexcept {}
 
@@ -110,4 +111,5 @@ double SolarRadiation::getRadiationShader() noexcept {
 	return solarShader;
 }
 
-}
+}//namespace climate
+}//namespace pleistocene

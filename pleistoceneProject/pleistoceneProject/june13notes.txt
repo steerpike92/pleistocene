@@ -1,6 +1,4 @@
-
 cool idea:
-
 
 q: earth readout
 w: horizon readout
@@ -13,4 +11,3 @@ r: air readout
 ...
 
 that way you can scroll through all the the layers in the simulation
-

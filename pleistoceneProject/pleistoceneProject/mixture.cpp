@@ -1,5 +1,8 @@
 #include "mixture.h"
+
 namespace pleistocene {
+namespace climate {
+
 //=====================================================================================================================
 //MIXTURE
 //=====================================================================================================================
@@ -340,5 +343,5 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 	return messages;
 
 }
-
+}//namespace climate
 }//namespace pleistocene

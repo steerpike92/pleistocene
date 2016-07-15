@@ -1,10 +1,13 @@
 #pragma once
 #include "globals.h"
+
 namespace pleistocene {
-class Camera;
-class Game;
+
 class Input;
-class GameOptions;
+
+namespace graphics {
+
+class Camera;
 
 class Graphics {
 public:
@@ -69,4 +72,5 @@ private:
 	std::map <std::string, SDL_Texture*> _textures;
 	std::vector <std::string> _pathNames;
 };
+}//namespace graphics
 }//namespace pleistocene

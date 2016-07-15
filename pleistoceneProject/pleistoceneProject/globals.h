@@ -21,7 +21,6 @@
 #define EXCEPTION_HANDLING 1
 
 
-
 #if DEBUG
 #define LOG(x) std::cout<<x<<std::endl
 #else
@@ -29,6 +28,9 @@
 #endif
 
 namespace pleistocene {
+
+namespace options { class GameOptions; }
+
 
 namespace globals {
 const int SCREEN_WIDTH = 1000;
@@ -343,7 +345,7 @@ class Address {
 	static int Cols;
 
 public:
-	static void getOptions(GameOptions &options) noexcept;
+	static void getOptions(options::GameOptions &options) noexcept;
 
 	int r;//row
 	int c;//column

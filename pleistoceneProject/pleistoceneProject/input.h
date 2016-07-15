@@ -2,7 +2,9 @@
 #include "globals.h"
 
 namespace pleistocene {
-class Camera;
+
+namespace graphics{ class Camera; }
+
 
 class Input {
 public:
@@ -37,11 +39,11 @@ public:
 	//quit flag
 	bool _quitFlag = false;
 
-	void setCamera(Camera &camera) noexcept;
+	void setCamera(graphics::Camera &camera) noexcept;
 
 private:
 
-	Camera *_cameraPtr;
+	graphics::Camera *_cameraPtr;
 
 	//updates key maps
 	void keyUpEvent(const SDL_Event &event) noexcept;

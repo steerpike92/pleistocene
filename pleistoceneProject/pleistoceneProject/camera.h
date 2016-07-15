@@ -3,14 +3,17 @@
 
 namespace pleistocene {
 
-class GameOptions;
+namespace options{class GameOptions;}
+
 class Input;
+
+namespace graphics {
 
 class Camera {
 public:
 	Camera() noexcept;
 
-	Camera(my::Vector2 startingPosition, double startingZoom, GameOptions *options) noexcept;
+	Camera(my::Vector2 startingPosition, double startingZoom, options::GameOptions *options) noexcept;
 
 	void updateCameraOptions() noexcept;
 
@@ -25,17 +28,19 @@ public:
 private:
 	my::Vector2 _cameraPosition;
 	double _zoomScale;
-	GameOptions *_optionsPtr;
+	options::GameOptions *_optionsPtr;
 
 	int _gameWidth_pixels;
 	int _gameHeight_pixels;
 
-	bool LOOP;
-	bool RESTRICT_CAMERA;
+	bool _loop;
+	bool _restrictCamera;
 
 
 
 
 
 };
+
+}//namespace graphics
 }//namespace pleistocene

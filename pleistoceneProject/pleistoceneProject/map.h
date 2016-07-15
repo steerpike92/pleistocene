@@ -3,23 +3,23 @@
 
 namespace pleistocene {
 class Tile;
-class Graphics;
-class Bios;
-class GameOptions;
+namespace graphics { class Graphics; }
+namespace user_interface { class Bios; }
+namespace options { class GameOptions; }
 
 class Map {
 public:
 	Map() noexcept;
-	Map(Graphics &graphics, Bios *bios, GameOptions &options) noexcept;
+	Map(graphics::Graphics &graphics, user_interface::Bios *bios, options::GameOptions &options) noexcept;
 
 	void generateMap(int seed) noexcept;
 
-	void draw(Graphics &graphics, bool cameraMovementFlag) noexcept;
+	void draw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept;
 	void update(int elapsedTime) noexcept;
 
 	void simulate() noexcept;
 
-	Bios* _bioPtr;
+	user_interface::Bios* _bioPtr;
 
 	bool _exists = false;
 

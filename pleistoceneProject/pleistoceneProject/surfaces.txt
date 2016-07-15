@@ -1,16 +1,8 @@
-
-
-Step 1:
-
 Add elevations to mixtures
-
 
 Actually, it might be easier to just keep all of the mixture functionality intact and inherit
 
-
 Say a new class "MaterialLayer" which owns a mixture includes auxiliary mixture fuctionality
-
-
 
 creating a material layer...
 
@@ -33,6 +25,3 @@ So in order of creation:
 
 
 It's a bidirectional linked list
-
-
-

@@ -5,7 +5,7 @@
 #include "element.h"
 
 namespace pleistocene {
-
+namespace climate {
 namespace layers {
 
 class MaterialColumn {
@@ -86,6 +86,6 @@ public:
 
 };
 
-}
-
+}//namespace layers
+}//namespace climate
 }//namespace pleistocene

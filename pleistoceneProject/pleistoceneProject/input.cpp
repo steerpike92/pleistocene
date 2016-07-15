@@ -2,7 +2,9 @@
 #include "globals.h"
 #include "game.h"
 #include "camera.h"
+
 namespace pleistocene {
+
 void Input::beginNewFrame() noexcept {
 	_pressedKeys.clear();
 	_releasedKeys.clear();
@@ -139,7 +141,7 @@ SDL_Rect* Input::getSelectionRect() noexcept {
 	return &_selectionRect;
 }
 
-void Input::setCamera(Camera &camera) noexcept {
+void Input::setCamera(graphics::Camera &camera) noexcept {
 	_cameraPtr = &camera;
 }
 }//namespace pleistocene

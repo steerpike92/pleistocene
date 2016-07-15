@@ -3,6 +3,7 @@
 #include "stateMixture.h"
 
 namespace pleistocene {
+namespace climate {
 
 class MaterialLayer;
 class EarthLayer;
@@ -317,6 +318,6 @@ public:
 
 
 
-}//end namespace my
-
+}//namespace layers
+}//namespace climate
 }//namespace pleistocene

@@ -2,6 +2,7 @@
 #include "graphics.h"
 
 namespace pleistocene {
+namespace climate {
 //======================================
 //INITIALIALIZATION
 //======================================
@@ -113,7 +114,7 @@ void TileClimate::updateClimate(int elapsedTime) noexcept {
 
 
 
-bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) noexcept {
+bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, climate::DrawType drawType) noexcept {
 
 	using namespace climate;
 	bool selectionFlag = false;
@@ -130,7 +131,7 @@ bool TileClimate::drawClimate(Graphics &graphics, std::vector<SDL_Rect> onScreen
 	}
 }
 
-bool TileClimate::standardDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
+bool TileClimate::standardDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 
 	double elevation = _materialColumn.getLandElevation();
@@ -176,7 +177,7 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 }
 
 
-bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
+bool TileClimate::surfaceTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 	const double landFudge = 10;
 
@@ -195,7 +196,7 @@ bool TileClimate::surfaceTemperatureDraw(Graphics &graphics, std::vector<SDL_Rec
 	return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
 }
 
-bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
+bool TileClimate::surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 
 	double temperature = _materialColumn.getBoundaryLayerTemperature();
@@ -217,7 +218,7 @@ bool TileClimate::surfaceAirTemperatureDraw(Graphics &graphics, std::vector<SDL_
 std::map<std::string, std::string> TileClimate::_climateTextures;
 std::map<climate::land::elevationType, std::string> TileClimate::_elevationTextures;
 
-void TileClimate::setupTextures(Graphics &graphics)  noexcept {
+void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 
 	_climateTextures["whiteTile"] = "../../content/simpleTerrain/whiteTile.png";
 
@@ -256,4 +257,5 @@ std::vector<std::string> TileClimate::getMessages(climate::DrawType messageType)
 	return messages;
 
 }
+}//namespace climate
 }//namespace pleistocene

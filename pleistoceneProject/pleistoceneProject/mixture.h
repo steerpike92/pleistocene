@@ -3,7 +3,7 @@
 #include "element.h"
 
 namespace pleistocene {
-
+namespace climate {
 class Mixture;
 
 //======================================================================================
@@ -83,4 +83,5 @@ public:
 	double getMols() const noexcept;
 };
 
+}//namespace climate
 }//namespace pleistocene

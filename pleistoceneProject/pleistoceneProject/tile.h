@@ -5,9 +5,10 @@
 namespace pleistocene {
 
 class Map;
-class Graphics;
-class Bios;
-class GameOptions;
+
+namespace graphics { class Graphics; }
+namespace user_interface { class Bios; }
+namespace options { class GameOptions; }
 
 //Tiles are hexagons
 //organized into horizontal rows and vertical columns in my::Vector2 _tileAddress(row,column)
@@ -32,7 +33,7 @@ private:
 	static void buildTileNeighbors()noexcept;//all tiles
 	void buildNeighborhood()noexcept;//individual tile
 
-	static void setupTextures(Graphics &graphics)noexcept;
+	static void setupTextures(graphics::Graphics &graphics)noexcept;
 
 	static std::vector<my::Address> _Addresses;
 
@@ -41,7 +42,7 @@ private:
 
 public:
 	//Calls other constructors
-	static void setupTiles(Graphics &graphics)noexcept;
+	static void setupTiles(graphics::Graphics &graphics)noexcept;
 
 	//Elevation noise creator
 	static void generateTileElevation(int seed)noexcept;
@@ -62,9 +63,9 @@ public:
 	//GRAPHICS
 	//====================
 
-	static void drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//all
+	static void drawTiles(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//all
 private:
-	void draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//one
+	void draw(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag)noexcept;//one
 	std::vector<SDL_Rect> _onScreenPositions;
 
 	//update animations
@@ -80,7 +81,7 @@ private:
 	void simulate()noexcept;
 
 public:
-	static Bios* _biosPtr;
+	static user_interface::Bios* _biosPtr;
 
 private:
 	//(row,column)
@@ -111,7 +112,7 @@ private:
 	double _longitude_deg;
 
 	//all simulation happens in TileClimate
-	TileClimate _tileClimate;
+	climate::TileClimate _tileClimate;
 };
 
 }//namespace pleistocene

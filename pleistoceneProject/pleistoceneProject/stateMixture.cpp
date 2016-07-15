@@ -2,6 +2,7 @@
 #include "mixture.h"
 
 namespace pleistocene {
+namespace climate {
 //===============================================================
 //SOLID
 //===============================================================
@@ -154,5 +155,5 @@ double GaseousMixture::getSaturationDensity() const noexcept {
 double GaseousMixture::getLapseRate() const noexcept {
 	return _adiabaticLapseRate;
 }
-
+}//namespace climate
 }//namespace pleistocene

@@ -2,24 +2,33 @@
 #include "globals.h"
 
 namespace pleistocene {
+
 class Input;
 
-namespace option {
+namespace options {
+
+
 
 enum DrawType {
-	ELEVATION,		//Q
-	SUNLIT_ELEVATION,	//W
+	ELEVATION,		//1
+	SUNLIT_ELEVATION,	//2
 
-	SURFACE_MATERIAL,
-	LAYER_MATERIAL,
+	SURFACE_MATERIAL,	//3
+	LAYER_MATERIAL,		//4
 
-	SURFACE_TEMPERATURE,
-	LAYER_TEMPERATURE
+	SURFACE_TEMPERATURE,	//5
+	LAYER_TEMPERATURE	//6
+};
+
+enum DrawSection {
+	SURFACE,		//7
+	EARTH,			//8
+	SEA,			//9
+	AIR			//0
+
 };
 
 
-
-}
 
 class GameOptions {
 public:
@@ -48,5 +57,12 @@ private:
 	int _Rows;
 	int _Cols;
 
+
+
+
+
+
 };
+
+}//namespace options
 }//namespace pleistocene

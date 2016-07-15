@@ -1,5 +1,6 @@
 #include "materialLayer.h"
 namespace pleistocene {
+namespace climate {
 namespace layers {
 
 
@@ -382,5 +383,5 @@ double AirLayer::getTemperature() const noexcept { return _gasPtr->getTemperatur
 
 
 }//namespace layers
-
+}//namespace climate
 }//namespace pleistocene

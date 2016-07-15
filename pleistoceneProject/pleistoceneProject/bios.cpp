@@ -5,10 +5,11 @@
 #include "map.h"
 
 namespace pleistocene {
+namespace user_interface {
 
 Bios::Bios() noexcept {}
 
-Bios::Bios(Graphics &graphics) noexcept {
+Bios::Bios(graphics::Graphics &graphics) noexcept {
 
 	int screenMargin = 0;
 	int width = 250;
@@ -48,7 +49,7 @@ void Bios::update() noexcept {
 	}
 }
 
-void Bios::draw(Graphics &graphics) noexcept {
+void Bios::draw(graphics::Graphics &graphics) noexcept {
 
 
 	if (_display == NULL) return;
@@ -89,7 +90,7 @@ void Bios::draw(Graphics &graphics) noexcept {
 
 InfoBar::InfoBar() noexcept {}
 
-InfoBar::InfoBar(Graphics &graphics) noexcept {
+InfoBar::InfoBar(graphics::Graphics &graphics) noexcept {
 	int width = globals::SCREEN_WIDTH;
 	int height = 18;
 	_displayRect = { 0 ,0 ,width,height };
@@ -103,7 +104,7 @@ void InfoBar::update() noexcept {
 	_messages = my::SimulationTime::readGlobalTime();
 }
 
-void InfoBar::draw(Graphics &graphics) noexcept {
+void InfoBar::draw(graphics::Graphics &graphics) noexcept {
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
 
 	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y);
@@ -116,4 +117,5 @@ void InfoBar::draw(Graphics &graphics) noexcept {
 	}
 
 }
+}//namespace user_interface
 }//namespace pleistocene

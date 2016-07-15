@@ -69,7 +69,7 @@ void Rectangle::print() const noexcept {
 //////////////=======================================
 
 
-void Address::getOptions(GameOptions &options) noexcept {
+void Address::getOptions(options::GameOptions &options) noexcept {
 
 	Rows = options.getRows();
 	Cols = options.getCols();

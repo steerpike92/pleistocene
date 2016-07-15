@@ -1,6 +1,9 @@
 #include "element.h"
 #include "materialLayer.h"
 namespace pleistocene {
+
+namespace climate {
+
 //=====================================================================================================================
 //ELEMENT
 //=====================================================================================================================
@@ -461,4 +464,5 @@ elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 }
 const elements::ElementPropertyMap Element::_infraredAbsorptivityMap = Element::buildInfraredAbsorptivityMap();
 
+}//namespace climate
 }//namespace pleistocene

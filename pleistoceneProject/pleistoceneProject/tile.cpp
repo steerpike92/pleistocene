@@ -3,7 +3,9 @@
 #include "map.h"
 #include "bios.h"
 #include "noise.h"
+
 namespace pleistocene {
+
 Tile::Tile() noexcept {}
 
 Tile::Tile(my::Address tileAddress) noexcept {
@@ -28,7 +30,7 @@ std::vector<Tile> Tile::_tiles;
 std::vector<my::Address> Tile::_Addresses;
 
 
-void Tile::setupTiles(Graphics &graphics) noexcept {
+void Tile::setupTiles(graphics::Graphics &graphics) noexcept {
 	buildTileVector();
 	setupTextures(graphics);
 	buildTileNeighbors();
@@ -64,7 +66,7 @@ void Tile::buildNeighborhood() noexcept {
 	}
 }
 
-Bios* Tile::_biosPtr;
+user_interface::Bios* Tile::_biosPtr;
 
 std::vector<double> Tile::buildNoiseTable(int seed, double zoom, double persistance, int octaves, int Rows, int Cols) noexcept {
 
@@ -220,7 +222,7 @@ void Tile::generateTileElevation(int seed) noexcept {
 
 			//set elevation
 			double elevation = noiseValue * climate::land::amplitude;
-			_tiles[A.i]._tileClimate = TileClimate(A, elevation);
+			_tiles[A.i]._tileClimate = climate::TileClimate(A, elevation);
 		}
 	}
 }
@@ -228,9 +230,9 @@ void Tile::generateTileElevation(int seed) noexcept {
 
 void Tile::setupTileClimateAdjacency() noexcept {
 
-	std::map<my::Direction, TileClimate*>	adjacientTileClimates;
-	my::Direction				direction;
-	TileClimate				*climatePtr;
+	std::map<my::Direction, climate::TileClimate*>		adjacientTileClimates;
+	my::Direction						direction;
+	climate::TileClimate					*climatePtr;
 
 	for (Tile &tile : _tiles) {
 		//build adjacient climate map for tile
@@ -249,10 +251,6 @@ void Tile::setupTileClimateAdjacency() noexcept {
 }
 
 
-
-
-
-
 void Tile::updateTiles(int elapsedTime) noexcept {
 	for (Tile &T : _tiles) {
 		T.update(elapsedTime);
@@ -268,9 +266,9 @@ void Tile::update(int elapsedTime) noexcept {
 
 void Tile::simulateTiles() noexcept {
 
-	TileClimate::beginNewHour();
+	climate::TileClimate::beginNewHour();
 
-	while (TileClimate::beginNextStep()) {
+	while (climate::TileClimate::beginNextStep()) {
 		for (Tile &tile : _tiles) {
 			tile.simulate();
 		}
@@ -285,22 +283,22 @@ void Tile::simulate() noexcept {
 //GRAPHICS
 //=======================
 
-void Tile::setupTextures(Graphics &graphics) noexcept {
+void Tile::setupTextures(graphics::Graphics &graphics) noexcept {
 
-	TileClimate::setupTextures(graphics);
+	climate::TileClimate::setupTextures(graphics);
 
 	//selection graphics
 	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
 	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
 }
 
-void Tile::drawTiles(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
+void Tile::drawTiles(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
 	for (Tile &tile : _tiles) {
 		tile.draw(graphics, drawType, cameraMovementFlag);
 	}
 }
 
-void Tile::draw(Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
+void Tile::draw(graphics::Graphics &graphics, climate::DrawType drawType, bool cameraMovementFlag) noexcept {
 	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_Address.r % 2) + globals::TILE_WIDTH * _Address.c;
 	_gameRectangle.w = globals::TILE_WIDTH;
 	_gameRectangle.y = _Address.r * globals::EFFECTIVE_HEIGHT;

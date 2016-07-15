@@ -8,13 +8,13 @@ Game::Game() noexcept {
 
 void Game::initialize() noexcept {
 
-	_options = GameOptions();
-	_infoBar = InfoBar(_graphics);
-	_bios = Bios(_graphics);
+	_options = options::GameOptions();
+	_infoBar = user_interface::InfoBar(_graphics);
+	_bios = user_interface::Bios(_graphics);
 	_map = Map(_graphics, &_bios, _options);
 
 
-	_camera = Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
+	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
