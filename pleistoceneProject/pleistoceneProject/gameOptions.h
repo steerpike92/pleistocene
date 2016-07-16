@@ -38,7 +38,7 @@ class GameOptions {
 public:
 	GameOptions() noexcept;
 
-	void setMapSize(int sizeOption) noexcept;
+	void setWorldSize(int sizeOption) noexcept;
 
 	int getRows() const noexcept;
 	int getCols() const noexcept;

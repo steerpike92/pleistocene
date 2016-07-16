@@ -5,15 +5,19 @@
 
 namespace pleistocene {
 
-//FORWARD DECLARATIONS
 
 namespace graphics { class Graphics; }
 namespace user_interface { class Bios; }
 namespace options { class GameOptions; }
 
+
+
+
 namespace simulation {
 
-class Map;
+
+
+
 
 
 //Tiles are hexagons
@@ -22,8 +26,8 @@ class Map;
 //Iterated through row by row to draw (so tiles can be drawn on top of each other)
 class Tile {
 public:
-	Tile()noexcept;
-	Tile(my::Address tileAddress)noexcept;
+	Tile() noexcept;
+	Tile(my::Address tileAddress) noexcept;
 
 	//=====================================================================
 	//SETUP
@@ -34,63 +38,63 @@ public:
 private:
 	static std::vector <Tile> _tiles;
 
-	static void buildTileVector()noexcept;
+	static void buildTileVector() noexcept;
 
-	static void buildTileNeighbors()noexcept;//all tiles
-	void buildNeighborhood()noexcept;//individual tile
+	static void buildTileNeighbors() noexcept;//all tiles
+	void buildNeighborhood() noexcept;//individual tile
 
-	static void setupTextures(graphics::Graphics &graphics)noexcept;
+	static void setupTextures(graphics::Graphics &graphics) noexcept;
 
-	static std::vector<my::Address> _Addresses;
+	static std::vector<my::Address> _addresses;
 
 	//my::Rectangle with ingame tile dimensions
 	SDL_Rect _gameRectangle;
 
 public:
 	//Calls other constructors
-	static void setupTiles(graphics::Graphics &graphics)noexcept;
+	static void setupTiles(graphics::Graphics &graphics) noexcept;
 
 	//Elevation noise creator
-	static void generateTileElevation(int seed)noexcept;
+	static void generateTileElevation (int seed) noexcept;
 private:
-	static std::vector<double> buildNoiseTable(int Rows, int Cols, int seed) noexcept;
+	static std::vector<double> buildNoiseTable (int Rows, int Cols, int seed) noexcept;
 
-	static std::vector<double> blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols,
-		int vBlendDistance, int  hBlendDistance)noexcept;
+	static std::vector<double> blendNoiseTable (std::vector<double> noiseTable, int Rows, int Cols,
+		int vBlendDistance, int  hBlendDistance) noexcept;
 
 
 public:
 	//construct surface relationships 
-	static void setupTileClimateAdjacency()noexcept;
+	static void setupTileClimateAdjacency () noexcept;
 
 
 
 	//GRAPHICS
 	//====================
 
-	static void drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options)noexcept;//all
+	static void drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept;//all
 private:
-	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options)noexcept;//one
+	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept;//one
 	std::vector<SDL_Rect> _onScreenPositions;
 
 	//update animations
 public:
-	static void updateTiles(int elapsedTime)noexcept;
+	static void updateTiles(int elapsedTime) noexcept;
 private:
-	void update(int elapsedTime)noexcept;
+	void update(int elapsedTime) noexcept;
 
 	//run hour simulation
 public:
-	static void simulateTiles()noexcept;
+	static void simulateTiles() noexcept;
 private:
-	void simulate()noexcept;
+	void simulate() noexcept;
 
 public:
 	static user_interface::Bios* _biosPtr;
 
 private:
 	//(row,column)
-	my::Address _Address;
+	my::Address _address;
 
 public:
 	//GETTERS
@@ -119,6 +123,11 @@ private:
 	//all simulation happens in TileClimate
 	climate::TileClimate _tileClimate;
 };
+
+
+
+
+
 
 }//namespace simulation
 }//namespace pleistocene

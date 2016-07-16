@@ -37,8 +37,8 @@ protected:
 
 public:
 	Mixture() noexcept;
-	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::FakeDouble) noexcept;
-	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::FakeDouble) noexcept;
+	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
+	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
 
 	//PARAMETER CALCULATIONS
 	//=====================================================================================================================

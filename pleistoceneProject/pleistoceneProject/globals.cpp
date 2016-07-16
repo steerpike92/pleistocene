@@ -77,11 +77,11 @@ void Address::getOptions(options::GameOptions &options) noexcept {
 
 }
 
-int Address::Rows = FakeIndex;
-int Address::Cols = FakeIndex;
+int Address::Rows = kFakeIndex;
+int Address::Cols = kFakeIndex;
 
 Address::Address() noexcept {
-	r = FakeInt; c = FakeInt; exists = false; i = -FakeIndex;
+	r = kFakeInt; c = kFakeInt; exists = false; i = -kFakeIndex;
 }
 
 
@@ -90,10 +90,10 @@ Address::Address(int R, int C) noexcept {
 
 	//guard against 
 	if (R < 0 || R >= Rows) {
-		r = FakeInt;
-		c = FakeInt;
+		r = kFakeInt;
+		c = kFakeInt;
 		exists = false;
-		i = FakeIndex;
+		i = kFakeIndex;
 		return;
 	}
 
@@ -123,14 +123,14 @@ Address::Address(int R, int C, bool Spurious) noexcept {
 	r = R;
 	odd = (r % 2 != 0);
 	c = C;
-	i = FakeIndex;
+	i = kFakeIndex;
 }
 
 //gets game position at an Address
 Vector2 Address::getGamePos() const noexcept {
 	Vector2 v;
-	v.x = (globals::TILE_WIDTH / 2) * (r % 2) + globals::TILE_WIDTH * c;
-	v.y = globals::EFFECTIVE_HEIGHT*r;
+	v.x = (globals::kTileWidth / 2) * (r % 2) + globals::kTileWidth * c;
+	v.y = globals::kEffectiveTileHeight*r;
 	return v;
 }
 
@@ -138,9 +138,9 @@ Vector2d Address::getLatLonDeg() const noexcept {
 	Vector2 v = this->getGamePos();
 
 	double _latitude_deg = ((-(double)v.y /
-		(globals::EFFECTIVE_HEIGHT*(Rows) / 2)) + 1)*simulation::climate::kMaxLatitude;
+		(globals::kEffectiveTileHeight*(Rows) / 2)) + 1)*simulation::climate::kMaxLatitude;
 	double _longitude_deg = 360 * v.x /
-		(Cols*globals::TILE_WIDTH);
+		(Cols*globals::kTileWidth);
 
 	return Vector2d(_latitude_deg, _longitude_deg);
 }
@@ -183,7 +183,7 @@ Address Address::adjacent(int i) const noexcept {
 	}
 	else {
 		//NOEXCEPT LOG("NOT A VALID DIRECTION");throw (2);
-		return Address(FakeInt, FakeInt, true);
+		return Address(kFakeInt, kFakeInt, true);
 	}
 }
 
@@ -197,6 +197,7 @@ int Address::GetCols() noexcept { return Cols; }
 //////////////SIMULATION TIME
 //////////////=======================================
 
+
 bool SimulationTime::_globalTimeExists = false;
 
 SimulationTime::SimulationTime() noexcept {
@@ -206,7 +207,9 @@ SimulationTime::SimulationTime() noexcept {
 		this->_day = _globalTime._day;
 		this->_hour = _globalTime._hour;
 	}
-	else {//Hello global time!
+
+	else {
+		//global time. Its kind of weird that a class is allowed to have a static member which is an object of that class
 		this->_year = 0;
 		this->_day = 0;
 		this->_hour = 0;
@@ -218,7 +221,8 @@ SimulationTime::SimulationTime() noexcept {
 
 SimulationTime SimulationTime::_globalTime = SimulationTime();
 
-void SimulationTime::updateGlobalTime() noexcept {
+void SimulationTime::updateGlobalTime() noexcept 
+{
 
 	_globalTime._hour++;
 
@@ -232,7 +236,16 @@ void SimulationTime::updateGlobalTime() noexcept {
 	}
 }
 
-std::vector<std::string> SimulationTime::readGlobalTime() noexcept {
+void SimulationTime::resetGlobalTime() noexcept
+{
+	_globalTime._day = 0;
+	_globalTime._hour = 0;
+	_globalTime._year = 0;
+	//TODO ensure any created simulation time objects are destroyed when resetGlobalTime is called (at new world creation only?)
+}
+
+std::vector<std::string> SimulationTime::readGlobalTime() noexcept 
+{
 
 	std::stringstream stream;
 	std::vector<std::string> messages;
@@ -255,7 +268,8 @@ std::vector<std::string> SimulationTime::readGlobalTime() noexcept {
 }
 
 
-double SimulationTime::getTotalHours() const noexcept {
+double SimulationTime::getTotalHours() const noexcept 
+{
 	double hours = 0.0;
 	if (this == &_globalTime) {
 		hours += _globalTime._hour;
@@ -272,7 +286,8 @@ double SimulationTime::getTotalHours() const noexcept {
 	}
 }
 
-double SimulationTime::getTotalDays() const noexcept {
+double SimulationTime::getTotalDays() const noexcept 
+{
 	double days = 0.0;
 	if (this == &_globalTime) {
 		days += (_globalTime._hour) / simulation::climate::kSolarDay_h;
@@ -286,7 +301,8 @@ double SimulationTime::getTotalDays() const noexcept {
 	return days;
 }
 
-double SimulationTime::getTotalYears() const noexcept {
+double SimulationTime::getTotalYears() const noexcept 
+{
 	double years = 0.0;
 	if (this == &_globalTime) {
 		years += ((_globalTime._hour) / simulation::climate::kSolarDay_h) / simulation::climate::kSolarYear_d;
@@ -301,19 +317,22 @@ double SimulationTime::getTotalYears() const noexcept {
 	return years;
 }
 
-int SimulationTime::getYear() const noexcept {
+int SimulationTime::getYear() const noexcept 
+{
 	if (this == &_globalTime) {
 		return _globalTime._year;
 	}
 	return _globalTime._year - this->_year;
 }
-int SimulationTime::getDay() const noexcept {
+int SimulationTime::getDay() const noexcept
+{
 	if (this == &_globalTime) {
 		return _globalTime._day;
 	}
 	return _globalTime._day - this->_day;
 }
-int SimulationTime::getHour() const noexcept {
+int SimulationTime::getHour() const noexcept 
+{
 	if (this == &_globalTime) {
 		return _globalTime._hour;
 	}
@@ -327,11 +346,13 @@ int SimulationTime::getHour() const noexcept {
 //////////////=======================================
 
 
-double degToRad(double deg) noexcept {
+double degToRad(double deg) noexcept 
+{
 	return deg*M_PI / 180.0;
 }
 
-double radToDeg(double rad) noexcept {
+double radToDeg(double rad) noexcept 
+{
 	return rad*180.0 / M_PI;
 }
 

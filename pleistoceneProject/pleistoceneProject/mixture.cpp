@@ -25,7 +25,7 @@ Mixture::Mixture(std::vector<Element> compositionElements, double temperature, e
 {
 	if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin) noexcept : "); LOG(temperature); exit(EXIT_FAILURE); }
 
-	if (_fixedVolume == my::FakeDouble) { _volumeIsFixed = false; }
+	if (_fixedVolume == my::kFakeDouble) { _volumeIsFixed = false; }
 	else { _volumeIsFixed = true; }
 
 	_elements.clear();

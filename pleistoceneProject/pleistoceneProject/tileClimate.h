@@ -15,6 +15,7 @@ namespace options { class GameOptions; }
 namespace simulation {
 
 class Tile;
+struct StatRequest;
 
 namespace climate {
 
@@ -28,7 +29,11 @@ const int kMaxLatitude = 70;
 const int kSolarYear_d = 40;	//Length of a solar year in days
 const int kSolarDay_h = 24;	//length of a solar day in hours
 const int kHour_s = 3600;
-//const int hour_s = 14400;
+
+//longer hour allows for faster simulation of large time, but introduces problems where many assumptions are no longer true
+//for instance, tiles baking in the sun only get to release radiation afterwards (although this might get changed)
+//this leads to super hot tiles which (due to the T^4 scaling of radiation) then overestimates the emitted radiaion
+//const int hour_s = 14400;	
 
 const double kSiderealDay_h = double(kSolarDay_h*kSolarYear_d) / double(kSolarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
 const double kTiltRad = 0.4101524;//radians of axial tilt
@@ -67,7 +72,7 @@ const double kElevationAmplitude = 5 * kElevationGaps;
 
 
 class TileClimate {
-	my::Address _Address;
+	my::Address _address;
 	double _longitude_deg;
 	double _latitude_deg;
 	double calculateLocalInitialtemperature() noexcept;
@@ -103,31 +108,31 @@ private:
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<elevationType, std::string> _elevationTextures;
 
-	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options)noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
 
 	//Standard Draw Subroutine
-	void setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType)noexcept;
+	void setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept;
 
-	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options)noexcept;
-	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
+	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 
-	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 
 
 public:
 	//=================================================
 	//SIMULATION
 	//=================================================
-	static void beginNewHour()noexcept;
+	static void beginNewHour() noexcept;
 
 	static int _simulationStep;
-	static bool beginNextStep()noexcept;
+	static bool beginNextStep() noexcept;
 
-	void simulateClimate()noexcept;
+	void simulateClimate() noexcept;
 private:
 	static const int kTotalSteps = 5;
 
-	double simulateSolarRadiation()noexcept;
+	double simulateSolarRadiation() noexcept;
 
 
 	static double _valueSum;
@@ -150,6 +155,8 @@ private:
 public:
 	//GETTERS
 	//===========================================
+	double getStatistic(const options::GameOptions &options) const noexcept;
+
 	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
 };
 

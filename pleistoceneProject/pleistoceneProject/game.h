@@ -24,7 +24,10 @@ Initializes major components:
 	Input
 
 	(TODO: Include Input into a single module/class "UserInterface")
-	
+	(Well, on the other hand, Input is the class most likely to get passed around, so maybe leaving it in 
+	pleistocene base namespace makes sense)
+
+
 	namespace user_interface
 	{
 		Bios (debug info display) (needs name change probably as Bios means something different to computer people)
@@ -34,20 +37,12 @@ Initializes major components:
 
 	namespace simulation
 	{
-		Map
+		World
 	}
 
-
-======================================
-Interfaces between major modules
-======================================
-
-======================================
-Operates game loop
-======================================
-	
-
 */
+
+
 
 class Game {
 public:
@@ -79,7 +74,7 @@ private:
 	graphics::Camera _camera;
 
 	//holds and updates and draws simulation
-	simulation::Map _map;
+	simulation::World _world;
 
 
 	//METHODS
@@ -99,16 +94,12 @@ private:
 	int _elapsedTime_MS;
 
 	//Process stored user input into changes
-	void processStoredInput() noexcept;
+	void processInput() noexcept;
 	bool _quitFlag = false;
 	bool _cameraMovementFlag = true;
 
 	//update for screen/animations. called each frame
 	void update() noexcept;
-
-	//update for simulation logic. 
-	//simulates an hour of the simulation.
-	void updateSimulation() noexcept;
 
 	//Drawing to renderer and flip to window
 	void draw() noexcept;

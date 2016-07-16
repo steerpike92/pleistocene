@@ -15,7 +15,7 @@ Bios::Bios(graphics::Graphics &graphics) noexcept {
 	int screenMargin = 0;
 	int width = 250;
 	int height = 600;
-	this->_displayRect = { globals::SCREEN_WIDTH - (width + screenMargin),screenMargin,width,height };
+	this->_displayRect = { globals::kScreenWidth - (width + screenMargin),screenMargin,width,height };
 	_textMargin = 1;
 	_textHeight = 7;
 
@@ -90,7 +90,7 @@ void Bios::draw(graphics::Graphics &graphics) noexcept {
 InfoBar::InfoBar() noexcept {}
 
 InfoBar::InfoBar(graphics::Graphics &graphics) noexcept {
-	int width = globals::SCREEN_WIDTH;
+	int width = globals::kScreenWidth;
 	int height = 18;
 	_displayRect = { 0 ,0 ,width,height };
 	_textMargin = 2;

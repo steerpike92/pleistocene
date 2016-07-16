@@ -15,9 +15,9 @@ TileClimate::TileClimate(my::Address A, double noiseValue) noexcept {
 
 	double landElevation=noiseValue * kElevationAmplitude;
 
-	_Address = A;
+	_address = A;
 
-	my::Vector2d latLonDeg = _Address.getLatLonDeg();
+	my::Vector2d latLonDeg = _address.getLatLonDeg();
 	_latitude_deg = latLonDeg.x;
 	_longitude_deg = latLonDeg.y;
 	_solarRadiation = SolarRadiation(_latitude_deg, _longitude_deg);
@@ -139,10 +139,6 @@ bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect
 
 	}
 
-
-
-
-
 }
 
 bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
@@ -258,7 +254,13 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 //GETTERS
 //===========================================
 
-std::vector<std::string> TileClimate::getMessages(const options::GameOptions &options) const noexcept {
+double TileClimate::getStatistic(const options::GameOptions &options) const noexcept 
+{
+	return 0.0;
+}
+
+std::vector<std::string> TileClimate::getMessages(const options::GameOptions &options) const noexcept 
+{
 	using namespace climate;
 
 	std::vector<std::string> messages;

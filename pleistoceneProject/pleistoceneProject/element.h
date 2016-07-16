@@ -73,10 +73,10 @@ public:
 	Element(elements::ConstructorType constructorType, elements::ElementType elementType,
 		double value, elements::State state = elements::NO_STATE) noexcept;
 
-	void combineLike(Element like)noexcept;
-	void addMass(double mass)noexcept;
-	double pullMass(double massRequested)noexcept;
-	void resizeBy(double proportion)noexcept;
+	void combineLike(Element like) noexcept;
+	void addMass(double mass) noexcept;
+	double pullMass(double massRequested) noexcept;
+	void resizeBy(double proportion) noexcept;
 
 	//getters
 	//================================

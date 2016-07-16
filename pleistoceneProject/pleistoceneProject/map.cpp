@@ -3,12 +3,16 @@
 #include "graphics.h"
 #include "noise.h"
 #include "tile.h"
+#include "input.h"
 
 namespace pleistocene {
 namespace simulation {
-Map::Map() noexcept {}
 
-Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept {
+World::World() noexcept {}
+
+
+World::World(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept 
+{
 	srand((unsigned int)time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions
@@ -18,29 +22,51 @@ Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, const options
 
 	Tile::_biosPtr = bios;//give tile class a static bios reference
 
-	//Map generating algorithm
+	//World generating algorithm
 	int seed = 21;//starting with a determined seed gives a pseudorandom intial map
-	generateMap(seed, options);
+	generateWorld(seed, options);
 }
 
 
-void Map::generateMap(int seed, const options::GameOptions &options) noexcept {
+void World::generateWorld(int seed, const options::GameOptions &options) noexcept 
+{
 	Tile::generateTileElevation(seed);
 	Tile::setupTileClimateAdjacency();
 }
 
 
-void Map::update(int elapsedTime) noexcept {
+void World::update(int elapsedTime) noexcept 
+{
 	Tile::updateTiles(elapsedTime);
 }
 
-void Map::simulate(const options::GameOptions &options) noexcept {
-
+void World::simulate(const options::GameOptions & options) noexcept 
+{
 	Tile::simulateTiles();
 }
 
+void World::processInput(const Input & input, const options::GameOptions & options) noexcept
+{
+	//New map (resets all simulation data and generates new tile elevations with a random seed
+	if (input.wasKeyPressed(SDL_SCANCODE_G)) {
+		generateWorld(rand(), options);
+		my::SimulationTime::resetGlobalTime();
+		simulate(options);
+	}
 
-void Map::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
+	//simulation
+	if (input.wasKeyPressed(SDL_SCANCODE_RETURN) ||	//Press enter for one hour of simulation
+		input.wasKeyHeld(SDL_SCANCODE_BACKSLASH) ||	//Hold backslash for continuous simulation
+		options._continuousSimulation)			//Press spacebar to toggle continuous simulation
+	{
+		my::SimulationTime::updateGlobalTime();
+		simulate(options);
+	}
+
+}
+
+
+void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
 	Tile::drawTiles(graphics, cameraMovementFlag, options);
 }
 

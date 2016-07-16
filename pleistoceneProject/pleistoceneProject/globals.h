@@ -1,7 +1,7 @@
 #pragma once
 
 //Strings and such
-#define NOMINMAX
+#define NOMINMAX	//fuck off windows.h
 #include <Windows.h>
 #include <iostream>
 #include <string>
@@ -25,11 +25,9 @@
 #include "SDL.h"	//graphics engine
 #include "SDL_ttf.h"	//true type font
 
-
 #define DEBUG 1
 
 //LOG to console
-
 //#if DEBUG
 //#define LOG(x) std::cout<<x<<std::endl
 //#else
@@ -37,15 +35,16 @@
 //#endif
 
 //LOG to output window
-
+#if DEBUG
 #define LOG( s )				\
 {						\
 	std::ostringstream os_;			\
 	os_ << s << "\n";			\
 	OutputDebugString( os_.str().c_str() );	\
 }
-
-
+#else
+#define LOG(x)
+#endif
 
 namespace pleistocene {
 
@@ -53,17 +52,17 @@ namespace options { class GameOptions; }
 
 
 namespace globals {
-const int SCREEN_WIDTH = 1000;
-const int SCREEN_HEIGHT = 600;
+const int kScreenWidth = 1000;
+const int kScreenHeight = 600;
 
-const int TILE_WIDTH = 256;
+const int kTileWidth = 256;
 
-const int TILE_HEIGHT = 256;
+const int kTileHeight = 256;
 
-const int EFFECTIVE_HEIGHT = 190;
+const int kEffectiveTileHeight = 190;
 
-const int FPS = 50;//target FPS (20 MS)
-const int MAX_FRAME_TIME = 5 * 1000 / FPS;//cutoff frame time after 100 MS 
+const int kFPS = 50;//target kFPS (20 MS)
+const int kMaxFrameTime = 5 * 1000 / kFPS;//cutoff frame time after 100 MS 
 }
 
 
@@ -72,11 +71,9 @@ class options::GameOptions;
 
 namespace my {
 
-
-
-const double FakeDouble = -6666.0;
-const int FakeInt = -6666;
-const int FakeIndex = -6666;
+const double kFakeDouble = -6666.0;
+const int kFakeInt = -6666;
+const int kFakeIndex = -6666;
 
 double uniformRandom() noexcept;
 
@@ -89,6 +86,10 @@ enum Direction {
 	NORTH_WEST
 };
 
+
+//my::Vector2
+//Mostly abandoned in favor of outsourcing to EIGEN to handle linear algebra
+//I also stopped being so afraid of std::pair<double,double>, which used to look like a monstrosity to me
 
 class Vector2d;
 
@@ -206,69 +207,74 @@ public:
 		std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
 	}
 
-};
-
-class MyVector3d {
-public:
-	double x; double y; double z;
-
-	//Default constructor
-	MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
-
-	//Specified constructor
-	MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
-
-	//Addition overload
-	MyVector3d operator + (MyVector3d v2) {
-		MyVector3d v3;
-		v3.x = this->x + v2.x;
-		v3.y = this->y + v2.y;
-		v3.z = this->z + v2.z;
-		return v3;
-	}
-	void operator +=(MyVector3d v2) {
-		x += v2.x;
-		y += v2.y;
-		z += v2.z;
-	}
-	//Subtraction overload
-	MyVector3d operator - (MyVector3d v2) {
-		MyVector3d v3;
-		v3.x = this->x - v2.x;
-		v3.y = this->y - v2.y;
-		v3.z = this->z - v2.z;
-		return v3;
-	}
-	void operator -=(MyVector3d v2) {
-		x -= v2.x;
-		y -= v2.y;
-		z -= v2.z;
-	}
-	MyVector3d operator * (int a) {
-		MyVector3d v2;
-		v2.x = x*double(a);
-		v2.y = y*double(a);
-		v2.z = z*double(a);
-		return v2;
-	}
-
-	MyVector3d operator * (double a) {
-		MyVector3d v2;
-		v2.x = x*a;
-		v2.y = y*a;
-		v2.z = z*a;
-		return v2;
-	}
-
-	double size() {
-		return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
-	}
-
-	void print() {
-		std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
-	}
 
 };
+
+//my::Vector3d
+
+//class MyVector3d {
+//public:
+//	double x; double y; double z;
+//
+//	//Default constructor
+//	MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
+//
+//	//Specified constructor
+//	MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
+//
+//	//Addition overload
+//	MyVector3d operator + (MyVector3d v2) {
+//		MyVector3d v3;
+//		v3.x = this->x + v2.x;
+//		v3.y = this->y + v2.y;
+//		v3.z = this->z + v2.z;
+//		return v3;
+//	}
+//	void operator +=(MyVector3d v2) {
+//		x += v2.x;
+//		y += v2.y;
+//		z += v2.z;
+//	}
+//	//Subtraction overload
+//	MyVector3d operator - (MyVector3d v2) {
+//		MyVector3d v3;
+//		v3.x = this->x - v2.x;
+//		v3.y = this->y - v2.y;
+//		v3.z = this->z - v2.z;
+//		return v3;
+//	}
+//	void operator -=(MyVector3d v2) {
+//		x -= v2.x;
+//		y -= v2.y;
+//		z -= v2.z;
+//	}
+//	MyVector3d operator * (int a) {
+//		MyVector3d v2;
+//		v2.x = x*double(a);
+//		v2.y = y*double(a);
+//		v2.z = z*double(a);
+//		return v2;
+//	}
+//
+//	MyVector3d operator * (double a) {
+//		MyVector3d v2;
+//		v2.x = x*a;
+//		v2.y = y*a;
+//		v2.z = z*a;
+//		return v2;
+//	}
+//
+//	double size() {
+//		return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
+//	}
+//
+//	void print() {
+//		std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
+//	}
+//
+//};
+
+
 
 class Rectangle {
 public:
@@ -277,7 +283,7 @@ public:
 	Rectangle(int x, int y, int w, int h) noexcept;
 	Rectangle(SDL_Rect rect) noexcept;
 
-	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _C) const noexcept;
+	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _c) const noexcept;
 
 	const Vector2 getCenter() const noexcept;
 
@@ -341,14 +347,17 @@ public:
 };
 
 
+//This class is kinda stupid
 class SimulationTime {
 public:
 	//default constructor for 
 	SimulationTime() noexcept;
 
+	//as in a static member which is a SimulationTime object
 	static SimulationTime _globalTime;
 
 	static void updateGlobalTime() noexcept;
+	static void resetGlobalTime() noexcept;
 
 	static std::vector<std::string> readGlobalTime() noexcept;
 

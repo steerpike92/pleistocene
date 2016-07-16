@@ -17,10 +17,10 @@ Graphics::Graphics() noexcept {
 
 	if (TTF_Init() == -1) { LOG("ERROR: could not initialize TTF"); }
 
-	_window = SDL_CreateWindow("Tribe", 50, 50, globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT, 0);
+	_window = SDL_CreateWindow("Tribe", 50, 50, globals::kScreenWidth, globals::kScreenHeight, 0);
 	_renderer = SDL_CreateRenderer(_window, 0, 0);
 
-	_windowRect = { 0,0,globals::SCREEN_WIDTH, globals::SCREEN_HEIGHT };
+	_windowRect = { 0,0,globals::kScreenWidth, globals::kScreenHeight };
 
 
 	this->_font = TTF_OpenFont("../../content/fonts/Roboto-Black.ttf", 10);
@@ -128,7 +128,7 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 		localDestRect = *gameRectangle;
 
 		//add world looping shift
-		localDestRect.x += i * globals::TILE_WIDTH * my::Address::GetCols();
+		localDestRect.x += i * globals::kTileWidth * my::Address::GetCols();
 
 		//Adjust for camera position
 		my::Rectangle dest(localDestRect);

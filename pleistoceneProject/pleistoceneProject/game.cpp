@@ -13,7 +13,7 @@ void Game::initialize() noexcept
 	_options = options::GameOptions();
 	_infoBar = user_interface::InfoBar(_graphics);
 	_bios = user_interface::Bios(_graphics);
-	_map = simulation::Map(_graphics, &_bios, _options);
+	_world = simulation::World(_graphics, &_bios, _options);
 
 	//sets initial camera position/zoomout level
 	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
@@ -22,8 +22,8 @@ void Game::initialize() noexcept
 	_graphics.setInput(_input);
 	_input.setCamera(_camera);
 
-	_map.simulate(_options);//one initial call to simulate for graphical setup
-	_map.draw(_graphics, true, _options);//one guaranteed call checking draw positions
+	_world.simulate(_options);//one initial call to simulate for graphical setup
+	_world.draw(_graphics, true, _options);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
 	srand(size_t(time(NULL)));
@@ -37,7 +37,7 @@ void Game::gameLoop()  noexcept
 	while (!_quitFlag) {
 		_input.beginNewFrame();//Sorts input events into callable information
 		determineElapsedTime();		
-		processStoredInput();	
+		processInput();	
 		update();
 		draw();
 	}
@@ -57,12 +57,12 @@ void Game::determineElapsedTime() noexcept
 	}
 
 	_lastUpdateTime_MS = SDL_GetTicks();
-	_elapsedTime_MS = std::min(_elapsedTime_MS, globals::MAX_FRAME_TIME);
+	_elapsedTime_MS = std::min(_elapsedTime_MS, globals::kMaxFrameTime);
 }
 
 
 //The logical guts of Game
-void Game::processStoredInput() noexcept 
+void Game::processInput() noexcept 
 {
 
 	//Quit
@@ -76,14 +76,11 @@ void Game::processStoredInput() noexcept
 		_cameraMovementFlag = true;
 	}
 	 
-	//New map (resets all simulation data and generates new tile elevations with a random seed
-	if (_input.wasKeyPressed(SDL_SCANCODE_G)) {
-		_map.generateMap(rand(), _options);
-		_map.simulate(_options);
-	}
-
-	//Update options
+	// Update options
 	_options.processInput(_input);
+
+	_world.processInput(_input, _options);
+
 
 	//selection (left click)
 	if (_input.wasButtonPressed(1)) { _bios.clear(); _graphics._selecting = true; }
@@ -92,30 +89,16 @@ void Game::processStoredInput() noexcept
 	//de-selection (right click)
 	if (_input.wasButtonPressed(3)) { _bios.clear(); }
 
-
-	//simulation
-	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) ||	//Press enter for one hour of simulation
-		_input.wasKeyHeld(SDL_SCANCODE_BACKSLASH) ||	//Hold backslash for continuous simulation
-		_options._continuousSimulation)			//Press spacebar to toggle continuous simulation
-	{
-		updateSimulation();
-	}
 }
 
 
 void Game::update()  noexcept 
 {
-	_map.update(_elapsedTime_MS);
+	_world.update(_elapsedTime_MS);
 	_bios.update(_options);
 	_infoBar.update();
 }
 
-
-void Game::updateSimulation() noexcept 
-{
-	my::SimulationTime::updateGlobalTime();
-	_map.simulate(_options);
-}
 
 void Game::draw()  noexcept 
 {
@@ -127,7 +110,7 @@ void Game::draw()  noexcept
 		_cameraMovementFlag)							//draw when camera moves
 	{
 		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag, _options);
+		_world.draw(_graphics, _cameraMovementFlag, _options);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 

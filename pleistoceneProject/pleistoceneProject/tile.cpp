@@ -11,15 +11,15 @@ Tile::Tile() noexcept {}
 
 Tile::Tile(my::Address tileAddress) noexcept {
 
-	_Address = tileAddress;
+	_address = tileAddress;
 
-	_gameRectangle.x = _Address.getGamePos().x;
-	_gameRectangle.y = _Address.getGamePos().y;
-	_gameRectangle.w = globals::TILE_WIDTH;
-	_gameRectangle.h = globals::TILE_HEIGHT;
+	_gameRectangle.x = _address.getGamePos().x;
+	_gameRectangle.y = _address.getGamePos().y;
+	_gameRectangle.w = globals::kTileWidth;
+	_gameRectangle.h = globals::kTileHeight;
 
 
-	my::Vector2d latLonDeg = _Address.getLatLonDeg();
+	my::Vector2d latLonDeg = _address.getLatLonDeg();
 
 	_latitude_deg = latLonDeg.x;
 	_longitude_deg = latLonDeg.y;
@@ -28,7 +28,7 @@ Tile::Tile(my::Address tileAddress) noexcept {
 
 std::vector<Tile> Tile::_tiles;
 
-std::vector<my::Address> Tile::_Addresses;
+std::vector<my::Address> Tile::_addresses;
 
 
 void Tile::setupTiles(graphics::Graphics &graphics) noexcept {
@@ -43,10 +43,8 @@ void Tile::buildTileVector() noexcept {
 	for (int row = 0; row < my::Address::GetRows(); row++) {
 		for (int col = 0; col < my::Address::GetCols(); col++) {
 			_tiles.emplace_back(my::Address(row, col));
-			_Addresses.emplace_back(row, col);
-			if (_Addresses.back().i == my::FakeIndex) {
-				LOG("not a valid Address");
-			}
+			_addresses.emplace_back(row, col);
+			if (_addresses.back().i == my::kFakeIndex) { LOG("not a valid Address");  exit(EXIT_FAILURE); }
 		}
 	}
 }
@@ -60,7 +58,7 @@ void Tile::buildTileNeighbors() noexcept {
 void Tile::buildNeighborhood() noexcept {
 	my::Address neighborAddress;
 	for (int j = 0; j < 6; j++) {
-		neighborAddress = this->_Address.adjacent(j);
+		neighborAddress = this->_address.adjacent(j);
 		if (neighborAddress.i != -1) {
 			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
 		}
@@ -191,7 +189,7 @@ void Tile::generateTileElevation(int seed) noexcept {
 
 			//determine tile to set
 			A = my::Address(row, col);
-			if (A.i == my::FakeIndex) {LOG("address index out of bounds"); exit(EXIT_FAILURE);}
+			if (A.i == my::kFakeIndex) {LOG("address index out of bounds"); exit(EXIT_FAILURE);}
 
 			//Finally initialize TileClimate
 			_tiles[A.i]._tileClimate = climate::TileClimate(A, noiseValue);
@@ -245,6 +243,7 @@ void Tile::simulateTiles() noexcept {
 			tile.simulate();
 		}
 	}
+
 }
 
 void Tile::simulate() noexcept {
@@ -280,10 +279,10 @@ void Tile::drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, cons
 }
 
 void Tile::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
-	_gameRectangle.x = (globals::TILE_WIDTH / 2) * (_Address.r % 2) + globals::TILE_WIDTH * _Address.c;
-	_gameRectangle.w = globals::TILE_WIDTH;
-	_gameRectangle.y = _Address.r * globals::EFFECTIVE_HEIGHT;
-	_gameRectangle.h = globals::TILE_WIDTH;
+	_gameRectangle.x = (globals::kTileWidth / 2) * (_address.r % 2) + globals::kTileWidth * _address.c;
+	_gameRectangle.w = globals::kTileWidth;
+	_gameRectangle.y = _address.r * globals::kEffectiveTileHeight;
+	_gameRectangle.h = globals::kTileWidth;
 
 	bool selectionValue = false;//selection flag
 
@@ -304,7 +303,7 @@ void Tile::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const opt
 //GETTERS
 //=================
 
-my::Address Tile::getAddress() const noexcept { return _Address; }
+my::Address Tile::getAddress() const noexcept { return _address; }
 
 SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
