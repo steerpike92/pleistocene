@@ -5,7 +5,7 @@
 #include "tile.h"
 
 namespace pleistocene {
-
+namespace simulation {
 Map::Map() noexcept {}
 
 Map::Map(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept {
@@ -43,4 +43,6 @@ void Map::simulate(const options::GameOptions &options) noexcept {
 void Map::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
 	Tile::drawTiles(graphics, cameraMovementFlag, options);
 }
+
+}//namespace simulation
 }//namespace pleistocene

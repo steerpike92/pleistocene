@@ -2,6 +2,7 @@
 #include "gameOptions.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace layers {
 
@@ -40,7 +41,7 @@ void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 	//don't send down less than a joule
 	if (energyKJ > 0.001) {
 		//if down is nullptr the sunlight has reached the abyss and you have bigger problems
-		//NOEXCEPT if (_down == nullptr) { LOG("sun shines in hell"); throw(2); }
+		if (_down == nullptr) { LOG("sun shines in hell"); exit(EXIT_FAILURE); }
 
 		_down->filterSolarRadiation(energyKJ);	//chain downward
 	}
@@ -78,11 +79,11 @@ std::vector<std::string> MaterialLayer::getMessages(const options::GameOptions &
 		break;
 	case(options::TEMPERATURE) :
 		stream = std::stringstream();
-		stream << "Temperature: " << int(getTemperature()-273)<< " °C";
+		stream << "Temperature: " << int(getTemperature() - 273) << " °C";
 		messages.push_back(stream.str());
 
 		stream = std::stringstream();
-		stream << "Heat Capacity: " << int(_mixture->getHeatCapacity())<< " kJ/K";
+		stream << "Heat Capacity: " << int(_mixture->getHeatCapacity()) << " kJ/K";
 		messages.push_back(stream.str());
 
 		break;
@@ -184,8 +185,6 @@ std::vector<elements::Element> EarthLayer::generateSoil(double depth, double hei
 			elementVector.push_back(element);
 		}
 		return elementVector;
-		//default:
-			//NOEXCEPT LOG("not a layer type"); throw(2); return elementVector;
 	}
 }
 
@@ -245,7 +244,7 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 		return MaterialLayer::getMessages(options);
 	case(options::MATERIAL_PROPERTIES) :
 	{
-		std::vector<std::string> subMessages= MaterialLayer::getMessages(options);
+		std::vector<std::string> subMessages = MaterialLayer::getMessages(options);
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 
 		stream = std::stringstream();
@@ -258,7 +257,7 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 
 	}
 
-		break;
+					   break;
 	case(options::FLOW) :
 
 		break;
@@ -306,7 +305,7 @@ std::vector<std::string> HorizonLayer::getMessages(const options::GameOptions & 
 	case(options::ELEVATION) :
 		return MaterialLayer::getMessages(options);
 
-	case(options::TEMPERATURE) : 
+	case(options::TEMPERATURE) :
 		return MaterialLayer::getMessages(options);
 
 	case(options::MATERIAL_PROPERTIES) :
@@ -398,7 +397,7 @@ std::vector<std::string> SeaLayer::getMessages(const options::GameOptions & opti
 
 	case(options::MATERIAL_PROPERTIES) :
 		return MaterialLayer::getMessages(options);
-	
+
 	case(options::FLOW) :
 		return messages;
 
@@ -557,7 +556,7 @@ double AirLayer::truePressureCalculator(double elevation) const noexcept
 	double TrueMols = _gasPtr->getMols();
 	double TrueTemperature = lapsedTemperatureCalculator(elevation);
 
-	//NOEXCEPT if (ExpectedMols <= 0 || ExpectedTemperature <= 0) { LOG("pressure calculator divide by zero"); throw(2); return 0; }
+	if (ExpectedMols <= 0 || ExpectedTemperature <= 0) { LOG("pressure calculator divide by zero"); exit(EXIT_FAILURE);}
 
 	double TruePressure = (TrueMols / ExpectedMols) * (TrueTemperature / ExpectedTemperature) * ExpectedPressure;
 
@@ -611,4 +610,5 @@ double AirLayer::getDrawData(const options::GameOptions & options) const noexcep
 
 }//namespace layers
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

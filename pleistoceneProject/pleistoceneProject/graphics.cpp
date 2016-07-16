@@ -103,7 +103,7 @@ void Graphics::colorFilter(const std::string &texturePathName, double redFilter,
 	SDL_SetTextureColorMod(_textures[texturePathName], redMod, greenMod, blueMod);
 
 	////if (SDL_SetTextureColorMod(_textures[texturePathName], redMod, greenMod, blueMod)) {
-		//NOEXCEPT LOG("ERROR, COLOR FILTERING NOT SUPPORTED"); throw(2);
+		//NOEXCEPT LOG("ERROR, COLOR FILTERING NOT SUPPORTED"); exit(EXIT_FAILURE);
 	//}
 	return;
 }

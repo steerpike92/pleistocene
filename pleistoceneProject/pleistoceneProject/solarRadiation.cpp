@@ -1,20 +1,21 @@
 #include "solarRadiation.h"
+#include "tileClimate.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 
 SolarRadiation::SolarRadiation() noexcept {}
 
 SolarRadiation::SolarRadiation(double latitude_deg, double longitude_deg) noexcept {
-	using namespace climate::planetary;
 
 	_latitude_rad = (my::degToRad(latitude_deg));
 	_longitude_rad = (my::degToRad(longitude_deg));
 
 	//Longitude=0 normalVector setup
-	_normalVector(0) = cos(_latitude_rad + tilt_rad);
+	_normalVector(0) = cos(_latitude_rad + kTiltRad);
 	_normalVector(1) = 0;
-	_normalVector(2) = sin(_latitude_rad + tilt_rad);
+	_normalVector(2) = sin(_latitude_rad + kTiltRad);
 
 	//longitude shift
 	buildRotationMatrix(_longitude_rad);
@@ -28,12 +29,11 @@ bool SolarRadiation::_axisExists = false;
 
 //Rotation matrix from sidereal angle
 void SolarRadiation::buildRotationMatrix(double angle_rad) noexcept {
-	using namespace climate::planetary;
 
 	if (!_axisExists) {//First time setup
-		_earthAxis << -sin(tilt_rad),
+		_earthAxis << -sin(kTiltRad),
 			0,
-			cos(tilt_rad);
+			cos(kTiltRad);
 
 		_intermediateMatrix << 0, -_earthAxis(2), _earthAxis(1),
 			_earthAxis(2), 0, -_earthAxis(0),
@@ -58,11 +58,10 @@ double SolarRadiation::_oldRotation = -1.0;
 
 void SolarRadiation::setupSolarRadiation() noexcept
 {
-	using namespace climate::planetary;
 
 	//Setup Rotation Matrix
 	//take total hours in this year and divide it by the length of a sidereal day (hours)
-	double sDays = (my::SimulationTime::_globalTime.getHour() + my::SimulationTime::_globalTime.getDay()*solarDay_h) / siderealDay_h;
+	double sDays = (my::SimulationTime::_globalTime.getHour() + my::SimulationTime::_globalTime.getDay()*kSolarDay_h) / kSiderealDay_h;
 
 	//take the floor of the number of sidereal days to determine our progress through the current siderial day
 	double sDayFloor = floor(sDays);
@@ -75,7 +74,7 @@ void SolarRadiation::setupSolarRadiation() noexcept
 	//Setup Sun Ray Vector
 	//sun vector rotates in circle once per solar year
 	angle_rad = 2 * M_PI*(double(my::SimulationTime::_globalTime.getDay() +
-		double(my::SimulationTime::_globalTime.getHour()) / double(solarDay_h)) / (double)solarYear_d);
+		double(my::SimulationTime::_globalTime.getHour()) / double(kSolarDay_h)) / (double)kSolarYear_d);
 
 	_sunRayVector(0) = cos(angle_rad);
 	_sunRayVector(1) = sin(angle_rad);
@@ -111,4 +110,5 @@ double SolarRadiation::getRadiationShader() noexcept {
 }
 
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

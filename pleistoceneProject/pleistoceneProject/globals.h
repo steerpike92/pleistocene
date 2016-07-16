@@ -1,31 +1,51 @@
 #pragma once
 
-
+//Strings and such
+#define NOMINMAX
+#include <Windows.h>
 #include <iostream>
 #include <string>
+#include <sstream>	//string stream
+#include <fstream>	//file stream
+
+//STL
 #include <vector>
 #include <tuple>
 #include <map>
-#include <algorithm>//map functions
-#include "math.h"//pow, trig functions
-#include <stdlib.h>//srand, rand
-#include <time.h>//time
-#include "SDL.h"
-#include "SDL_ttf.h"
-#include <sstream>
-#include <fstream>
-#include <Eigen/Dense>//linear algebra
+#include <algorithm>	
 #include <memory>
 
+//Math
+#include "math.h"	//pow, trig functions
+#include <stdlib.h>	//srand, rand
+#include <time.h>	//time
+#include <Eigen/Dense>	//linear algebra
+
+//Graphics
+#include "SDL.h"	//graphics engine
+#include "SDL_ttf.h"	//true type font
+
+
 #define DEBUG 1
-#define EXCEPTION_HANDLING 1
+
+//LOG to console
+
+//#if DEBUG
+//#define LOG(x) std::cout<<x<<std::endl
+//#else
+//#define LOG(x)
+//#endif
+
+//LOG to output window
+
+#define LOG( s )				\
+{						\
+	std::ostringstream os_;			\
+	os_ << s << "\n";			\
+	OutputDebugString( os_.str().c_str() );	\
+}
 
 
-#if DEBUG
-#define LOG(x) std::cout<<x<<std::endl
-#else
-#define LOG(x)
-#endif
 
 namespace pleistocene {
 
@@ -44,60 +64,8 @@ const int EFFECTIVE_HEIGHT = 190;
 
 const int FPS = 50;//target FPS (20 MS)
 const int MAX_FRAME_TIME = 5 * 1000 / FPS;//cutoff frame time after 100 MS 
-
 }
 
-
-namespace climate {
-
-namespace planetary {
-const double tileArea = 100000000.0; //m^2
-
-const double g = 9.81;		//acceleration of gravity (m/s/s)
-const int maxLatitude = 70;
-const int solarYear_d = 40;	//Length of a solar year in days
-const int solarDay_h = 24;	//length of a solar day in hours
-const int hour_s = 3600;
-//const int hour_s = 14400;
-
-const double siderealDay_h = double(solarDay_h*solarYear_d) / double(solarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
-const double tilt_rad = 0.4101524;//radians of axial tilt
-//const double tilt_rad = (M_PI / 2)*.6;
-
-const double solarIntensity = 1.360;//kilo-watts per m2
-const double solarEnergyPerHour = solarIntensity * hour_s;// Kilo-Joules per hour per m2
-
-const double stephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
-const double emmisionConstantPerHour = stephanBoltzmanConstant * hour_s;
-
-const double initialTemperatureK = 295.0;
-}
-
-namespace land {
-
-enum elevationType {
-	SUBMERGED,
-	LOW_LAND,
-	MID_LAND,
-	HIGH_LAND
-};
-
-const double gaps = 1000;
-
-const double landCutoff = 0;
-const double midCutoff = gaps;
-const double highCutoff = 2 * gaps;
-
-//if unititilized, -3000 meter depth (average sea depth)
-const double defaultDepth = -3 * gaps;
-
-//high point of 5000 meters above and below sea level
-//rarely realized due to peaking adjustment to noise function
-const double amplitude = 5 * gaps;
-
-}
-
-}
 
 
 class options::GameOptions;

@@ -34,7 +34,7 @@ void Bios::clear() noexcept {
 	_display = false;
 }
 
-void Bios::selectTile(Tile * const tile) noexcept {
+void Bios::selectTile(simulation::Tile * const tile) noexcept {
 	_selectedTile = tile;
 
 	_selectionDrawPos = _selectedTile->getGameRect();

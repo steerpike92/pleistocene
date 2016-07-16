@@ -3,6 +3,7 @@
 #include "mixture.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace elements {
 
@@ -117,4 +118,5 @@ public:
 
 }//namespace elements
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

@@ -3,6 +3,7 @@
 #include "gameOptions.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 //======================================
 //INITIALIALIZATION
@@ -10,7 +11,9 @@ namespace climate {
 
 TileClimate::TileClimate() noexcept {}
 
-TileClimate::TileClimate(my::Address A, double landElevation) noexcept {
+TileClimate::TileClimate(my::Address A, double noiseValue) noexcept {
+
+	double landElevation=noiseValue * kElevationAmplitude;
 
 	_Address = A;
 
@@ -22,11 +25,12 @@ TileClimate::TileClimate(my::Address A, double landElevation) noexcept {
 	double initialTemperature = calculateLocalInitialtemperature();
 
 	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
-
 }
 
+
+
 double TileClimate::calculateLocalInitialtemperature() noexcept {
-	double localInitialTemperature = climate::planetary::initialTemperatureK;
+	double localInitialTemperature = kInitialTemperatureK;
 	localInitialTemperature -= pow((_latitude_deg / 90.0), 2) * 40;
 	return localInitialTemperature;
 }
@@ -63,7 +67,7 @@ void TileClimate::beginNewHour() noexcept {
 
 bool TileClimate::beginNextStep() noexcept {
 	_simulationStep++;
-	return (_simulationStep <= _totalSteps);//check if simulation hour complete
+	return (_simulationStep <= kTotalSteps);//check if simulation hour complete
 }
 
 void TileClimate::simulateClimate() noexcept {
@@ -93,14 +97,14 @@ void TileClimate::simulateClimate() noexcept {
 		_materialColumn.simulateWaterFlow();
 		_materialColumn.simulatePlants();
 		break;
-		//default:
-			//NOEXCEPT LOG("Error: Simulation step out of bounds");throw(2);break;
+	default:
+		LOG("Error: Simulation step out of bounds");exit(EXIT_FAILURE);
 	}
 }
 
 double TileClimate::simulateSolarRadiation() noexcept {
 	double solarFraction = _solarRadiation.applySolarRadiation();
-	double incidentSolarEnergyPerHour = solarFraction*climate::planetary::solarEnergyPerHour;
+	double incidentSolarEnergyPerHour = solarFraction*kSolarEnergyPerHour;
 	return incidentSolarEnergyPerHour;
 }
 
@@ -119,22 +123,22 @@ bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect
 
 	//switch by draw type
 
-	//switch (options._drawType) {
+	//switch (options._statistic) {
 	//case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
 	//case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
 	////case(options::MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
 	//default: return elevationDraw(graphics, onScreenPositions, options);
 	//}
 
-	if (options._drawType == options::ELEVATION && options._drawSection == options::SURFACE) {
+	if (options._statistic == options::ELEVATION && options._drawSection == options::SURFACE) {
 		return elevationDraw(graphics, onScreenPositions, options);
 	}
 	else {
 
 		double drawValue = _materialColumn.getDrawValue(options);
-		
+
 	}
-	
+
 
 
 
@@ -147,7 +151,7 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	double elevation = _materialColumn.getLandElevation();
 
 	double elevationShader;
-	climate::land::elevationType elevationDrawType;
+	elevationType elevationDrawType;
 
 	setElevationDrawSpecs(elevation, elevationShader, elevationDrawType);
 
@@ -163,26 +167,26 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 }
 
 
-void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType) noexcept {
+void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept {
 
-	if (elevation < climate::land::landCutoff) {
-		computedElevationType = climate::land::SUBMERGED;
-		computedElevationShader = abs(double(elevation + 6 * climate::land::gaps)) / double(6 * climate::land::gaps);
+	if (elevation < kLandCutoff) {
+		computedElevationType = SUBMERGED;
+		computedElevationShader = abs(double(elevation + 6 * kElevationGaps)) / double(6 * kElevationGaps);
 		return;
 	}
-	if (elevation < climate::land::midCutoff) {
-		computedElevationType = climate::land::LOW_LAND;
-		computedElevationShader = abs(0.6 + 2 * double(climate::land::gaps - elevation) / double(5 * climate::land::gaps));
+	if (elevation < kMidCutoff) {
+		computedElevationType = LOW_LAND;
+		computedElevationShader = abs(0.6 + 2 * double(kElevationGaps - elevation) / double(5 * kElevationGaps));
 		return;
 	}
-	if (elevation < climate::land::highCutoff) {
-		computedElevationType = climate::land::MID_LAND;
-		computedElevationShader = abs(0.6 + 2 * double(2 * climate::land::gaps - elevation) / double(5 * climate::land::gaps));
+	if (elevation < kHighCutoff) {
+		computedElevationType = MID_LAND;
+		computedElevationShader = abs(0.6 + 2 * double(2 * kElevationGaps - elevation) / double(5 * kElevationGaps));
 		return;
 	}
 
-	computedElevationType = climate::land::HIGH_LAND;
-	computedElevationShader = abs(0.4 + 2 * double(elevation - 2 * climate::land::gaps) / double(10 * climate::land::gaps));
+	computedElevationType = HIGH_LAND;
+	computedElevationShader = abs(0.4 + 2 * double(elevation - 2 * kElevationGaps) / double(10 * kElevationGaps));
 	return;
 }
 
@@ -193,13 +197,13 @@ bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_
 
 	double surfaceTemperature = _materialColumn.getSurfaceTemperature();
 
-	double temperature;
+	//double temperature;
 
-	double colorIntensity = std::min(abs(landFudge + surfaceTemperature - planetary::initialTemperatureK) / 40.0, 1.0);
+	double colorIntensity = std::min(abs(landFudge + surfaceTemperature - kInitialTemperatureK) / 40.0, 1.0);
 	double filter = 1.0 - colorIntensity;
 
 
-	if (landFudge + surfaceTemperature < planetary::initialTemperatureK) {//Cold
+	if (landFudge + surfaceTemperature < kInitialTemperatureK) {//Cold
 		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
 	}
 	else {//Hot
@@ -229,22 +233,22 @@ bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_
 //}
 
 std::map<std::string, std::string> TileClimate::_climateTextures;
-std::map<climate::land::elevationType, std::string> TileClimate::_elevationTextures;
+std::map<elevationType, std::string> TileClimate::_elevationTextures;
 
 void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 
 	_climateTextures["whiteTile"] = "../../content/simpleTerrain/whiteTile.png";
 
 
-	_elevationTextures[climate::land::SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
-	_elevationTextures[climate::land::LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
-	_elevationTextures[climate::land::MID_LAND] = "../../content/simpleTerrain/midLand.png";
-	_elevationTextures[climate::land::HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
+	_elevationTextures[SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
+	_elevationTextures[LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
+	_elevationTextures[MID_LAND] = "../../content/simpleTerrain/midLand.png";
+	_elevationTextures[HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
 
 
 	graphics.loadImage(_climateTextures["whiteTile"]);
 
-	for (std::pair< climate::land::elevationType, std::string> P : _elevationTextures) {
+	for (std::pair< elevationType, std::string> P : _elevationTextures) {
 		graphics.loadImage(P.second);
 	}
 }
@@ -268,14 +272,11 @@ std::vector<std::string> TileClimate::getMessages(const options::GameOptions &op
 	return messages;
 
 }
-}//namespace climate
-}//namespace pleistocene
 
-
-static double _valueSum=0;
-static int _tileCount=0;
+static double _valueSum = 0;
+static int _tileCount = 0;
 static double _valueMean = 0;
-static double _standardDeviation=0;
+static double _standardDeviation = 0;
 
 static void clearStatistics() {
 	_valueSum = 0;
@@ -283,3 +284,9 @@ static void clearStatistics() {
 	_valueMean = 0;
 	_standardDeviation = 0;
 }
+
+}//namespace climate
+}//namespace simulation
+}//namespace pleistocene
+
+

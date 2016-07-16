@@ -2,6 +2,7 @@
 #include "materialLayer.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace elements {
 
@@ -14,7 +15,7 @@ Element::Element() noexcept {}
 Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) noexcept {
 	using namespace elements;
 
-	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);throw(2);}
+	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);exit(EXIT_FAILURE);}
 
 	_elementType = elementType;
 
@@ -28,13 +29,13 @@ Element::Element(elements::ConstructorType constructorType, elements::ElementTyp
 	switch (constructorType) {
 	case(VOLUME) :
 		_volume = value;
-		//if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); throw(2); } //NOEXCEPT
+		//if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); exit(EXIT_FAILURE); } //NOEXCEPT
 		if (_state == PARTICULATE) { _mass = _volume*_particleDensityMap.at(_elementType); }
 		else { _mass = _volume*_densityMap.at(_elementType); }
 		break;
 	case(MOLAR) :
 		_mols = value;
-		//if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); throw(2); } //NOEXCEPT
+		//if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); exit(EXIT_FAILURE); } //NOEXCEPT
 		_mass = _mols*_molarMassMap.at(_elementType);
 		break;
 	case(MASS) :
@@ -58,13 +59,13 @@ Element::Element(elements::ConstructorType constructorType, elements::ElementTyp
 		}
 		break;
 		//default:
-			//LOG("No mixture constructor type"); throw(2); return; //NOEXCEPT
+			//LOG("No mixture constructor type"); exit(EXIT_FAILURE); return; //NOEXCEPT
 	}
 }
 
 void Element::combineLike(Element like) noexcept {
 
-	//NOEXCEPT if (_elementType != like._elementType) { LOG("DIFFERENT ELEMENT"); throw(2); return; }
+	//NOEXCEPT if (_elementType != like._elementType) { LOG("DIFFERENT ELEMENT"); exit(EXIT_FAILURE); return; }
 
 	_mass += like._mass;
 
@@ -467,4 +468,5 @@ const elements::ElementPropertyMap Element::_infraredAbsorptivityMap = Element::
 
 }//namespace elements
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

@@ -1,26 +1,28 @@
 #include "game.h"
 namespace pleistocene {
 
-Game::Game() noexcept {
+Game::Game() noexcept 
+{
 	initialize();
 	gameLoop();
 }
 
-void Game::initialize() noexcept {
+void Game::initialize() noexcept 
+{
 
 	_options = options::GameOptions();
 	_infoBar = user_interface::InfoBar(_graphics);
 	_bios = user_interface::Bios(_graphics);
-	_map = Map(_graphics, &_bios, _options);
+	_map = simulation::Map(_graphics, &_bios, _options);
 
-
+	//sets initial camera position/zoomout level
 	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
 	_input.setCamera(_camera);
 
-	_map.simulate();//one initial call to simulate for graphical setup
+	_map.simulate(_options);//one initial call to simulate for graphical setup
 	_map.draw(_graphics, true, _options);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
@@ -28,18 +30,23 @@ void Game::initialize() noexcept {
 }
 
 
-void Game::gameLoop()  noexcept {
+//LOOP
+//====================================================
+void Game::gameLoop()  noexcept 
+{
 	while (!_quitFlag) {
-		_input.beginNewFrame();	//Sorts input events into callable information
-		determineElapsedTime();
-		processInput(_elapsedTime_MS);
-		update(_elapsedTime_MS);
+		_input.beginNewFrame();//Sorts input events into callable information
+		determineElapsedTime();		
+		processStoredInput();	
+		update();
 		draw();
 	}
 }
 
 
-void Game::determineElapsedTime() noexcept {
+
+void Game::determineElapsedTime() noexcept 
+{
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
 	size_t delay;
 
@@ -53,14 +60,10 @@ void Game::determineElapsedTime() noexcept {
 	_elapsedTime_MS = std::min(_elapsedTime_MS, globals::MAX_FRAME_TIME);
 }
 
-void Game::processInput(int elapsedTime) noexcept {
 
-
-	if (_camera.processCommands(_input, elapsedTime)) {
-		_cameraMovementFlag = true;
-	}
-
-	 
+//The logical guts of Game
+void Game::processStoredInput() noexcept 
+{
 
 	//Quit
 	if (_input._quitFlag || _input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
@@ -68,42 +71,54 @@ void Game::processInput(int elapsedTime) noexcept {
 		return;
 	}
 
+	//Process commands returns true if there is any camera movement
+	if (_camera.processCommands(_input, _elapsedTime_MS)) {
+		_cameraMovementFlag = true;
+	}
+	 
 	//New map (resets all simulation data and generates new tile elevations with a random seed
 	if (_input.wasKeyPressed(SDL_SCANCODE_G)) {
 		_map.generateMap(rand(), _options);
-		_map.simulate();
+		_map.simulate(_options);
 	}
 
 	//Update options
 	_options.processInput(_input);
 
-	//selection
-	if (_input.wasButtonPressed(1)) {
-		_bios.clear();
-		_graphics._selecting = true;
-	}
+	//selection (left click)
+	if (_input.wasButtonPressed(1)) { _bios.clear(); _graphics._selecting = true; }
 	else { _graphics._selecting = false; }
+
+	//de-selection (right click)
 	if (_input.wasButtonPressed(3)) { _bios.clear(); }
 
+
 	//simulation
-	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) || _input.wasKeyHeld(SDL_SCANCODE_BACKSLASH) || _options._continuousSimulation)
+	if (_input.wasKeyPressed(SDL_SCANCODE_RETURN) ||	//Press enter for one hour of simulation
+		_input.wasKeyHeld(SDL_SCANCODE_BACKSLASH) ||	//Hold backslash for continuous simulation
+		_options._continuousSimulation)			//Press spacebar to toggle continuous simulation
 	{
 		updateSimulation();
 	}
 }
 
-void Game::update(int elapsedTime)  noexcept {
-	_map.update(elapsedTime);
+
+void Game::update()  noexcept 
+{
+	_map.update(_elapsedTime_MS);
 	_bios.update(_options);
 	_infoBar.update();
 }
 
-void Game::updateSimulation() noexcept {
+
+void Game::updateSimulation() noexcept 
+{
 	my::SimulationTime::updateGlobalTime();
 	_map.simulate(_options);
 }
 
-void Game::draw()  noexcept {
+void Game::draw()  noexcept 
+{
 
 	//Low/High framerate control
 	if ((!_options._dailyDraw) ||							//draw each hour if daily draw off

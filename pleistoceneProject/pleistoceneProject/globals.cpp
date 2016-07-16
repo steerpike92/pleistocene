@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "gameOptions.h"
+#include "tileClimate.h"
 namespace pleistocene {
 namespace my {
 Vector2::Vector2(Vector2d v2) noexcept {
@@ -137,7 +138,7 @@ Vector2d Address::getLatLonDeg() const noexcept {
 	Vector2 v = this->getGamePos();
 
 	double _latitude_deg = ((-(double)v.y /
-		(globals::EFFECTIVE_HEIGHT*(Rows) / 2)) + 1)*climate::planetary::maxLatitude;
+		(globals::EFFECTIVE_HEIGHT*(Rows) / 2)) + 1)*simulation::climate::kMaxLatitude;
 	double _longitude_deg = 360 * v.x /
 		(Cols*globals::TILE_WIDTH);
 
@@ -167,8 +168,9 @@ Address Address::adjacent(Direction direction) const noexcept {
 		return Address(r, c - 1);
 	case(NORTH_WEST) :
 		return Address(r - 1, c + colMod - 1);
-		//default:
-			//NOEXCEPT LOG("NOT A VALID DIRECTION");throw(2);return Address(r, c);
+
+	//default:
+		//NOEXCEPT LOG("NOT A VALID DIRECTION");exit(EXIT_FAILURE);return Address(r, c);
 	default:
 		return Address();
 
@@ -220,10 +222,10 @@ void SimulationTime::updateGlobalTime() noexcept {
 
 	_globalTime._hour++;
 
-	if (_globalTime._hour >= climate::planetary::solarDay_h) {
+	if (_globalTime._hour >= simulation::climate::kSolarDay_h) {
 		_globalTime._hour = 0;
 		_globalTime._day++;
-		if (_globalTime._day >= climate::planetary::solarYear_d) {
+		if (_globalTime._day >= simulation::climate::kSolarYear_d) {
 			_globalTime._day = 0;
 			_globalTime._year++;
 		}
@@ -257,15 +259,15 @@ double SimulationTime::getTotalHours() const noexcept {
 	double hours = 0.0;
 	if (this == &_globalTime) {
 		hours += _globalTime._hour;
-		hours += climate::planetary::solarDay_h*(_globalTime._day);
-		hours += climate::planetary::solarYear_d*climate::planetary::solarDay_h*(_globalTime._year);
+		hours += simulation::climate::kSolarDay_h*(_globalTime._day);
+		hours += simulation::climate::kSolarYear_d*simulation::climate::kSolarDay_h*(_globalTime._year);
 		return hours;
 	}
 	else {
 
 		hours += _globalTime._hour - this->_hour;
-		hours += climate::planetary::solarDay_h*(_globalTime._day - this->_day);
-		hours += climate::planetary::solarYear_d*climate::planetary::solarDay_h*(_globalTime._year - this->_year);
+		hours += simulation::climate::kSolarDay_h*(_globalTime._day - this->_day);
+		hours += simulation::climate::kSolarYear_d*simulation::climate::kSolarDay_h*(_globalTime._year - this->_year);
 		return hours;
 	}
 }
@@ -273,27 +275,27 @@ double SimulationTime::getTotalHours() const noexcept {
 double SimulationTime::getTotalDays() const noexcept {
 	double days = 0.0;
 	if (this == &_globalTime) {
-		days += (_globalTime._hour) / climate::planetary::solarDay_h;
+		days += (_globalTime._hour) / simulation::climate::kSolarDay_h;
 		days += _globalTime._day;
-		days += climate::planetary::solarYear_d*(_globalTime._year);
+		days += simulation::climate::kSolarYear_d*(_globalTime._year);
 		return days;
 	}
-	days += (_globalTime._hour - this->_hour) / climate::planetary::solarDay_h;
+	days += (_globalTime._hour - this->_hour) / simulation::climate::kSolarDay_h;
 	days += _globalTime._day - this->_day;
-	days += climate::planetary::solarYear_d*(_globalTime._year - this->_year);
+	days += simulation::climate::kSolarYear_d*(_globalTime._year - this->_year);
 	return days;
 }
 
 double SimulationTime::getTotalYears() const noexcept {
 	double years = 0.0;
 	if (this == &_globalTime) {
-		years += ((_globalTime._hour) / climate::planetary::solarDay_h) / climate::planetary::solarYear_d;
-		years += (_globalTime._day) / climate::planetary::solarYear_d;
+		years += ((_globalTime._hour) / simulation::climate::kSolarDay_h) / simulation::climate::kSolarYear_d;
+		years += (_globalTime._day) / simulation::climate::kSolarYear_d;
 		years += _globalTime._year;
 		return years;
 	}
-	years += ((_globalTime._hour - this->_hour) / climate::planetary::solarDay_h) / climate::planetary::solarYear_d;
-	years += (_globalTime._day - this->_day) / climate::planetary::solarYear_d;
+	years += ((_globalTime._hour - this->_hour) / simulation::climate::kSolarDay_h) / simulation::climate::kSolarYear_d;
+	years += (_globalTime._day - this->_day) / simulation::climate::kSolarYear_d;
 	years += _globalTime._year - this->_year;
 
 	return years;

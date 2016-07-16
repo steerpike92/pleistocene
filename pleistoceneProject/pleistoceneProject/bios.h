@@ -6,7 +6,7 @@ namespace pleistocene {
 namespace graphics { class Graphics; }
 namespace options { class GameOptions; }
 
-class Tile;
+namespace simulation { class Tile; }
 
 namespace user_interface {
 
@@ -21,7 +21,7 @@ public:
 	void update(const options::GameOptions &options) noexcept;
 	void draw(graphics::Graphics &graphics) noexcept;
 
-	void selectTile(Tile * const tile) noexcept;
+	void selectTile(simulation::Tile * const tile) noexcept;
 
 private:
 
@@ -29,7 +29,7 @@ private:
 
 	bool _display = false;
 
-	Tile *_selectedTile;
+	simulation::Tile *_selectedTile;
 	std::vector<std::string> _messages;
 	SDL_Rect _displayRect;
 	int _textMargin;

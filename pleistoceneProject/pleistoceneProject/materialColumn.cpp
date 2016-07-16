@@ -4,6 +4,7 @@
 #include "gameOptions.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace layers {
 
@@ -75,7 +76,7 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 
 	while (seaBottomElevation < seaLayerElevations[i] + seaSurfaceElevation) { i++; } //determine number of layers
 
-	//NOEXCEPT if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); throw(2); return 0; }
+	if (i >= 6 || i == 0) { LOG("Inappropriate Sea Depth:"); LOG(seaBottomElevation); exit(EXIT_FAILURE); return 0; }
 
 	i--;
 
@@ -377,7 +378,7 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 		return messages;
 	}
-			       
+
 	case(options::SEA) : {
 
 		if (_submerged) {
@@ -389,7 +390,7 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 		}
 
 		else return messages;
-	
+
 	}
 	case(options::AIR) : {
 		auto layerReporting = &(_air.front());//FRONT
@@ -402,7 +403,7 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 }
 
 double MaterialColumn::getDrawValue(const options::GameOptions &options) const noexcept {
-	
+
 	switch (options._drawSection) {
 
 	case(options::SURFACE) :
@@ -449,4 +450,5 @@ double MaterialColumn::getDrawValue(const options::GameOptions &options) const n
 
 }//namespace layers
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

@@ -2,6 +2,7 @@
 #include "globals.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 
 class SolarRadiation {
@@ -45,4 +46,5 @@ private:
 };
 
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

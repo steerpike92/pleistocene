@@ -2,6 +2,7 @@
 #include "mixture.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace elements {
 //===============================================================
@@ -46,7 +47,7 @@ void SolidMixture::calculatePermeability() noexcept {
 void SolidMixture::calculateGroundWaterFlow() noexcept {
 }
 
-double SolidMixture::getPermeability() const noexcept {return _permeability;}
+double SolidMixture::getPermeability() const noexcept { return _permeability; }
 double SolidMixture::getPorosity() const noexcept { return _voidSpace; }
 
 
@@ -162,4 +163,5 @@ double GaseousMixture::getLapseRate() const noexcept {
 
 }//namespace elements
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

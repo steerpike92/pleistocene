@@ -5,11 +5,16 @@
 
 namespace pleistocene {
 
-class Map;
+//FORWARD DECLARATIONS
 
 namespace graphics { class Graphics; }
 namespace user_interface { class Bios; }
 namespace options { class GameOptions; }
+
+namespace simulation {
+
+class Map;
+
 
 //Tiles are hexagons
 //organized into horizontal rows and vertical columns in my::Vector2 _tileAddress(row,column)
@@ -115,4 +120,5 @@ private:
 	climate::TileClimate _tileClimate;
 };
 
+}//namespace simulation
 }//namespace pleistocene

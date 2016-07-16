@@ -6,6 +6,7 @@ namespace pleistocene {
 
 namespace options { class GameOptions; }
 
+namespace simulation {
 namespace climate {
 namespace layers {
 
@@ -339,4 +340,5 @@ public:
 
 }//namespace layers
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

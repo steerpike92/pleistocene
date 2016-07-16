@@ -5,6 +5,7 @@
 #include "gameOptions.h"
 
 namespace pleistocene {
+namespace simulation {
 
 Tile::Tile() noexcept {}
 
@@ -150,7 +151,7 @@ void Tile::generateTileElevation(int seed) noexcept {
 	int Rows = TileRows;							//rows needed in noise table
 
 
-	
+
 
 	//noise generator;
 	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols, seed);
@@ -190,11 +191,10 @@ void Tile::generateTileElevation(int seed) noexcept {
 
 			//determine tile to set
 			A = my::Address(row, col);
-			//NOEXCEPT if (A.i == my::FakeIndex) {LOG("address index out of bounds");throw (2);}
+			if (A.i == my::FakeIndex) {LOG("address index out of bounds"); exit(EXIT_FAILURE);}
 
-			//set elevation
-			double elevation = noiseValue * climate::land::amplitude;
-			_tiles[A.i]._tileClimate = climate::TileClimate(A, elevation);
+			//Finally initialize TileClimate
+			_tiles[A.i]._tileClimate = climate::TileClimate(A, noiseValue);
 		}
 	}
 }
@@ -267,11 +267,11 @@ void Tile::setupTextures(graphics::Graphics &graphics) noexcept {
 void Tile::drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
 
 
-	if (options._newStatistic) {
-		for (Tile &tile : _tiles) {
-			tile._tileClimate.drawClimate(graphics, options);//////SETUP STAT DRAWING
-		}
-	}
+	//if (options._newStatistic) {
+	//	for (Tile &tile : _tiles) {
+	//		tile._tileClimate.drawClimate(graphics, options);//////SETUP STAT DRAWING
+	//	}
+	//}
 
 
 	for (Tile &tile : _tiles) {
@@ -310,7 +310,7 @@ SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
 std::vector<std::string> Tile::sendMessages(const options::GameOptions &options) const noexcept {
 
-	
+
 
 	std::vector<std::string> messages;
 
@@ -327,4 +327,5 @@ std::vector<std::string> Tile::sendMessages(const options::GameOptions &options)
 	return messages;
 }
 
+}//namespace simulation
 }//namespace pleistocene

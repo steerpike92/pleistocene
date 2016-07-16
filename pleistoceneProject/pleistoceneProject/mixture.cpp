@@ -1,6 +1,8 @@
 #include "mixture.h"
+#include "tileClimate.h"
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace elements {
 
@@ -21,7 +23,7 @@ Mixture::Mixture(std::vector<Element> compositionElements, double temperature, e
 	_state(state),
 	_fixedVolume(fixedVolume)
 {
-	//NOEXCEPT if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin) noexcept : "); LOG(temperature); throw(2); }
+	if (_temperature <= 0) { LOG("ERROR: Inappropriately low temperature (this is kelvin) noexcept : "); LOG(temperature); exit(EXIT_FAILURE); }
 
 	if (_fixedVolume == my::FakeDouble) { _volumeIsFixed = false; }
 	else { _volumeIsFixed = true; }
@@ -191,7 +193,7 @@ void Mixture::pushSpecific(Element addedSpecificElement, double temperature, boo
 	ElementType eType = addedSpecificElement.getElementType();
 
 	//check state conflict
-	//NOEXCEPT if (addedSpecificElement.getStateConflict(_state)) {LOG("Element type not compatible with state");throw(2);}
+	if (addedSpecificElement.getStateConflict(_state)) {LOG("Element type not compatible with state"); exit(EXIT_FAILURE);}
 
 	if (temperatureSpecified) {
 		Mixture temporaryMixture = Mixture(addedSpecificElement, temperature, _state);
@@ -238,9 +240,9 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	_totalInfraredEmitted = 0;
 
 	int mixtureCount = _elements.size();
-	//NOEXCEPT if (mixtureCount== 0) {LOG("NO COMPONENTS"); throw(2); return solarEnergyKJ;}
-	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); throw(2); return solarEnergyKJ; }
-	//NOEXCEPT if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); throw(2); return solarEnergyKJ; }
+	if (mixtureCount== 0) {LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ;}
+	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); exit(EXIT_FAILURE); return solarEnergyKJ; }
+	if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 
 	//reflection
 	solarEnergyKJ *= (1 - _albedo);
@@ -258,15 +260,15 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 double Mixture::emitInfrared() noexcept {
 
 	int mixtureCount = _elements.size();
-	//NOEXCEPT if (mixtureCount == 0) { LOG("NO COMPONENTS"); throw(2); return 0; }
-	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return 0; }
+	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return 0; }
+	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  exit(EXIT_FAILURE); return 0; }
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
+		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
 	}
 	else {
-		emissionEnergy = climate::planetary::emmisionConstantPerHour * pow(_temperature, 4);
+		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4);
 	}
 
 	_totalInfraredEmitted += emissionEnergy;
@@ -280,8 +282,8 @@ double Mixture::emitInfrared() noexcept {
 
 double Mixture::filterInfrared(double infraredEnergy) noexcept {
 	int mixtureCount = _elements.size();
-	//NOEXCEPT if (mixtureCount == 0) { LOG("NO COMPONENTS");  throw(2); return infraredEnergy; }
-	//NOEXCEPT if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  throw(2); return infraredEnergy; }
+	if (mixtureCount == 0) { LOG("NO COMPONENTS");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
+	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
 
 	//absorption heating
 	double infraredAbsorbed = _infraredAbsorptionIndex*infraredEnergy;
@@ -339,4 +341,5 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 
 }//namespace elements
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene

@@ -3,6 +3,7 @@
 #include <set>
 
 namespace pleistocene {
+namespace simulation {
 namespace climate {
 namespace elements {
 
@@ -167,4 +168,5 @@ private:
 
 }//namespace elements
 }//namespace climate
+}//namespace simulation
 }//namespace pleistocene
