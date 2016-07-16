@@ -34,7 +34,8 @@ void Map::update(int elapsedTime) noexcept {
 	Tile::updateTiles(elapsedTime);
 }
 
-void Map::simulate() noexcept {
+void Map::simulate(const options::GameOptions &options) noexcept {
+
 	Tile::simulateTiles();
 }
 

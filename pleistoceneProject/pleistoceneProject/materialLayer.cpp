@@ -70,7 +70,7 @@ std::vector<std::string> MaterialLayer::getMessages(const options::GameOptions &
 	std::vector<std::string> messages;
 	std::stringstream stream;
 
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) :
 		stream = std::stringstream();
 		stream << "Elevation: " << int(_topElevation);
@@ -112,7 +112,7 @@ std::vector<std::string> MaterialLayer::getMessages(const options::GameOptions &
 }
 double MaterialLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
@@ -238,7 +238,7 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 	std::vector<std::string> messages;
 	std::stringstream stream;
 
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) :
 		return MaterialLayer::getMessages(options);
 	case(options::TEMPERATURE) :
@@ -272,7 +272,7 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 }
 double EarthLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
@@ -302,7 +302,7 @@ std::vector<std::string> HorizonLayer::getMessages(const options::GameOptions & 
 	std::vector<std::string> messages;
 	std::stringstream stream;
 
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) :
 		return MaterialLayer::getMessages(options);
 
@@ -336,7 +336,7 @@ std::vector<std::string> HorizonLayer::getMessages(const options::GameOptions & 
 
 double HorizonLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
@@ -389,7 +389,7 @@ std::vector<std::string> SeaLayer::getMessages(const options::GameOptions & opti
 	std::vector<std::string> messages;
 	std::stringstream stream;
 
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) :
 		return MaterialLayer::getMessages(options);
 
@@ -409,7 +409,7 @@ std::vector<std::string> SeaLayer::getMessages(const options::GameOptions & opti
 
 double SeaLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
@@ -577,7 +577,7 @@ std::vector<std::string> AirLayer::getMessages(const options::GameOptions & opti
 	std::vector<std::string> messages;
 	std::stringstream stream;
 
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) :
 		return MaterialLayer::getMessages(options);
 
@@ -599,7 +599,7 @@ std::vector<std::string> AirLayer::getMessages(const options::GameOptions & opti
 
 double AirLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
-	switch (options._drawType) {
+	switch (options._statistic) {
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();

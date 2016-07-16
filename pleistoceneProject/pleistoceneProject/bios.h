@@ -48,7 +48,7 @@ public:
 
 	InfoBar(graphics::Graphics &graphics) noexcept;
 
-	void draw(graphics::Graphics &graphics) noexcept;
+	void draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept;
 	void update() noexcept;
 
 private:

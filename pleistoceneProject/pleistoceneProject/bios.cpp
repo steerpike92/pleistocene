@@ -103,16 +103,44 @@ void InfoBar::update() noexcept {
 	_messages = my::SimulationTime::readGlobalTime();
 }
 
-void InfoBar::draw(graphics::Graphics &graphics) noexcept {
+void InfoBar::draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept {
+	//bar across top of screen
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
 
-	my::Vector2 textPos(_displayRect.x + _textMargin, _displayRect.y);
+	my::Vector2 textPosition(_displayRect.x + _textMargin, _displayRect.y);
 
 	my::Vector2 textDimensions;
 
+	int dateMargin = 40; //otherwise it'll jostle stupidly with changing dates. Should have chosen a monospace font
+
 	for (std::string &message : _messages) {
-		textDimensions = graphics.blitText(message, textPos, graphics.White, true);
-		textPos.x += textDimensions.x + _textMargin;
+		textDimensions = graphics.blitText(message, textPosition, graphics.White, true);
+		textPosition.x += dateMargin;
+	}
+
+
+	std::vector<std::string> draw_messages;
+	draw_messages.push_back("   ");
+
+	switch (options._drawSection) {
+	case(options::SURFACE) : draw_messages.push_back("SURFACE "); break;
+	case(options::HORIZON) : draw_messages.push_back("HORIZON "); break;
+	case(options::EARTH) : draw_messages.push_back("EARTH "); break;
+	case(options::SEA) : draw_messages.push_back("SEA ");  break;
+	case(options::AIR) : draw_messages.push_back("AIR "); break;
+	}
+
+	switch (options._statistic) {
+	case(options::ELEVATION) : draw_messages.push_back("ELEVATION "); break;
+	case(options::TEMPERATURE) : draw_messages.push_back("TEMPERATURE "); break;
+	case(options::MATERIAL_PROPERTIES) : draw_messages.push_back("MATERIAL PROPERTIES "); break;
+	case(options::FLOW) : draw_messages.push_back("FLOW "); break;
+	case(options::MOISTURE) : draw_messages.push_back("MOISTURE "); break;
+	}
+
+	for (std::string &message : draw_messages) {
+		textDimensions = graphics.blitText(message, textPosition, graphics.White, true);
+		textPosition.x += textDimensions.x;
 	}
 
 }

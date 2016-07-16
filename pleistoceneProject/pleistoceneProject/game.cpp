@@ -100,29 +100,23 @@ void Game::update(int elapsedTime)  noexcept {
 
 void Game::updateSimulation() noexcept {
 	my::SimulationTime::updateGlobalTime();
-	_map.simulate();
+	_map.simulate(_options);
 }
 
 void Game::draw()  noexcept {
 
-	//Low/High framerate draw control structure
-	if (!_options._dailyDraw) {//draw each hour if daily draw off
-		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag, _options);
-		_cameraMovementFlag = false;//i.e. processed
-	}
-	else if (_graphics._selecting) {
-		_graphics.clear();
-		_map.draw(_graphics, _cameraMovementFlag, _options);
-		_cameraMovementFlag = false;//i.e. processed
-	}
-	else if (my::SimulationTime::_globalTime.getHour() == _options._drawHour) {//draw on draw hour
+	//Low/High framerate control
+	if ((!_options._dailyDraw) ||							//draw each hour if daily draw off
+		_graphics._selecting ||							//draw whenever user clicks on a tile
+		my::SimulationTime::_globalTime.getHour() == _options._drawHour ||	//draw on specified draw hour
+		_cameraMovementFlag)							//draw when camera moves
+	{
 		_graphics.clear();
 		_map.draw(_graphics, _cameraMovementFlag, _options);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 
-	_infoBar.draw(_graphics);
+	_infoBar.draw(_graphics, _options);
 	_bios.draw(_graphics);
 	_graphics.flip();
 }

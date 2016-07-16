@@ -9,7 +9,7 @@ namespace options {
 
 
 
-enum DrawType {
+enum Statistic {
 	ELEVATION,		//1
 
 	TEMPERATURE,		//2
@@ -50,11 +50,12 @@ public:
 	bool _restrictCameraOption = false;
 	bool _maxFramerateOption = false;
 
-	DrawType _drawType = ELEVATION;
+	Statistic _statistic = ELEVATION;
 	bool _sunlit = true;
 	DrawSection _drawSection = SURFACE;
-
 	int _drawLayer = 0;
+
+	bool _newStatistic = false;
 
 	void processInput(Input &input);
 

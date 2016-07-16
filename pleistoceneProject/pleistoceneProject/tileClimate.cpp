@@ -119,12 +119,26 @@ bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect
 
 	//switch by draw type
 
-	switch (options._drawType) {
-	case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
-	case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
-	//case(options::MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
-	default: return elevationDraw(graphics, onScreenPositions, options);
+	//switch (options._drawType) {
+	//case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
+	//case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
+	////case(options::MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
+	//default: return elevationDraw(graphics, onScreenPositions, options);
+	//}
+
+	if (options._drawType == options::ELEVATION && options._drawSection == options::SURFACE) {
+		return elevationDraw(graphics, onScreenPositions, options);
 	}
+	else {
+
+		double drawValue = _materialColumn.getDrawValue(options);
+		
+	}
+	
+
+
+
+
 }
 
 bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
@@ -243,8 +257,6 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 std::vector<std::string> TileClimate::getMessages(const options::GameOptions &options) const noexcept {
 	using namespace climate;
 
-
-
 	std::vector<std::string> messages;
 
 	std::vector<std::string> SubMessages = _materialColumn.getMessages(options);
@@ -258,3 +270,16 @@ std::vector<std::string> TileClimate::getMessages(const options::GameOptions &op
 }
 }//namespace climate
 }//namespace pleistocene
+
+
+static double _valueSum=0;
+static int _tileCount=0;
+static double _valueMean = 0;
+static double _standardDeviation=0;
+
+static void clearStatistics() {
+	_valueSum = 0;
+	_tileCount = 0;
+	_valueMean = 0;
+	_standardDeviation = 0;
+}

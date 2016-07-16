@@ -337,7 +337,7 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 	std::vector<std::string> subMessages;
 	std::stringstream stream;
 
-	if (options._drawType == options::TEMPERATURE) {
+	if (options._statistic == options::TEMPERATURE) {
 		stream = std::stringstream();
 		stream << "Back Radiation: " << int(_backRadiation) << " KJ";
 		messages.push_back(stream.str());

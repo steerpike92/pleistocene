@@ -2,6 +2,7 @@
 #include "graphics.h"
 #include "map.h"
 #include "bios.h"
+#include "gameOptions.h"
 
 namespace pleistocene {
 
@@ -264,6 +265,15 @@ void Tile::setupTextures(graphics::Graphics &graphics) noexcept {
 }
 
 void Tile::drawTiles(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
+
+
+	if (options._newStatistic) {
+		for (Tile &tile : _tiles) {
+			tile._tileClimate.drawClimate(graphics, options);//////SETUP STAT DRAWING
+		}
+	}
+
+
 	for (Tile &tile : _tiles) {
 		tile.draw(graphics, cameraMovementFlag, options);
 	}

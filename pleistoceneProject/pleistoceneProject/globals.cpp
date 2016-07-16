@@ -243,10 +243,12 @@ std::vector<std::string> SimulationTime::readGlobalTime() noexcept {
 	stream << "Day: " << _globalTime._day;
 	messages.push_back(stream.str());
 
+
 	stream = std::stringstream();
 	stream << "Hour: " << _globalTime._hour;
 	messages.push_back(stream.str());
 
+	
 	return messages;
 }
 
