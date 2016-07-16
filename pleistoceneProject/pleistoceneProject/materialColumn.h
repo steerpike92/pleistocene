@@ -18,6 +18,9 @@ class MaterialColumn {
 	std::vector<SeaLayer> _sea;
 	std::vector<AirLayer> _air;
 
+	//conveniently assignable during const calls
+	//MaterialLayer* _layerReporting;
+
 	//non owning vector with pointers to all layers
 	std::vector<MaterialLayer*> _column;
 
@@ -85,6 +88,8 @@ public:
 	double getBoundaryLayerTemperature() const noexcept;
 
 	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+
+	double getDrawValue(const options::GameOptions &options)const noexcept;
 
 };
 

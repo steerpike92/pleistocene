@@ -24,7 +24,8 @@ enum DrawType {
 };
 
 enum DrawSection {
-	SURFACE,		//7
+	SURFACE,		//6
+	HORIZON,		//7
 	EARTH,			//8
 	SEA,			//9
 	AIR			//0
@@ -52,6 +53,7 @@ public:
 	DrawType _drawType = ELEVATION;
 	bool _sunlit = true;
 	DrawSection _drawSection = SURFACE;
+
 	int _drawLayer = 0;
 
 	void processInput(Input &input);

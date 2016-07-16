@@ -28,6 +28,9 @@ private:
 	void calculatePermeability() noexcept;
 	void calculateGroundWaterFlow() noexcept;
 
+public:
+	double getPorosity() const noexcept;
+	double getPermeability() const noexcept;
 };
 
 //===============================================================

@@ -1,4 +1,5 @@
 #include "materialLayer.h"
+#include "gameOptions.h"
 
 namespace pleistocene {
 namespace climate {
@@ -64,7 +65,62 @@ double MaterialLayer::getBottomElevation() const noexcept { return _bottomElevat
 double MaterialLayer::getTopElevation() const noexcept { return _topElevation; }
 double MaterialLayer::getTemperature() const noexcept { return _mixture->getTemperature(); }
 
+std::vector<std::string> MaterialLayer::getMessages(const options::GameOptions & options) const noexcept
+{
+	std::vector<std::string> messages;
+	std::stringstream stream;
 
+	switch (options._drawType) {
+	case(options::ELEVATION) :
+		stream = std::stringstream();
+		stream << "Elevation: " << int(_topElevation);
+		messages.push_back(stream.str());
+		break;
+	case(options::TEMPERATURE) :
+		stream = std::stringstream();
+		stream << "Temperature: " << int(getTemperature()-273)<< " °C";
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Heat Capacity: " << int(_mixture->getHeatCapacity())<< " kJ/K";
+		messages.push_back(stream.str());
+
+		break;
+	case(options::MATERIAL_PROPERTIES) :
+
+		stream = std::stringstream();
+		stream << "Albedo: " << int(_mixture->getAlbedo() * 100) << "%";
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Mass: " << int(_mixture->getMass()) << " kg";
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Height: " << int(_height) << " m";
+		messages.push_back(stream.str());
+		break;
+	case(options::FLOW) :
+
+		break;
+	case(options::MOISTURE) :
+
+		break;
+	}
+
+	return messages;
+}
+double MaterialLayer::getDrawData(const options::GameOptions & options) const noexcept
+{
+	switch (options._drawType) {
+	case(options::ELEVATION) : return _topElevation;
+	case(options::TEMPERATURE) : return _mixture->getTemperature();
+	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(options::FLOW) : return 0;
+	case(options::MOISTURE) : return 0;
+	}
+
+}
 
 //////////==================================
 //////////EARTH
@@ -172,7 +228,59 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex) noexcept
 //SIMULATION
 //===========================
 
-void EarthLayer::simulateFlow() noexcept {}//STUB
+void EarthLayer::simulateFlow() noexcept {}
+
+//GETTERS
+//===========================
+
+std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & options) const noexcept
+{
+	std::vector<std::string> messages;
+	std::stringstream stream;
+
+	switch (options._drawType) {
+	case(options::ELEVATION) :
+		return MaterialLayer::getMessages(options);
+	case(options::TEMPERATURE) :
+		return MaterialLayer::getMessages(options);
+	case(options::MATERIAL_PROPERTIES) :
+	{
+		std::vector<std::string> subMessages= MaterialLayer::getMessages(options);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+
+		stream = std::stringstream();
+		stream << "Porousness: " << int(_solidPtr->getPorosity());
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Permeability: " << int(_solidPtr->getPermeability());
+		messages.push_back(stream.str());
+
+	}
+
+		break;
+	case(options::FLOW) :
+
+		break;
+	case(options::MOISTURE) :
+
+		break;
+	}
+
+
+	return messages;
+}
+double EarthLayer::getDrawData(const options::GameOptions & options) const noexcept
+{
+	switch (options._drawType) {
+	case(options::ELEVATION) : return _topElevation;
+	case(options::TEMPERATURE) : return _mixture->getTemperature();
+	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(options::FLOW) : return 0;
+	case(options::MOISTURE) : return 0;
+	}
+}
+
 
 ////////////==================================
 ////////////HORIZON
@@ -187,6 +295,54 @@ EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHe
 	using namespace layers;
 
 	_layerType = HORIZON;//overwrite
+}
+
+std::vector<std::string> HorizonLayer::getMessages(const options::GameOptions & options) const noexcept
+{
+	std::vector<std::string> messages;
+	std::stringstream stream;
+
+	switch (options._drawType) {
+	case(options::ELEVATION) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::TEMPERATURE) : 
+		return MaterialLayer::getMessages(options);
+
+	case(options::MATERIAL_PROPERTIES) :
+	{
+		std::vector<std::string> subMessages = MaterialLayer::getMessages(options);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+
+		stream = std::stringstream();
+		stream << "Porousness: " << int(_solidPtr->getPorosity());
+		messages.push_back(stream.str());
+
+		stream = std::stringstream();
+		stream << "Permeability: " << int(_solidPtr->getPermeability());
+		messages.push_back(stream.str());
+
+		return messages;
+	}
+
+	case(options::FLOW) :
+		return messages;
+
+	case(options::MOISTURE) :
+		return messages;
+	}
+	return messages;
+}
+
+double HorizonLayer::getDrawData(const options::GameOptions & options) const noexcept
+{
+	switch (options._drawType) {
+	case(options::ELEVATION) : return _topElevation;
+	case(options::TEMPERATURE) : return _mixture->getTemperature();
+	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(options::FLOW) : return 0;
+	case(options::MOISTURE) : return 0;
+	}
 }
 
 //////////////==================================
@@ -227,6 +383,40 @@ _liquidPtr(new elements::LiquidMixture())
 //===========================
 
 void SeaLayer::simulateFlow() noexcept {} //STUB
+
+std::vector<std::string> SeaLayer::getMessages(const options::GameOptions & options) const noexcept
+{
+	std::vector<std::string> messages;
+	std::stringstream stream;
+
+	switch (options._drawType) {
+	case(options::ELEVATION) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::TEMPERATURE) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::MATERIAL_PROPERTIES) :
+		return MaterialLayer::getMessages(options);
+	
+	case(options::FLOW) :
+		return messages;
+
+	case(options::MOISTURE) :
+		return messages;
+	}
+}
+
+double SeaLayer::getDrawData(const options::GameOptions & options) const noexcept
+{
+	switch (options._drawType) {
+	case(options::ELEVATION) : return _topElevation;
+	case(options::TEMPERATURE) : return _mixture->getTemperature();
+	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(options::FLOW) : return 0;
+	case(options::MOISTURE) : return 0;
+	}
+}
 
 //////////==================================
 //////////AIR
@@ -381,6 +571,42 @@ double AirLayer::truePressureCalculator(double elevation) const noexcept
 //=========================
 
 double AirLayer::getTemperature() const noexcept { return _gasPtr->getTemperature(); }
+
+std::vector<std::string> AirLayer::getMessages(const options::GameOptions & options) const noexcept
+{
+	std::vector<std::string> messages;
+	std::stringstream stream;
+
+	switch (options._drawType) {
+	case(options::ELEVATION) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::TEMPERATURE) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::MATERIAL_PROPERTIES) :
+		return MaterialLayer::getMessages(options);
+
+	case(options::FLOW) :
+		return messages;
+
+	case(options::MOISTURE) :
+		return messages;
+	}
+	return messages;
+
+}
+
+double AirLayer::getDrawData(const options::GameOptions & options) const noexcept
+{
+	switch (options._drawType) {
+	case(options::ELEVATION) : return _topElevation;
+	case(options::TEMPERATURE) : return _mixture->getTemperature();
+	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(options::FLOW) : return 0;
+	case(options::MOISTURE) : return 0;
+	}
+}
 
 
 }//namespace layers

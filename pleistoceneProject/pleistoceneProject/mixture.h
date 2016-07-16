@@ -78,6 +78,7 @@ public:
 
 	std::vector<std::string> getMessages() const noexcept;
 	double getTemperature() const noexcept;
+	double getHeatCapacity() const noexcept;
 	double getHeight() const noexcept;
 	double getAlbedo() const noexcept;
 	double getVolume() const noexcept;

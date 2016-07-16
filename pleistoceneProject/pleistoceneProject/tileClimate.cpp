@@ -120,14 +120,14 @@ bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect
 	//switch by draw type
 
 	switch (options._drawType) {
-	case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options._sunlit);
-	case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions);
+	case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
+	case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
 	//case(options::MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
-	default: return elevationDraw(graphics, onScreenPositions, true);
+	default: return elevationDraw(graphics, onScreenPositions, options);
 	}
 }
 
-bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, bool sunlit) noexcept {
+bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
 	using namespace climate;
 
 	double elevation = _materialColumn.getLandElevation();
@@ -138,7 +138,7 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	setElevationDrawSpecs(elevation, elevationShader, elevationDrawType);
 
 	double solarShader = 1;
-	if (sunlit) solarShader = _solarRadiation.getRadiationShader();
+	if (options._sunlit) solarShader = _solarRadiation.getRadiationShader();
 
 	double textureShader = solarShader*elevationShader;
 	textureShader = std::max(textureShader, 0.05);
@@ -173,14 +173,17 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 }
 
 
-bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
+bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
 	using namespace climate;
 	const double landFudge = 10;
 
 	double surfaceTemperature = _materialColumn.getSurfaceTemperature();
 
+	double temperature;
+
 	double colorIntensity = std::min(abs(landFudge + surfaceTemperature - planetary::initialTemperatureK) / 40.0, 1.0);
 	double filter = 1.0 - colorIntensity;
+
 
 	if (landFudge + surfaceTemperature < planetary::initialTemperatureK) {//Cold
 		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);

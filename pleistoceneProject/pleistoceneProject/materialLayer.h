@@ -3,6 +3,9 @@
 #include "stateMixture.h"
 
 namespace pleistocene {
+
+namespace options { class GameOptions; }
+
 namespace climate {
 namespace layers {
 
@@ -63,6 +66,7 @@ struct NeighborHorizon {
 	double heightGradient;
 };
 
+
 namespace earth {
 const double bedrockDepth = 201; //201 m of simulated subterranian activity
 
@@ -112,9 +116,6 @@ const double StandardLapseRate[2] = { -0.0065, 0 };
 
 
 
-
-
-
 //////////==================================
 //////////MATERIAL LAYER
 //////////==================================
@@ -160,13 +161,17 @@ public:
 	double emitInfraredRadiation() noexcept;
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
+	virtual void simulateFlow() = 0;
+
 	//GETTERS
 	//============================
 	double getTopElevation() const noexcept;
 	double getBottomElevation() const noexcept;
 	virtual double getTemperature() const noexcept;
 
-	virtual void simulateFlow() = 0;
+	virtual std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	virtual double getDrawData(const options::GameOptions &options) const noexcept;
+
 };
 
 ////////////================================
@@ -174,7 +179,7 @@ public:
 ////////////================================
 
 class EarthLayer : public MaterialLayer {
-private:
+protected:
 	//unique earth member variables
 	//std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
 
@@ -185,6 +190,10 @@ public:
 	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept;
 
 	void simulateFlow() noexcept;
+
+	//Message getter
+	virtual std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	virtual double getDrawData(const options::GameOptions &options) const noexcept;
 
 private:
 	//unique earth member functions
@@ -224,6 +233,10 @@ public:
 	HorizonLayer() noexcept;
 	//~HorizonLayer() noexcept;
 	HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept;
+
+	//Message getter
+	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	double getDrawData(const options::GameOptions &options) const noexcept;
 
 private:
 	//unique horizon member functions
@@ -273,7 +286,9 @@ public:
 
 	void simulateFlow() noexcept;
 
-	//double getTemperature() const noexcept;
+	//Message getter
+	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	double getDrawData(const options::GameOptions &options) const noexcept;
 };
 
 
@@ -311,8 +326,12 @@ private:
 	double truePressureCalculator(double elevation) const noexcept;
 
 public:
+
 	double getTemperature() const noexcept;
 
+	//Message getter
+	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	double getDrawData(const options::GameOptions &options) const noexcept;
 };
 
 

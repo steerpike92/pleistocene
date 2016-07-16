@@ -300,6 +300,7 @@ void Mixture::conduction(Mixture &mixture1, Mixture &mixture2) noexcept {//STUB
 }
 
 double Mixture::getTemperature() const noexcept { return _temperature; }
+double Mixture::getHeatCapacity() const noexcept { return _totalHeatCapacity; }
 double Mixture::getHeight() const noexcept { return _totalVolume; }
 double Mixture::getAlbedo() const noexcept { return _albedo; }
 double Mixture::getVolume() const noexcept { return _totalVolume; }
@@ -309,17 +310,9 @@ double Mixture::getMols() const noexcept { return _totalMols; }
 std::vector<std::string> Mixture::getMessages() const noexcept {
 	std::vector<std::string> messages;
 
-	std::stringstream stream;
+	/*std::stringstream stream;
 	stream << "Temperature: " << round(_temperature - 273.15) << " °C";
 	messages.push_back(stream.str());
-
-	/*stream = std::stringstream();
-	stream << "Albedo: " << int(_albedo * 100) << "%";
-	messages.push_back(stream.str());
-
-	stream = std::stringstream();
-	stream << "Mass: " << int(_totalMass);
-	messages.push_back(stream.str());*/
 
 	stream = std::stringstream();
 	stream << "Heat Capacity: " << int(_totalHeatCapacity);
@@ -339,7 +332,7 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 
 	stream = std::stringstream();
 	stream << " ";
-	messages.push_back(stream.str());
+	messages.push_back(stream.str());*/
 
 	return messages;
 }

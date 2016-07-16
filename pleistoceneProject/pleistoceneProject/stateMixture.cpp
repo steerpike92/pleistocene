@@ -44,8 +44,11 @@ void SolidMixture::calculatePermeability() noexcept {
 	_permeability = totalPermeability / _totalVolume;
 }
 void SolidMixture::calculateGroundWaterFlow() noexcept {
-
 }
+
+double SolidMixture::getPermeability() const noexcept {return _permeability;}
+double SolidMixture::getPorosity() const noexcept { return _voidSpace; }
+
 
 //===============================================================
 //PARTICULATE

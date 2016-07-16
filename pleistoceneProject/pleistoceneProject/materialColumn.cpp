@@ -334,70 +334,117 @@ double MaterialColumn::getBoundaryLayerTemperature() const noexcept { return _ai
 std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions &options) const noexcept
 {
 	std::vector<std::string> messages;
+	std::vector<std::string> subMessages;
+	std::stringstream stream;
 
-	switch (options._drawType){
-	case(options::ELEVATION) :
-		break;
-	case(options::TEMPERATURE) :
-		break;
-	case(options::MATERIAL_PROPERTIES) :
-		break;
-	case(options::FLOW) :
-		break;
-	case(options::MOISTURE) :
-		break;
+	if (options._drawType == options::TEMPERATURE) {
+		stream = std::stringstream();
+		stream << "Back Radiation: " << int(_backRadiation) << " KJ";
+		messages.push_back(stream.str());
 
-
+		stream = std::stringstream();
+		stream << "Escape Radiation: " << int(_escapeRadiation) << " KJ";
+		messages.push_back(stream.str());
 	}
 
+	switch (options._drawSection) {
 
-	std::stringstream stream;
-	stream << "Land Elevation: " << int(_landElevation);
-	messages.push_back(stream.str());
-
-	stream = std::stringstream();
-	stream << "Back Radiation: " << int(_backRadiation) << " KJ";
-	messages.push_back(stream.str());
-
-	stream = std::stringstream();
-	stream << "Escape Radiation: " << int(_escapeRadiation) << " KJ";
-	messages.push_back(stream.str());
-
-
-
-	/*switch (messageType) {
-	case(climate::STANDARD_DRAW) :
-
-		stream = std::stringstream();
-		stream << "Bedrock Elevation: " << int(_earth.front().getBottomElevation());
-		messages.push_back(stream.str());
-
-		stream = std::stringstream();
-		stream << "Horizon Elevation: " << int(_earth.back().getTopElevation());
-		messages.push_back(stream.str());
-
-		break;
-	case(climate::SURFACE_TEMPERATURE_DRAW) :
+	case(options::SURFACE) :
 		if (_submerged) {
-			stream = std::stringstream();
-			stream << "Water Surface Temp: " << int(_sea.back().getTemperature() - 273) << " °C";
-			messages.push_back(stream.str());
+			auto layerReporting = &(_sea.back());
+			subMessages = layerReporting->getMessages(options);
+			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+			return messages;
 		}
 		else {
-			stream = std::stringstream();
-			stream << "Land Surface Temp: " << int(_horizon.back().getTemperature() - 273) << " °C";
-			messages.push_back(stream.str());
+			auto layerReporting = &(_horizon.back());
+			subMessages = layerReporting->getMessages(options);
+			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+			return messages;
 		}
-		break;
-	case(climate::SURFACE_AIR_TEMPERATURE_DRAW) :
-		stream = std::stringstream();
-		stream << "Air Surface Temp: " << int(_air.front().getTemperature() - 273) << "°C";
-		messages.push_back(stream.str());
-		break;
-	}*/
 
+	case(options::HORIZON) : {
+		auto layerReporting = &(_horizon.back());//BACK
+		//add layer handling
+		subMessages = layerReporting->getMessages(options);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		return messages;
+	}
+	case(options::EARTH) : {
+		auto layerReporting = &(_earth.back());//BACK
+		//add layer handling
+		subMessages = layerReporting->getMessages(options);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		return messages;
+	}
+			       
+	case(options::SEA) : {
 
-	return messages;
+		if (_submerged) {
+			auto layerReporting = &(_sea.back());//BACK
+							     //add layer handling
+			subMessages = layerReporting->getMessages(options);
+			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+			return messages;
+		}
+
+		else return messages;
+	
+	}
+	case(options::AIR) : {
+		auto layerReporting = &(_air.front());//FRONT
+		//add layer handling
+		subMessages = layerReporting->getMessages(options);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		return messages;
+	}
+	}
+}
+
+double MaterialColumn::getDrawValue(const options::GameOptions &options) const noexcept {
+	
+	switch (options._drawSection) {
+
+	case(options::SURFACE) :
+		if (_submerged) {
+			auto layerReporting = &(_sea.back());
+			return layerReporting->getDrawData(options);
+		}
+		else {
+			auto layerReporting = &(_horizon.back());
+			return layerReporting->getDrawData(options);
+		}
+
+	case(options::HORIZON) : {
+		auto layerReporting = &(_horizon.back());//BACK
+							 //add layer handling
+		return layerReporting->getDrawData(options);
+	}
+	case(options::EARTH) : {
+		auto layerReporting = &(_earth.back());//BACK
+						       //add layer handling
+		return layerReporting->getDrawData(options);
+	}
+
+	case(options::SEA) : {
+
+		if (_submerged) {
+			auto layerReporting = &(_sea.back());//BACK
+							     //add layer handling
+			return layerReporting->getDrawData(options);
+		}
+
+		else return 0.0;
+
+	}
+	case(options::AIR) : {
+		auto layerReporting = &(_air.front());//FRONT
+						      //add layer handling
+		return layerReporting->getDrawData(options);
+	}
+	}
+
+	return 0.0;
 }
 
 }//namespace layers

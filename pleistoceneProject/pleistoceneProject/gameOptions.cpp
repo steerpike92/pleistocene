@@ -54,13 +54,16 @@ void GameOptions::processInput(Input &input) {
 	if (input.wasKeyPressed(SDL_SCANCODE_3)) _drawType = MATERIAL_PROPERTIES;
 	if (input.wasKeyPressed(SDL_SCANCODE_4)) _drawType = FLOW;
 	if (input.wasKeyPressed(SDL_SCANCODE_5)) _drawType = MOISTURE;
-	//if (input.wasKeyPressed(SDL_SCANCODE_6)) _drawType = LAYER_TEMPERATURE;
-	if (input.wasKeyPressed(SDL_SCANCODE_7)) _drawSection = SURFACE;
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) _drawSection = EARTH;
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) _drawSection = SEA;
-	if (input.wasKeyPressed(SDL_SCANCODE_0)) _drawSection = AIR;
+	if (input.wasKeyPressed(SDL_SCANCODE_6)) _drawSection = SURFACE; _drawLayer = 0;
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) _drawSection = HORIZON; _drawLayer = 0;
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) _drawSection = EARTH; _drawLayer = 0;
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) _drawSection = SEA; _drawLayer = 0;
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) _drawSection = AIR; _drawLayer = 0;
 
-
+	//layer selection
+	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) _drawLayer--;
+	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) _drawLayer++;
+	_drawLayer %= 8;
 }
 
 }//namespace options

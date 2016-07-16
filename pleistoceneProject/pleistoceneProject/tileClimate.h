@@ -53,12 +53,12 @@ private:
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<climate::land::elevationType, std::string> _elevationTextures;
 
-	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, bool sunlit)noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options)noexcept;
 
 	//Standard Draw Subroutine
 	void setElevationDrawSpecs(double elevation, double &computedElevationShader, climate::land::elevationType &computedElevationType)noexcept;
 
-	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
+	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options)noexcept;
 	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
 
 	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions)noexcept;
