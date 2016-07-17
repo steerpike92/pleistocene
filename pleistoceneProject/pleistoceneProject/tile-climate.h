@@ -141,16 +141,6 @@ private:
 	static double _standardDeviation;
 
 
-	//TODO
-
-	//static void clearStatistics();//reset for new data type
-	//static void newStatisticRound();//reset for new hour
-	//static void computeMean();//new mean value
-	//static void computeStandardDeviation();//new standard deviation
-
-	//static double sigmaOffMean(double dataValue);//how weird is THIS DATA?
-
-	//void applyHeatMap(double sigmasOffMean); //color filter THIS DATA FOR ME!
 
 public:
 	//GETTERS

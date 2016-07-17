@@ -13,17 +13,17 @@ void Game::initialize() noexcept
 	_options = options::GameOptions();
 	_infoBar = user_interface::InfoBar(_graphics);
 	_bios = user_interface::Bios(_graphics);
-	_world = simulation::World(_graphics, &_bios, _options);
+	_world = simulation::World(_graphics, _options);
 
 	//sets initial camera position/zoomout level
-	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), &_options);
+	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), _options);
 
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
 	_input.setCamera(_camera);
 
 	_world.simulate(_options);//one initial call to simulate for graphical setup
-	_world.draw(_graphics, true, _options);//one guaranteed call checking draw positions
+	_world.draw(_graphics, true, _options, _bios);//one guaranteed call checking draw positions
 	_lastUpdateTime_MS = SDL_GetTicks();
 
 	srand(size_t(time(NULL)));
@@ -72,7 +72,7 @@ void Game::processInput() noexcept
 	}
 
 	//Process commands returns true if there is any camera movement
-	if (_camera.processCommands(_input, _elapsedTime_MS)) {
+	if (_camera.processCommands(_input, _elapsedTime_MS, _options)) {
 		_cameraMovementFlag = true;
 	}
 	 
@@ -110,7 +110,7 @@ void Game::draw()  noexcept
 		_cameraMovementFlag)							//draw when camera moves
 	{
 		_graphics.clear();
-		_world.draw(_graphics, _cameraMovementFlag, _options);
+		_world.draw(_graphics, _cameraMovementFlag, _options, _bios);
 		_cameraMovementFlag = false;//i.e. processed
 	}
 

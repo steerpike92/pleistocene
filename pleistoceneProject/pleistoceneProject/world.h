@@ -1,5 +1,6 @@
 #pragma once
 #include "globals.h"
+#include "tile.h"
 
 namespace pleistocene {
  
@@ -10,7 +11,6 @@ namespace options { class GameOptions; }
 
 namespace simulation {
 
-class Tile;
 
 enum StatType {
 	ELEVATION,		//1
@@ -49,21 +49,32 @@ struct StatRequest {
 };
 
 
-//TODO
-//The World class needs a rename and some shit to do.
-
-//Extract all of the ridiculous Static members in tile and put them here
-
 
 
 class World {
 public:
 	World() noexcept;
-	World(graphics::Graphics &graphics, user_interface::Bios *bios, const options::GameOptions &options) noexcept;
+	World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept;
+
+private:
+
+	void setupTiles(graphics::Graphics & graphics) noexcept;
+	void buildTileVector() noexcept;
+	void setupTextures(graphics::Graphics & graphics) noexcept;
+	void buildTileNeighbors() noexcept;
+
+	void generateTileElevations(int seed) noexcept;
+	void setupTileClimateAdjacency() noexcept;
+
+	std::vector<double> World::buildNoiseTable(int Rows, int Cols, int seed) noexcept;
+
+	std::vector<double> World::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) noexcept;
+
+public:
 
 	void generateWorld(int seed, const options::GameOptions &options) noexcept;
 
-	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept;
+	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept;
 	void update(int elapsedTime) noexcept;
 
 	void simulate(const options::GameOptions &options) noexcept;
@@ -77,8 +88,9 @@ public:
 
 private:
 
-	StatRequest _statRequest;
+	std::vector<Tile> _tiles;
 
+	StatRequest _statRequest;
 
 };
 

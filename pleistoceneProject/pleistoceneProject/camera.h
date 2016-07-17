@@ -13,31 +13,24 @@ class Camera {
 public:
 	Camera() noexcept;
 
-	Camera(my::Vector2 startingPosition, double startingZoom, options::GameOptions *options) noexcept;
+	Camera(my::Vector2 startingPosition, double startingZoom, const options::GameOptions &options) noexcept;
 
-	void updateCameraOptions() noexcept;
+	void updateCameraOptions(const options::GameOptions &options) noexcept;
 
 	my::Vector2 getCameraPosition() const noexcept;
 	double getZoomScale() const noexcept;
 
 	//returns true iff camera moved
-	bool processCommands(const Input &input, int elapsedTime) noexcept;
+	bool processCommands(const Input &input, int elapsedTime, const options::GameOptions &options) noexcept;
 
 	my::Vector2 screenPosToGamePos(my::Vector2 screenPosition) const noexcept;
 
 private:
 	my::Vector2 _cameraPosition;
 	double _zoomScale;
-	options::GameOptions *_optionsPtr;
 
 	int _gameWidth_pixels;
 	int _gameHeight_pixels;
-
-	bool _loop;
-	bool _restrictCamera;
-
-
-
 
 
 };
