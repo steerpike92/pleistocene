@@ -1,5 +1,5 @@
-#include "materialLayer.h"
-#include "gameOptions.h"
+#include "material-layer.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace simulation {
@@ -117,8 +117,9 @@ double MaterialLayer::getDrawData(const options::GameOptions & options) const no
 	case(options::ELEVATION) : return _topElevation;
 	case(options::TEMPERATURE) : return _mixture->getTemperature();
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
-	case(options::FLOW) : return 0;
-	case(options::MOISTURE) : return 0;
+	case(options::FLOW) : return 0; //stub
+	case(options::MOISTURE) : return 0; //stub
+	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 
 }
@@ -238,10 +239,8 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 	std::stringstream stream;
 
 	switch (options._statistic) {
-	case(options::ELEVATION) :
-		return MaterialLayer::getMessages(options);
-	case(options::TEMPERATURE) :
-		return MaterialLayer::getMessages(options);
+	case(options::ELEVATION) : return MaterialLayer::getMessages(options);
+	case(options::TEMPERATURE) : return MaterialLayer::getMessages(options);
 	case(options::MATERIAL_PROPERTIES) :
 	{
 		std::vector<std::string> subMessages = MaterialLayer::getMessages(options);
@@ -255,19 +254,13 @@ std::vector<std::string> EarthLayer::getMessages(const options::GameOptions & op
 		stream << "Permeability: " << int(_solidPtr->getPermeability());
 		messages.push_back(stream.str());
 
+		return messages;
+
 	}
-
-					   break;
-	case(options::FLOW) :
-
-		break;
-	case(options::MOISTURE) :
-
-		break;
+	case(options::FLOW) : return messages; //stub
+	case(options::MOISTURE) : return messages; //stub
+	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
 	}
-
-
-	return messages;
 }
 double EarthLayer::getDrawData(const options::GameOptions & options) const noexcept
 {
@@ -277,6 +270,7 @@ double EarthLayer::getDrawData(const options::GameOptions & options) const noexc
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
 	case(options::FLOW) : return 0;
 	case(options::MOISTURE) : return 0;
+	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
 
@@ -389,20 +383,12 @@ std::vector<std::string> SeaLayer::getMessages(const options::GameOptions & opti
 	std::stringstream stream;
 
 	switch (options._statistic) {
-	case(options::ELEVATION) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::TEMPERATURE) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::MATERIAL_PROPERTIES) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::FLOW) :
-		return messages;
-
-	case(options::MOISTURE) :
-		return messages;
+	case(options::ELEVATION) : return MaterialLayer::getMessages(options);
+	case(options::TEMPERATURE) : return MaterialLayer::getMessages(options);
+	case(options::MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(options);
+	case(options::FLOW) : return messages; //stub
+	case(options::MOISTURE) : return messages; //stub
+	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
 	}
 }
 
@@ -414,6 +400,7 @@ double SeaLayer::getDrawData(const options::GameOptions & options) const noexcep
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
 	case(options::FLOW) : return 0;
 	case(options::MOISTURE) : return 0;
+	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
 
@@ -577,23 +564,13 @@ std::vector<std::string> AirLayer::getMessages(const options::GameOptions & opti
 	std::stringstream stream;
 
 	switch (options._statistic) {
-	case(options::ELEVATION) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::TEMPERATURE) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::MATERIAL_PROPERTIES) :
-		return MaterialLayer::getMessages(options);
-
-	case(options::FLOW) :
-		return messages;
-
-	case(options::MOISTURE) :
-		return messages;
+	case(options::ELEVATION) : return MaterialLayer::getMessages(options);
+	case(options::TEMPERATURE) : return MaterialLayer::getMessages(options);
+	case(options::MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(options);
+	case(options::FLOW) : return messages; //STUB
+	case(options::MOISTURE) : return messages; //STUB
+	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return messages;
 	}
-	return messages;
-
 }
 
 double AirLayer::getDrawData(const options::GameOptions & options) const noexcept
@@ -604,6 +581,7 @@ double AirLayer::getDrawData(const options::GameOptions & options) const noexcep
 	case(options::MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
 	case(options::FLOW) : return 0;
 	case(options::MOISTURE) : return 0;
+	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
 

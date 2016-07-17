@@ -1,10 +1,10 @@
 #pragma once
 #include "globals.h"
-#include "gameOptions.h"
+#include "game-options.h"
 #include "graphics.h"
 #include "input.h"
 #include "bios.h"
-#include "map.h"
+#include "world.h"
 #include "camera.h"
 
 namespace pleistocene {

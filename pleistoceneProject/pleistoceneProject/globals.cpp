@@ -1,6 +1,6 @@
 #include "globals.h"
-#include "gameOptions.h"
-#include "tileClimate.h"
+#include "game-options.h"
+#include "tile-climate.h"
 namespace pleistocene {
 namespace my {
 Vector2::Vector2(Vector2d v2) noexcept {

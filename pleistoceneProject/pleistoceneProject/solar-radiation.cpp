@@ -1,5 +1,5 @@
-#include "solarRadiation.h"
-#include "tileClimate.h"
+#include "solar-radiation.h"
+#include "tile-climate.h"
 
 namespace pleistocene {
 namespace simulation {

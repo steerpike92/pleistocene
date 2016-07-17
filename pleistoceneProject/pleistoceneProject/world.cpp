@@ -1,5 +1,5 @@
-#include "map.h"
-#include "gameOptions.h"
+#include "world.h"
+#include "game-options.h"
 #include "graphics.h"
 #include "noise.h"
 #include "tile.h"

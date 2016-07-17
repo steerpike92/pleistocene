@@ -1,4 +1,4 @@
-#include "stateMixture.h"
+#include "state-mixture.h"
 #include "mixture.h"
 
 namespace pleistocene {

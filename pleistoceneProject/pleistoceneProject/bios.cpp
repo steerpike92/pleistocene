@@ -2,8 +2,8 @@
 #include "graphics.h"
 
 #include "tile.h"
-#include "map.h"
-#include "gameOptions.h"
+#include "world.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace user_interface {

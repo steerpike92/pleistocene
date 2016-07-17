@@ -1,7 +1,7 @@
 #pragma once
 #include "globals.h"
-#include "materialLayer.h"
-#include "stateMixture.h"
+#include "material-layer.h"
+#include "state-mixture.h"
 #include "element.h"
 
 namespace pleistocene {

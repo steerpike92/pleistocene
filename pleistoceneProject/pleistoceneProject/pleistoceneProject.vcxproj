@@ -117,41 +117,41 @@
     <ClCompile Include="bios.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="element.cpp" />
+    <ClCompile Include="game-options.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="gameOptions.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="map.cpp" />
-    <ClCompile Include="materialColumn.cpp" />
-    <ClCompile Include="materialLayer.cpp" />
+    <ClCompile Include="material-column.cpp" />
+    <ClCompile Include="material-layer.cpp" />
     <ClCompile Include="mixture.cpp" />
     <ClCompile Include="noise.cpp" />
-    <ClCompile Include="solarRadiation.cpp" />
-    <ClCompile Include="stateMixture.cpp" />
+    <ClCompile Include="solar-radiation.cpp" />
+    <ClCompile Include="state-mixture.cpp" />
+    <ClCompile Include="tile-climate.cpp" />
     <ClCompile Include="tile.cpp" />
-    <ClCompile Include="tileClimate.cpp" />
+    <ClCompile Include="world.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bios.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="element.h" />
+    <ClInclude Include="game-options.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="gameOptions.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="map.h" />
-    <ClInclude Include="materialColumn.h" />
-    <ClInclude Include="materialLayer.h" />
+    <ClInclude Include="material-column.h" />
+    <ClInclude Include="material-layer.h" />
     <ClInclude Include="mixture.h" />
     <ClInclude Include="noise.h" />
-    <ClInclude Include="solarRadiation.h" />
-    <ClInclude Include="stateMixture.h" />
+    <ClInclude Include="solar-radiation.h" />
+    <ClInclude Include="state-mixture.h" />
+    <ClInclude Include="tile-climate.h" />
     <ClInclude Include="tile.h" />
-    <ClInclude Include="tileClimate.h" />
     <ClInclude Include="utility.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="june13notes.txt" />

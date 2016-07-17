@@ -1,7 +1,7 @@
-#include "materialColumn.h"
-#include "materialLayer.h"
+#include "material-column.h"
+#include "material-layer.h"
 #include "globals.h"
-#include "gameOptions.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace simulation {

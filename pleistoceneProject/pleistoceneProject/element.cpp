@@ -1,5 +1,5 @@
 #include "element.h"
-#include "materialLayer.h"
+#include "material-layer.h"
 
 namespace pleistocene {
 namespace simulation {

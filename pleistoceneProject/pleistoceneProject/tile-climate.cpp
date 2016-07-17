@@ -1,6 +1,6 @@
-#include "tileClimate.h"
+#include "tile-climate.h"
 #include "graphics.h"
-#include "gameOptions.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace simulation {

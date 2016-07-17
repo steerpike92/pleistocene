@@ -1,9 +1,9 @@
 #pragma once
 #include "globals.h"
-#include "solarRadiation.h"
+#include "solar-radiation.h"
 
 #include "mixture.h"
-#include "materialColumn.h"
+#include "material-column.h"
 
 namespace pleistocene {
 

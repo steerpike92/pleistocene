@@ -1,8 +1,8 @@
 #include "tile.h"
 #include "graphics.h"
-#include "map.h"
+#include "world.h"
 #include "bios.h"
-#include "gameOptions.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace simulation {

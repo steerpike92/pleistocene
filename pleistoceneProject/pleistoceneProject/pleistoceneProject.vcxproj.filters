@@ -39,34 +39,34 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mixture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="noise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="solarRadiation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stateMixture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tileClimate.cpp">
+    <ClCompile Include="game-options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="materialLayer.cpp">
+    <ClCompile Include="tile-climate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="materialColumn.cpp">
+    <ClCompile Include="world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameOptions.cpp">
+    <ClCompile Include="state-mixture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solar-radiation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material-layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="material-column.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,37 +92,37 @@
     <ClInclude Include="input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mixture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="noise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="solarRadiation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stateMixture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tileClimate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="materialLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="materialColumn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gameOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game-options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tile-climate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="state-mixture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="solar-radiation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material-layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="material-column.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

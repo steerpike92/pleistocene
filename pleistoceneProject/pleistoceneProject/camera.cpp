@@ -1,6 +1,6 @@
 #include "camera.h"
 #include "input.h"
-#include "gameOptions.h"
+#include "game-options.h"
 
 namespace pleistocene {
 namespace graphics {

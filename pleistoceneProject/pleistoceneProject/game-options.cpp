@@ -1,4 +1,4 @@
-#include "gameOptions.h"
+#include "game-options.h"
 #include "globals.h"
 #include "input.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "globals.h"
-#include "tileClimate.h"
+#include "tile-climate.h"
 #include "noise.h"
 
 namespace pleistocene {

@@ -1,6 +1,6 @@
 #pragma once
 #include "globals.h"
-#include "stateMixture.h"
+#include "state-mixture.h"
 
 namespace pleistocene {
 

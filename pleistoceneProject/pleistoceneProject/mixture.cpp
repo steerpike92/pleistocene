@@ -1,5 +1,5 @@
 #include "mixture.h"
-#include "tileClimate.h"
+#include "tile-climate.h"
 
 namespace pleistocene {
 namespace simulation {
