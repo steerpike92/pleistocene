@@ -239,7 +239,7 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 
 	//the tricky part is the possibility for layers to pop in and out of existance
 
-	//another complication is the silyness of ~0 to ~2 meter deep seas we'll get in highly flat regions.
+	//another complication is the silliness of ~0 to ~2 meter deep seas we'll get in highly flat regions.
 
 	//the best solution I think is to declare such a region a marsh and handle it as a special case in horizon layer;
 
@@ -403,7 +403,7 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 	}
 }
 
-double MaterialColumn::getDrawValue(const StatRequest &statRequest) const noexcept {
+double MaterialColumn::getStat(const StatRequest &statRequest) const noexcept {
 
 	switch (statRequest._section) {
 

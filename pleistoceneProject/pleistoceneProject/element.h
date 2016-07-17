@@ -5,6 +5,7 @@
 namespace pleistocene {
 namespace simulation {
 namespace climate {
+namespace layers {
 namespace elements {
 
 class Element;
@@ -167,6 +168,7 @@ private:
 };
 
 }//namespace elements
+}//namespace layers
 }//namespace climate
 }//namespace simulation
 }//namespace pleistocene

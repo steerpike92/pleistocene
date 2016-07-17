@@ -337,8 +337,12 @@ public:
 	Address(int R, int C, bool Spurious) noexcept;
 
 	//gets game position at an Address
+	int getXPos() const noexcept;
+	int getYPos() const noexcept;
 	Vector2 getGamePos() const noexcept;
-
+	
+	double getLatitudeDegrees() const noexcept;
+	double getLongitudeDegrees() const noexcept;
 	Vector2d getLatLonDeg() const noexcept;
 
 	Address adjacent(Direction direction) const noexcept;

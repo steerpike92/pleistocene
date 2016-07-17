@@ -98,25 +98,15 @@ public:
 	//=================================================
 	static void setupTextures(graphics::Graphics &graphics) noexcept;
 
-	void updateClimate(int elapsedTime) noexcept;//animation Update
 
-
-	bool drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept;
 private:
 
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<elevationType, std::string> _elevationTextures;
 
-	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
-
 	//Standard Draw Subroutine
 	void setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept;
-
-	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
-	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
-
-	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
-
 
 public:
 	//=================================================
@@ -141,7 +131,7 @@ private:
 public:
 	//GETTERS
 	//===========================================
-	double getStatistic(const StatRequest &statRequest) const noexcept;
+	double getStat(const StatRequest &statRequest) const noexcept;
 
 	std::vector<std::string> getMessages(const StatRequest &statRequest) const noexcept;
 };

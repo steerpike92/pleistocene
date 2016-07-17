@@ -127,23 +127,16 @@ Address::Address(int R, int C, bool Spurious) noexcept {
 }
 
 //gets game position at an Address
-Vector2 Address::getGamePos() const noexcept {
-	Vector2 v;
-	v.x = (globals::kTileWidth / 2) * (r % 2) + globals::kTileWidth * c;
-	v.y = globals::kEffectiveTileHeight*r;
-	return v;
+int Address::getXPos()const noexcept { return (globals::kTileWidth / 2) * (r % 2) + globals::kTileWidth * c; }
+int Address::getYPos()const noexcept { return globals::kEffectiveTileHeight*r; }
+Vector2 Address::getGamePos() const noexcept {return Vector2 { getXPos(),getYPos() } ;}
+
+double Address::getLatitudeDegrees() const noexcept {
+	return ((-(double)getYPos() / (globals::kEffectiveTileHeight*(Rows) / 2)) + 1)*simulation::climate::kMaxLatitude;
 }
+double Address::getLongitudeDegrees() const noexcept {return 360 * getXPos() / (Cols*globals::kTileWidth);}
 
-Vector2d Address::getLatLonDeg() const noexcept {
-	Vector2 v = this->getGamePos();
-
-	double _latitude_deg = ((-(double)v.y /
-		(globals::kEffectiveTileHeight*(Rows) / 2)) + 1)*simulation::climate::kMaxLatitude;
-	double _longitude_deg = 360 * v.x /
-		(Cols*globals::kTileWidth);
-
-	return Vector2d(_latitude_deg, _longitude_deg);
-}
+Vector2d Address::getLatLonDeg() const noexcept { return Vector2d{ getLatitudeDegrees(), getLongitudeDegrees() };}
 
 Address Address::adjacent(Direction direction) const noexcept {
 

@@ -4,11 +4,7 @@
 #include "noise.h"
 
 namespace pleistocene {
-
-
 namespace graphics { class Graphics; }
-namespace user_interface { class Bios; }
-
 namespace simulation {
 
 struct StatRequest;
@@ -23,52 +19,49 @@ public:
 	Tile() noexcept;
 	Tile(my::Address tileAddress) noexcept;
 
-	//=====================================================================
-	//SETUP
-	//=======================================================================
-
-	//static void getOptions(GameOptions &options);
+	
 	void buildNeighborhood() noexcept;
+	//Map to adjacient tile addresses
+	std::map<my::Direction, my::Address> _directionalNeighbors;
+
+
+
 
 	//GRAPHICS
 	//====================
-	bool draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept;
+	bool statDraw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, bool cameraMovementFlag, bool sunlit) noexcept;
+
+	static std::map<int, std::string> _colorTextures;
+	static void setupTextures(graphics::Graphics &graphics) noexcept;
 private:
-	std::vector<SDL_Rect> _onScreenPositions;
+	bool onscreenPositionUpdate(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept;
+	std::vector<SDL_Rect> _onscreenPositions;
 	//my::Rectangle with ingame tile dimensions
 	SDL_Rect _gameRectangle;
 
-public:
-	
-	//update animations
-	void update(int elapsedTime) noexcept;
 
+public:
 	//run hour simulation
 	void simulate() noexcept;
 
 	//(row,column)
 	my::Address _address;
 
-
-	
-	my::Address getAddress() const noexcept;
 	SDL_Rect getGameRect() const noexcept;
 	std::vector<std::string> sendMessages(const StatRequest &statRequest) const noexcept;//communicates with bios
 
-	//all simulation happens in TileClimate
 
+	//all simulation happens in TileClimate
 	climate::TileClimate _tileClimate;
 
-	std::map<my::Direction, my::Address> _directionalNeighbors;
 
-	double _statValue; 
+	double _statValue;//e.g. temperature
+	double _heatMapValue;//e.g. sigmas off mean scaled to -1 to 1
 
 	double getStatistic(const StatRequest &statRequest) noexcept;
 
 private:
-
-	//vector of neighboring tile my::Addresses. Better to store my::Addresses than pointers as pointers miiiight change
-	//std::vector<my::Address> _neighbors;
 
 	//Latitude in degrees from equator
 	double _latitude_deg;

@@ -108,16 +108,16 @@ void Graphics::colorFilter(const std::string &texturePathName, double redFilter,
 	return;
 }
 
-std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const gameRectangle, bool screenLocked)  noexcept {
+std::vector<SDL_Rect> Graphics::getOnscreenPositions(const SDL_Rect * const gameRectangle, bool screenLocked)  noexcept {
 
-	std::vector<SDL_Rect> onScreenPositions;
+	std::vector<SDL_Rect> onscreenPositions;
 
 	if (screenLocked) {
-		onScreenPositions.push_back(*gameRectangle);
-		return onScreenPositions;
+		onscreenPositions.push_back(*gameRectangle);
+		return onscreenPositions;
 	}
 
-	SDL_bool onScreen = SDL_FALSE;
+	SDL_bool onscreen = SDL_FALSE;
 	SDL_Rect localDestRect;
 	int loopStart = 0, loopEnd = 0;
 	if (1) { loopStart = -1; loopEnd = 1; }//map elements //Stub add option
@@ -136,14 +136,14 @@ std::vector<SDL_Rect> Graphics::getOnScreenPositions(const SDL_Rect * const game
 
 		//Within view rendering guard
 		SDL_Rect bullshit;//SDL demands somewhere to store something irrelevant
-		onScreen = SDL_IntersectRect(&localDestRect, &_windowRect, &bullshit);
+		onscreen = SDL_IntersectRect(&localDestRect, &_windowRect, &bullshit);
 
-		if (onScreen) { onScreenPositions.push_back(localDestRect); }
+		if (onscreen) { onscreenPositions.push_back(localDestRect); }
 	}
-	return onScreenPositions;
+	return onscreenPositions;
 }
 
-bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions,
+bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onscreenPositions,
 	double degreesRotated, bool mirrorH, bool mirrorV)  noexcept {
 
 	bool selectionFlag = false;
@@ -154,7 +154,7 @@ bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const so
 	else if (mirrorH) mirror = SDL_FLIP_HORIZONTAL;
 	else if (mirrorV) mirror = SDL_FLIP_VERTICAL;
 
-	for (SDL_Rect localDestRect : onScreenPositions) {
+	for (SDL_Rect localDestRect : onscreenPositions) {
 		if (SDL_RenderCopyEx(_renderer, _textures[pathName], sourceRect, &localDestRect, degreesRotated, NULL, mirror)) {
 			//NOEXCEPT LOG("Error rendering: "); LOG(pathName); throw(1);
 		}
@@ -179,11 +179,11 @@ void Graphics::blitRectangle(const SDL_Rect * const Rectangle, const SDL_Color c
 
 	//Within view rendering guard
 	SDL_Rect bullshit;
-	SDL_bool onScreen = SDL_IntersectRect(&localDestRect, &_windowRect, &bullshit);
+	SDL_bool onscreen = SDL_IntersectRect(&localDestRect, &_windowRect, &bullshit);
 
 	SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
 
-	if (onScreen) {
+	if (onscreen) {
 
 		if (SDL_RenderFillRect(_renderer, &localDestRect)) {
 			//NOEXCEPT LOG("Error rendering my::Rectangle"); throw(1);

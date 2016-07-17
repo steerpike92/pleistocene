@@ -129,6 +129,7 @@
     <ClCompile Include="noise.cpp" />
     <ClCompile Include="solar-radiation.cpp" />
     <ClCompile Include="state-mixture.cpp" />
+    <ClCompile Include="statistics.cpp" />
     <ClCompile Include="tile-climate.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="world.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="noise.h" />
     <ClInclude Include="solar-radiation.h" />
     <ClInclude Include="state-mixture.h" />
+    <ClInclude Include="statistics.h" />
     <ClInclude Include="tile-climate.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="utility.h" />

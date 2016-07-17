@@ -83,18 +83,17 @@ void Game::processInput() noexcept
 
 
 	//selection (left click)
-	if (_input.wasButtonPressed(1)) { _bios.clear(); _graphics._selecting = true; }
+	if (_input.wasButtonPressed(1)) { _graphics._selecting = true; }
 	else { _graphics._selecting = false; }
 
 	//de-selection (right click)
-	if (_input.wasButtonPressed(3)) { _bios.clear(); }
+	if (_input.wasButtonPressed(3)) { _world.clearSelected(); }
 }
 
 
 void Game::update()  noexcept 
 {
-	_world.update(_elapsedTime_MS);
-	_bios.update();
+	_bios.update(_world.getMessages());
 	_infoBar.update();
 }
 

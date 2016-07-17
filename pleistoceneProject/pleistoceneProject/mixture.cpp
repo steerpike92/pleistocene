@@ -4,6 +4,7 @@
 namespace pleistocene {
 namespace simulation {
 namespace climate {
+namespace layers {
 namespace elements {
 
 //=====================================================================================================================
@@ -193,7 +194,7 @@ void Mixture::pushSpecific(Element addedSpecificElement, double temperature, boo
 	ElementType eType = addedSpecificElement.getElementType();
 
 	//check state conflict
-	if (addedSpecificElement.getStateConflict(_state)) {LOG("Element type not compatible with state"); exit(EXIT_FAILURE);}
+	if (addedSpecificElement.getStateConflict(_state)) { LOG("Element type not compatible with state"); exit(EXIT_FAILURE); }
 
 	if (temperatureSpecified) {
 		Mixture temporaryMixture = Mixture(addedSpecificElement, temperature, _state);
@@ -240,7 +241,7 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	_totalInfraredEmitted = 0;
 
 	int mixtureCount = _elements.size();
-	if (mixtureCount== 0) {LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ;}
+	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 	if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 
@@ -340,6 +341,7 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 }
 
 }//namespace elements
+}//namespace layers
 }//namespace climate
 }//namespace simulation
 }//namespace pleistocene

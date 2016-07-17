@@ -90,7 +90,7 @@ public:
 
 	std::vector<std::string> getMessages(const StatRequest &statRequest) const noexcept;
 
-	double getDrawValue(const StatRequest &statRequest)const noexcept;
+	double getStat(const StatRequest &statRequest) const noexcept;
 
 };
 

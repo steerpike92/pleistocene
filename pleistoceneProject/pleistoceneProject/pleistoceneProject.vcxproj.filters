@@ -69,6 +69,9 @@
     <ClCompile Include="material-column.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="statistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bios.h">
@@ -123,6 +126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="material-column.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="statistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

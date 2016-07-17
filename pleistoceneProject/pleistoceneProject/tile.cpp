@@ -17,7 +17,6 @@ Tile::Tile(my::Address tileAddress) noexcept {
 	_gameRectangle.w = globals::kTileWidth;
 	_gameRectangle.h = globals::kTileHeight;
 
-
 	my::Vector2d latLonDeg = _address.getLatLonDeg();
 
 	_latitude_deg = latLonDeg.x;
@@ -35,12 +34,6 @@ void Tile::buildNeighborhood() noexcept {
 	}
 }
 
-
-
-void Tile::update(int elapsedTime) noexcept {
-
-}
-
 //SIMULATION
 //============================
 
@@ -54,38 +47,59 @@ void Tile::simulate() noexcept {
 //=======================
 
 
-bool Tile::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options) noexcept {
-	_gameRectangle.x = (globals::kTileWidth / 2) * (_address.r % 2) + globals::kTileWidth * _address.c;
-	_gameRectangle.w = globals::kTileWidth;
-	_gameRectangle.y = _address.r * globals::kEffectiveTileHeight;
-	_gameRectangle.h = globals::kTileWidth;
-
-	bool selectionBool = false;//selection flag
-
-	if (cameraMovementFlag) {//only update positions if camera has moved
-		_onScreenPositions = graphics.getOnScreenPositions(&_gameRectangle);
-	}
-
-	if (_onScreenPositions.empty()) {
+bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept
+{
+	if ( onscreenPositionUpdate(graphics, cameraMovementFlag)) {
 		return false;
 	}
 
-	//draw and check selection
-	selectionBool = _tileClimate.drawClimate(graphics, _onScreenPositions);
-	return selectionBool;
+	double filter = abs(_heatMapValue);
+
+	if (_heatMapValue <= 0) {//Cold (blue)
+		graphics.colorFilter(_colorTextures[0], filter, filter, 1.0);
+	}
+	else {//Hot (red)
+		graphics.colorFilter(_colorTextures[0], 1.0, filter, filter);
+	}
+
+
+	return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);
 }
 
+
+bool Tile::elevationDraw(graphics::Graphics &graphics, bool cameraMovementFlag, bool sunlit) noexcept 
+{
+	if (!onscreenPositionUpdate(graphics, cameraMovementFlag)) { //checks 
+		return false;
+	}
+	return _tileClimate.elevationDraw(graphics, _onscreenPositions, sunlit);
+}
+
+
+bool Tile::onscreenPositionUpdate(graphics::Graphics &graphics, bool cameraMovementFlag)
+{
+	if (cameraMovementFlag) {//only update positions if camera has moved
+		_onscreenPositions = graphics.getOnscreenPositions(&_gameRectangle);
+	}
+	//return true if tile is onscreen
+	if (_onscreenPositions.empty()) { return false; }
+	else { return true; }
+}
+
+std::map<int, std::string> _colorTextures;
+
+void Tile::setupTextures(graphics::Graphics &graphics) noexcept
+{
+	_colorTextures[0] = "../../content/simpleTerrain/whiteTile.png";
+	graphics.loadImage(_colorTextures[0]);
+}
 
 //GETTERS
 //=================
 
-my::Address Tile::getAddress() const noexcept { return _address; }
-
 SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
 std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) const noexcept {
-
-
 
 	std::vector<std::string> messages;
 
@@ -102,12 +116,7 @@ std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) cons
 	return messages;
 }
 
-double Tile::getStatistic(const StatRequest &statRequest) noexcept {
-	
-
-	_tileClimate.getStatistic(statRequest);
-
-}
+double Tile::getStatistic(const StatRequest &statRequest) noexcept {_tileClimate.getStatistic(statRequest);}
 
 }//namespace simulation
 }//namespace pleistocene

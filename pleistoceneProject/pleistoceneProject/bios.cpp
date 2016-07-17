@@ -19,39 +19,21 @@ Bios::Bios(graphics::Graphics &graphics) noexcept {
 	_textMargin = 1;
 	_textHeight = 7;
 
-	graphics.loadImage(this->blackPath);
-
-	_exists = true;
-	_selectedTile = NULL;
 }
 
 
-void Bios::clear() noexcept {
-	if (_selectedTile) {
-		_selectedTile = NULL;
+void Bios::update(std::vector<std::string> messages) noexcept {
+	_messages = messages;
+	if (_messages.empty()) {
+		_display = false;
 	}
-	_messages.clear();
-	_display = false;
-}
-
-void Bios::selectTile(simulation::Tile * const tile) noexcept {
-	_selectedTile = tile;
-
-	_selectionDrawPos = _selectedTile->getGameRect();
-
-	this->_display = true;
-}
-
-void Bios::update() noexcept {
-	if (_selectedTile) {
-		//_messages = _selectedTile->sendMessages();
-	}
+	else _display = true;
 }
 
 void Bios::draw(graphics::Graphics &graphics) noexcept {
 
 
-	if (_display == NULL) return;
+	if (_display == false) return;
 
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);//background
 
@@ -70,19 +52,7 @@ void Bios::draw(graphics::Graphics &graphics) noexcept {
 	SDL_Rect sourceRect = { 0,0,255,255 };
 	SDL_Rect dest;
 
-	if (_selectedTile) {
-
-		dest = _selectionDrawPos;
-
-		std::vector<SDL_Rect> onScreenPositions = graphics.getOnScreenPositions(&dest);
-
-		if (onScreenPositions.empty()) {
-			return;
-		}
-
-		graphics.blitSurface(blackPath, &sourceRect, onScreenPositions);
-
-	}
+	
 }
 
 
@@ -98,9 +68,9 @@ InfoBar::InfoBar(graphics::Graphics &graphics) noexcept {
 
 
 
-void InfoBar::update() noexcept {
-	_messages.clear();
-	_messages = my::SimulationTime::readGlobalTime();
+void InfoBar::update(std::vector<std::string> messages) noexcept {
+	_timeReadout = my::SimulationTime::readGlobalTime();
+	_worldReadout = messages;
 }
 
 void InfoBar::draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept {
@@ -113,32 +83,12 @@ void InfoBar::draw(graphics::Graphics &graphics, const options::GameOptions &opt
 
 	int dateMargin = 40; //otherwise it'll jostle stupidly with changing dates. Should have chosen a monospace font
 
-	for (std::string &message : _messages) {
+	for (std::string &message : _timeReadout) {
 		textDimensions = graphics.blitText(message, textPosition, graphics.White, true);
 		textPosition.x += dateMargin;
 	}
 
-
-	std::vector<std::string> draw_messages;
-	draw_messages.push_back("   ");
-
-	switch (options._drawSection) {
-	case(options::SURFACE) : draw_messages.push_back("SURFACE "); break;
-	case(options::HORIZON) : draw_messages.push_back("HORIZON "); break;
-	case(options::EARTH) : draw_messages.push_back("EARTH "); break;
-	case(options::SEA) : draw_messages.push_back("SEA ");  break;
-	case(options::AIR) : draw_messages.push_back("AIR "); break;
-	}
-
-	switch (options._statistic) {
-	case(options::ELEVATION) : draw_messages.push_back("ELEVATION "); break;
-	case(options::TEMPERATURE) : draw_messages.push_back("TEMPERATURE "); break;
-	case(options::MATERIAL_PROPERTIES) : draw_messages.push_back("MATERIAL PROPERTIES "); break;
-	case(options::FLOW) : draw_messages.push_back("FLOW "); break;
-	case(options::MOISTURE) : draw_messages.push_back("MOISTURE "); break;
-	}
-
-	for (std::string &message : draw_messages) {
+	for (std::string &message : _worldReadout) {
 		textDimensions = graphics.blitText(message, textPosition, graphics.White, true);
 		textPosition.x += textDimensions.x;
 	}

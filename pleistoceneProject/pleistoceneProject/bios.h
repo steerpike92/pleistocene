@@ -6,10 +6,7 @@ namespace pleistocene {
 namespace graphics { class Graphics; }
 namespace options { class GameOptions; }
 
-namespace simulation { class Tile; }
-
 namespace user_interface {
-
 
 class Bios {
 public:
@@ -17,27 +14,18 @@ public:
 
 	Bios(graphics::Graphics &graphics)  noexcept;
 
-	void clear()  noexcept;
-	void update() noexcept;
+	void update(std::vector<std::string> messages) noexcept;
 	void draw(graphics::Graphics &graphics) noexcept;
-
-	void selectTile(simulation::Tile * const tile) noexcept;
-
 private:
 
 	bool _exists = false;
 
 	bool _display = false;
 
-	simulation::Tile *_selectedTile;
 	std::vector<std::string> _messages;
 	SDL_Rect _displayRect;
 	int _textMargin;
 	int _textHeight;
-
-	std::string blackPath = "../../content/simpleTerrain/blackOutline.png";
-
-	SDL_Rect _selectionDrawPos;
 
 };
 
@@ -49,7 +37,7 @@ public:
 	InfoBar(graphics::Graphics &graphics) noexcept;
 
 	void draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept;
-	void update() noexcept;
+	void update(std::vector<std::string> messages) noexcept;
 
 private:
 
@@ -57,8 +45,8 @@ private:
 	int _textMargin;
 	int _textHeight;
 
-	std::vector<std::string> _messages;
-
+	std::vector<std::string> _timeReadout;
+	std::vector<std::string> _worldReadout;
 
 };
 

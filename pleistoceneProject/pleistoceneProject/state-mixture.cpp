@@ -4,6 +4,7 @@
 namespace pleistocene {
 namespace simulation {
 namespace climate {
+namespace layers {
 namespace elements {
 //===============================================================
 //SOLID
@@ -162,6 +163,7 @@ double GaseousMixture::getLapseRate() const noexcept {
 }
 
 }//namespace elements
+}//namespace layers
 }//namespace climate
 }//namespace simulation
 }//namespace pleistocene

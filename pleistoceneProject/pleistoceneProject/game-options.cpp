@@ -6,7 +6,7 @@ namespace pleistocene {
 namespace options {
 
 GameOptions::GameOptions() noexcept {
-	setWorldSize(2);
+	setWorldSize(1);
 	my::Address::getOptions(*this);
 }
 
@@ -48,25 +48,7 @@ void GameOptions::processInput(Input &input) {
 	//play/pause toggle
 	if (input.wasKeyPressed(SDL_SCANCODE_SPACE)) _continuousSimulation = !_continuousSimulation;
 
-	_newStatistic = false;
-
-	//draw type selection
-	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statistic = ELEVATION; _newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statistic = TEMPERATURE;_newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statistic = MATERIAL_PROPERTIES; _newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statistic = FLOW; _newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statistic = MOISTURE; _newStatistic = true; }
-	//draw section selector
-	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _drawSection = SURFACE; _drawLayer = 0; _newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _drawSection = HORIZON; _drawLayer = 0; _newStatistic = true; }
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _drawSection = EARTH; _drawLayer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _drawSection = SEA; _drawLayer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _drawSection = AIR; _drawLayer = 0;  _newStatistic = true; }
-
-	//layer selection
-	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _drawLayer--; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _drawLayer++; _newStatistic = true;}
-	_drawLayer %= 8;
+	
 }
 
 }//namespace options

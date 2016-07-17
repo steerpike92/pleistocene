@@ -38,10 +38,10 @@ public:
 	//flag for mouse selection
 	bool _selecting;
 
-	std::vector<SDL_Rect> getOnScreenPositions(const SDL_Rect * constgameRectangle, bool screenLocked = false) noexcept;
+	std::vector<SDL_Rect> getOnscreenPositions(const SDL_Rect * constgameRectangle, bool screenLocked = false) noexcept;
 
 	//draws to renderer and uses draw position to detect selection
-	bool blitSurface(std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onScreenPositions,
+	bool blitSurface(std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onscreenPositions,
 		double degreesRotated = 0.0, bool mirrorH = false, bool mirrorV = false) noexcept;
 
 	void blitRectangle(const SDL_Rect *const Rect, const SDL_Color color, bool screenLocked = false) noexcept;

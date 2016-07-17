@@ -11,15 +11,15 @@ namespace simulation {
 World::World() noexcept {}
 
 
-World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept 
+World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
+_statRequest(StatRequest()),
+_selectedTile(nullptr)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
 
 	//build tiles in memory and calls setup functions
 	setupTiles(graphics);
-
-	_exists = true;
-
+	
 	//World generating algorithm
 	int seed = 21;//starting with a determined seed gives a pseudorandom intial map
 	generateWorld(seed, options);
@@ -209,13 +209,6 @@ void World::setupTileClimateAdjacency() noexcept {
 }
 
 
-void World::update(int elapsedTime) noexcept 
-{
-	for (Tile &tile : _tiles) {
-		tile.update(elapsedTime);
-	}
-}
-
 void World::simulate(const options::GameOptions &options) noexcept 
 {
 	climate::TileClimate::beginNewHour();
@@ -224,10 +217,6 @@ void World::simulate(const options::GameOptions &options) noexcept
 		for (Tile &tile : _tiles) {
 			tile.simulate();
 		}
-	}
-	
-	for (Tile &tile : _tiles) {
-		tile.
 	}
 
 }
@@ -249,6 +238,27 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		my::SimulationTime::updateGlobalTime();
 		simulate(options);
 	}
+
+
+	//draw type selection
+	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; }
+	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; }
+	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES;  }
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; }
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; }
+	//draw section selector
+	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; }
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  }
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; }
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; }
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; }
+
+	//layer selection
+	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; }
+	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; }
+	_statRequest._layer %= 8;
+
+	
 }
 
 void World::setupTextures(graphics::Graphics &graphics) noexcept {
@@ -258,15 +268,85 @@ void World::setupTextures(graphics::Graphics &graphics) noexcept {
 	//selection graphics
 	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
 	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
+
 }
 
-void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept {
-	for (Tile &tile : _tiles) {
-		if (tile.draw(graphics, cameraMovementFlag, options)) {
-			bios.selectTile(&tile);
+void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept 
+{
+	if (_statRequest._statType == ELEVATION && _statRequest._section == SURFACE_) {
+		for (Tile &tile : _tiles) {
+			if (tile.elevationDraw(graphics, cameraMovementFlag, options._sunlit)) {
+				_selectedTile = &tile;
+			}
 		}
 	}
+
+	else {
+		_statistics.clear();
+		double tileStatValue;
+
+		for (Tile &tile : _tiles) {
+			tileStatValue = tile.getStatistic(_statRequest);
+			_statistics.contributeValue(tileStatValue);
+		}
+
+		_statistics.calculateStatistics();
+
+		for (Tile &tile : _tiles) {
+			if (tile.statDraw(graphics, cameraMovementFlag)) {
+				_selectedTile = &tile;
+			}
+		}
+	}
+
+	if (_selectedTile) {
+		std::vector<SDL_Rect> onscreenPositions = graphics.getOnscreenPositions(&_selectedTile->getGameRect());
+		if (onscreenPositions.empty()) {
+			return;
+		}
+		graphics.blitSurface("../../content/simpleTerrain/blackOutline.png", NULL, onscreenPositions);
+	}
+
 }
+
+std::vector<std::string> World::getMessages() const noexcept 
+{
+	if (_selectedTile != nullptr) {
+		return _selectedTile->sendMessages(_statRequest);
+	}
+	else return std::vector<std::string> {};
+}
+
+void World::clearSelected() noexcept { _selectedTile = nullptr; }
+
+std::vector<std::string> World::getReadout() const noexcept
+{
+	std::vector<std::string> readout;
+
+	std::string word;
+
+	switch (_statRequest._section) {
+	case(SURFACE_) : word="SURFACE "; break;
+	case(HORIZON_) :  word = "HORIZON "; break;
+	case(EARTH_) :  word = "EARTH "; break;
+	case(SEA_) :  word = "SEA "; break;
+	case(AIR_) :   word = "AIR "; break;
+	}
+
+	readout.push_back(word);
+
+	switch (_statRequest._statType) {
+	case(ELEVATION) : word = "ELEVATION "; break;
+	case(TEMPERATURE) :  word = "TEMPERATURE "; break;
+	case(MATERIAL_PROPERTIES) :  word = "MATERIAL PROPERTIES "; break;
+	case(FLOW) : word = "FLOW "; break;
+	case(MOISTURE) : word = "MOISTURE "; break;
+	}
+
+	readout.push_back(word);
+	return readout;
+}
+
 
 }//namespace simulation
 }//namespace pleistocene

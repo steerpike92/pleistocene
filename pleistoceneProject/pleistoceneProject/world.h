@@ -1,5 +1,6 @@
 #pragma once
 #include "globals.h"
+#include "statistics.h"
 #include "tile.h"
 
 namespace pleistocene {
@@ -10,6 +11,8 @@ class Input;
 namespace options { class GameOptions; }
 
 namespace simulation {
+
+
 
 enum StatType {
 	ELEVATION,		//1
@@ -26,8 +29,6 @@ enum Section {
 	SEA_,			//9
 	AIR_			//0
 };
-
-
 
 struct StatRequest {
 	StatType _statType;
@@ -46,18 +47,6 @@ struct StatRequest {
 		_layer(layer)
 	{}
 
-};
-
-class Statistics {
-	double mean;
-	double standardDeviation;
-
-public:
-	Statistics();
-
-	void clear();
-	void contributeValue(double value);
-	double getSigmasOffMean(double value) const;
 };
 
 
@@ -85,16 +74,17 @@ public:
 	void generateWorld(int seed, const options::GameOptions &options) noexcept;
 
 	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept;
-	void update(int elapsedTime) noexcept;
 
 	void simulate(const options::GameOptions &options) noexcept;
 
 	user_interface::Bios* _bioPtr;
 
-	bool _exists = false;
-
-
 	void processInput(const Input &input, const options::GameOptions & options) noexcept;
+
+	void clearSelected() noexcept;
+
+	std::vector<std::string> getMessages() const noexcept;
+	std::vector<std::string> getReadout() const noexcept;
 
 private:
 
@@ -102,27 +92,9 @@ private:
 
 	StatRequest _statRequest;
 
-	//TODO
+	Statistics _statistics;
 
-	//double _valueSum;
-	//int _tileCount;//not always same as number of tiles (not all tiles have sea layers  to compare with)
-	//double _valueMean;
-	//double _standardDeviation;
-	
-
-	//void clearStatistics();//reset for new data type
-	//void newStatisticRound();//reset for new hour
-	//void computeMean();//new mean value
-	//void computeStandardDeviation();//new standard deviation
-
-	//double sigmaOffMean(double dataValue);//how weird is THIS DATA?
-
-	//applyHeatMap(double sigmasOffMean); //color filter THIS DATA FOR ME!
-
-
-
-
-
+	Tile *_selectedTile;
 };
 
 

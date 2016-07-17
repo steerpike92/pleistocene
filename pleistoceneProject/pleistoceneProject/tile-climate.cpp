@@ -114,35 +114,9 @@ double TileClimate::simulateSolarRadiation() noexcept {
 //GRAPHICS
 //======================================
 
-void TileClimate::updateClimate(int elapsedTime) noexcept {
-}
 
 
-
-bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
-
-	//switch by draw type
-
-	//switch (statRequest._statType) {
-	//case(ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
-	//case(TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
-	////case(MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
-	//default: return elevationDraw(graphics, onScreenPositions, options);
-	//}
-
-	//if (statRequest._statType == ELEVATION && statRequest._section == SURFACE_) {
-		return elevationDraw(graphics, onScreenPositions);
-	//}
-	//else {
-
-		//double drawValue = _materialColumn.getDrawValue(statRequest);
-
-	//}
-
-}
-
-bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
-	using namespace climate;
+bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept {
 
 	double elevation = _materialColumn.getLandElevation();
 
@@ -152,14 +126,14 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	setElevationDrawSpecs(elevation, elevationShader, elevationDrawType);
 
 	double solarShader = 1;
-	if (1) solarShader = _solarRadiation.getRadiationShader(); //TODO control of shading....
+	if (sunlit) solarShader = _solarRadiation.getRadiationShader(); //TODO control of shading....
 
 	double textureShader = solarShader*elevationShader;
 	textureShader = std::max(textureShader, 0.05);
 
 	graphics.darkenTexture(_elevationTextures[elevationDrawType], textureShader);
 
-	return graphics.blitSurface(_elevationTextures[elevationDrawType], nullptr, onScreenPositions);
+	return graphics.blitSurface(_elevationTextures[elevationDrawType], nullptr, onscreenPositions);
 }
 
 
@@ -187,62 +161,15 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 }
 
 
-bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
-	using namespace climate;
-	const double landFudge = 10;
-
-	double surfaceTemperature = _materialColumn.getSurfaceTemperature();
-
-	//double temperature;
-
-	double colorIntensity = std::min(abs(landFudge + surfaceTemperature - kInitialTemperatureK) / 40.0, 1.0);
-	double filter = 1.0 - colorIntensity;
-
-
-	if (landFudge + surfaceTemperature < kInitialTemperatureK) {//Cold
-		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
-	}
-	else {//Hot
-		graphics.colorFilter(_climateTextures["whiteTile"], 1.0, filter, filter);
-	}
-
-	return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
-}
-
-//bool TileClimate::surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
-//	using namespace climate;
-//
-//	double temperature = _materialColumn.getBoundaryLayerTemperature();
-//	const double airFudge = 20;
-//
-//	double colorIntensity = std::min(abs(airFudge + temperature - planetary::initialTemperatureK) / 20.0, 1.0);
-//	double filter = 1.0 - colorIntensity;
-//
-//	if (airFudge + temperature < planetary::initialTemperatureK) {//Cold
-//		graphics.colorFilter(_climateTextures["whiteTile"], filter, filter, 1.0);
-//	}
-//	else {//Hot
-//		graphics.colorFilter(_climateTextures["whiteTile"], 1.0, filter, filter);
-//	}
-//
-//	return graphics.blitSurface(_climateTextures["whiteTile"], NULL, onScreenPositions);
-//}
-
 std::map<std::string, std::string> TileClimate::_climateTextures;
 std::map<elevationType, std::string> TileClimate::_elevationTextures;
 
 void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 
-	_climateTextures["whiteTile"] = "../../content/simpleTerrain/whiteTile.png";
-
-
 	_elevationTextures[SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
 	_elevationTextures[LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
 	_elevationTextures[MID_LAND] = "../../content/simpleTerrain/midLand.png";
 	_elevationTextures[HIGH_LAND] = "../../content/simpleTerrain/highLand.png";
-
-
-	graphics.loadImage(_climateTextures["whiteTile"]);
 
 	for (std::pair< elevationType, std::string> P : _elevationTextures) {
 		graphics.loadImage(P.second);
@@ -254,9 +181,9 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 //GETTERS
 //===========================================
 
-double TileClimate::getStatistic(const StatRequest &statRequest) const noexcept 
+double TileClimate::getStat(const StatRequest &statRequest) const noexcept 
 {
-	return 0.0;
+	return _materialColumn.getStat(statRequest);
 }
 
 std::vector<std::string> TileClimate::getMessages(const StatRequest &statRequest) const noexcept 
