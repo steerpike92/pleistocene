@@ -88,14 +88,13 @@ void Game::processInput() noexcept
 
 	//de-selection (right click)
 	if (_input.wasButtonPressed(3)) { _bios.clear(); }
-
 }
 
 
 void Game::update()  noexcept 
 {
 	_world.update(_elapsedTime_MS);
-	_bios.update(_options);
+	_bios.update();
 	_infoBar.update();
 }
 

@@ -6,9 +6,10 @@
 
 namespace pleistocene {
 
-namespace options { class GameOptions; }
-
 namespace simulation {
+
+struct StatRequest;
+
 namespace climate {
 namespace layers {
 
@@ -20,7 +21,6 @@ class MaterialColumn {
 	std::vector<AirLayer> _air;
 
 	//conveniently assignable during const calls
-	//MaterialLayer* _layerReporting;
 
 	//non owning vector with pointers to all layers
 	std::vector<MaterialLayer*> _column;
@@ -88,9 +88,9 @@ public:
 	double getSurfaceTemperature() const noexcept;
 	double getBoundaryLayerTemperature() const noexcept;
 
-	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	std::vector<std::string> getMessages(const StatRequest &statRequest) const noexcept;
 
-	double getDrawValue(const options::GameOptions &options)const noexcept;
+	double getDrawValue(const StatRequest &statRequest)const noexcept;
 
 };
 

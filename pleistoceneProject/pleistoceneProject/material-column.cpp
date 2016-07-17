@@ -1,7 +1,7 @@
 #include "material-column.h"
 #include "material-layer.h"
 #include "globals.h"
-#include "game-options.h"
+#include "world.h"
 
 namespace pleistocene {
 namespace simulation {
@@ -332,13 +332,13 @@ double MaterialColumn::getSurfaceTemperature()const noexcept
 }
 double MaterialColumn::getBoundaryLayerTemperature() const noexcept { return _air.front().getTemperature(); }
 
-std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions &options) const noexcept
+std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequest) const noexcept
 {
 	std::vector<std::string> messages;
 	std::vector<std::string> subMessages;
 	std::stringstream stream;
 
-	if (options._statistic == options::TEMPERATURE) {
+	if (statRequest._statType == TEMPERATURE) {
 		stream = std::stringstream();
 		stream << "Back Radiation: " << int(_backRadiation) << " KJ";
 		messages.push_back(stream.str());
@@ -348,43 +348,44 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 		messages.push_back(stream.str());
 	}
 
-	switch (options._drawSection) {
+	switch (statRequest._section) {
 
-	case(options::SURFACE) :
+	case(SURFACE_) :
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());
-			subMessages = layerReporting->getMessages(options);
+			subMessages = layerReporting->getMessages(statRequest);
 			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 			return messages;
 		}
 		else {
 			auto layerReporting = &(_horizon.back());
-			subMessages = layerReporting->getMessages(options);
+			subMessages = layerReporting->getMessages(statRequest);
 			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 			return messages;
 		}
 
-	case(options::HORIZON) : {
+	case(HORIZON_) : {
 		auto layerReporting = &(_horizon.back());//BACK
 		//add layer handling
-		subMessages = layerReporting->getMessages(options);
-		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-		return messages;
-	}
-	case(options::EARTH) : {
-		auto layerReporting = &(_earth.back());//BACK
-		//add layer handling
-		subMessages = layerReporting->getMessages(options);
+		subMessages = layerReporting->getMessages(statRequest);
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 		return messages;
 	}
 
-	case(options::SEA) : {
+	case(EARTH_) : {
+		auto layerReporting = &(_earth.back());//BACK
+		//add layer handling
+		subMessages = layerReporting->getMessages(statRequest);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		return messages;
+	}
+
+	case(SEA_) : {
 
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());//BACK
 							     //add layer handling
-			subMessages = layerReporting->getMessages(options);
+			subMessages = layerReporting->getMessages(statRequest);
 			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 			return messages;
 		}
@@ -392,56 +393,56 @@ std::vector<std::string> MaterialColumn::getMessages(const options::GameOptions 
 		else return messages;
 
 	}
-	case(options::AIR) : {
+	case(AIR_) : {
 		auto layerReporting = &(_air.front());//FRONT
 		//add layer handling
-		subMessages = layerReporting->getMessages(options);
+		subMessages = layerReporting->getMessages(statRequest);
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 		return messages;
 	}
 	}
 }
 
-double MaterialColumn::getDrawValue(const options::GameOptions &options) const noexcept {
+double MaterialColumn::getDrawValue(const StatRequest &statRequest) const noexcept {
 
-	switch (options._drawSection) {
+	switch (statRequest._section) {
 
-	case(options::SURFACE) :
+	case(SURFACE_) :
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());
-			return layerReporting->getDrawData(options);
+			return layerReporting->getStat(statRequest);
 		}
 		else {
 			auto layerReporting = &(_horizon.back());
-			return layerReporting->getDrawData(options);
+			return layerReporting->getStat(statRequest);
 		}
 
-	case(options::HORIZON) : {
+	case(HORIZON_) : {
 		auto layerReporting = &(_horizon.back());//BACK
 							 //add layer handling
-		return layerReporting->getDrawData(options);
+		return layerReporting->getStat(statRequest);
 	}
-	case(options::EARTH) : {
+	case(EARTH_) : {
 		auto layerReporting = &(_earth.back());//BACK
 						       //add layer handling
-		return layerReporting->getDrawData(options);
+		return layerReporting->getStat(statRequest);
 	}
 
-	case(options::SEA) : {
+	case(SEA_) : {
 
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());//BACK
 							     //add layer handling
-			return layerReporting->getDrawData(options);
+			return layerReporting->getStat(statRequest);
 		}
 
 		else return 0.0;
 
 	}
-	case(options::AIR) : {
+	case(AIR_) : {
 		auto layerReporting = &(_air.front());//FRONT
 						      //add layer handling
-		return layerReporting->getDrawData(options);
+		return layerReporting->getStat(statRequest);
 	}
 	}
 

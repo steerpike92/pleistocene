@@ -18,7 +18,7 @@ public:
 	Bios(graphics::Graphics &graphics)  noexcept;
 
 	void clear()  noexcept;
-	void update(const options::GameOptions &options) noexcept;
+	void update() noexcept;
 	void draw(graphics::Graphics &graphics) noexcept;
 
 	void selectTile(simulation::Tile * const tile) noexcept;

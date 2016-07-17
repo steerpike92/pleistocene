@@ -1,6 +1,6 @@
 #include "tile-climate.h"
 #include "graphics.h"
-#include "game-options.h"
+#include "world.h"
 
 namespace pleistocene {
 namespace simulation {
@@ -119,29 +119,29 @@ void TileClimate::updateClimate(int elapsedTime) noexcept {
 
 
 
-bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
+bool TileClimate::drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 
 	//switch by draw type
 
-	//switch (options._statistic) {
-	//case(options::ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
-	//case(options::TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
-	////case(options::MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
+	//switch (statRequest._statType) {
+	//case(ELEVATION) : return elevationDraw(graphics, onScreenPositions, options);
+	//case(TEMPERATURE) : return temperatureDraw(graphics, onScreenPositions, options);
+	////case(MATERIAL_PROPERTIES) : return materialDraw(graphics, onScreenPositions);
 	//default: return elevationDraw(graphics, onScreenPositions, options);
 	//}
 
-	if (options._statistic == options::ELEVATION && options._drawSection == options::SURFACE) {
-		return elevationDraw(graphics, onScreenPositions, options);
-	}
-	else {
+	//if (statRequest._statType == ELEVATION && statRequest._section == SURFACE_) {
+		return elevationDraw(graphics, onScreenPositions);
+	//}
+	//else {
 
-		double drawValue = _materialColumn.getDrawValue(options);
+		//double drawValue = _materialColumn.getDrawValue(statRequest);
 
-	}
+	//}
 
 }
 
-bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
+bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 
 	double elevation = _materialColumn.getLandElevation();
@@ -152,7 +152,7 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	setElevationDrawSpecs(elevation, elevationShader, elevationDrawType);
 
 	double solarShader = 1;
-	if (options._sunlit) solarShader = _solarRadiation.getRadiationShader();
+	if (1) solarShader = _solarRadiation.getRadiationShader(); //TODO control of shading....
 
 	double textureShader = solarShader*elevationShader;
 	textureShader = std::max(textureShader, 0.05);
@@ -187,7 +187,7 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 }
 
 
-bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept {
+bool TileClimate::temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept {
 	using namespace climate;
 	const double landFudge = 10;
 
@@ -254,18 +254,18 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 //GETTERS
 //===========================================
 
-double TileClimate::getStatistic(const options::GameOptions &options) const noexcept 
+double TileClimate::getStatistic(const StatRequest &statRequest) const noexcept 
 {
 	return 0.0;
 }
 
-std::vector<std::string> TileClimate::getMessages(const options::GameOptions &options) const noexcept 
+std::vector<std::string> TileClimate::getMessages(const StatRequest &statRequest) const noexcept 
 {
 	using namespace climate;
 
 	std::vector<std::string> messages;
 
-	std::vector<std::string> SubMessages = _materialColumn.getMessages(options);
+	std::vector<std::string> SubMessages = _materialColumn.getMessages(statRequest);
 
 	for (std::string &str : SubMessages) {
 		messages.push_back(str);
@@ -273,18 +273,6 @@ std::vector<std::string> TileClimate::getMessages(const options::GameOptions &op
 
 	return messages;
 
-}
-
-static double _valueSum = 0;
-static int _tileCount = 0;
-static double _valueMean = 0;
-static double _standardDeviation = 0;
-
-static void clearStatistics() {
-	_valueSum = 0;
-	_tileCount = 0;
-	_valueMean = 0;
-	_standardDeviation = 0;
 }
 
 }//namespace climate

@@ -42,9 +42,9 @@ void Bios::selectTile(simulation::Tile * const tile) noexcept {
 	this->_display = true;
 }
 
-void Bios::update(const options::GameOptions &options) noexcept {
+void Bios::update() noexcept {
 	if (_selectedTile) {
-		_messages = _selectedTile->sendMessages(options);
+		//_messages = _selectedTile->sendMessages();
 	}
 }
 

@@ -21,11 +21,11 @@ enum StatType {
 };
 
 enum Section {
-	SURFACE,		//6
-	HORIZON,		//7
-	EARTH,			//8
-	SEA,			//9
-	AIR			//0
+	SURFACE_,		//6
+	HORIZON_,		//7
+	EARTH_,			//8
+	SEA_,			//9
+	AIR_			//0
 };
 
 
@@ -37,7 +37,7 @@ struct StatRequest {
 
 	StatRequest():
 		_statType(ELEVATION),
-		_section(SURFACE),
+		_section(SURFACE_),
 		_layer(0)
 	{}
 
@@ -91,6 +91,28 @@ private:
 	std::vector<Tile> _tiles;
 
 	StatRequest _statRequest;
+
+	//TODO
+
+	//double _valueSum;
+	//int _tileCount;//not always same as number of tiles (not all tiles have sea layers  to compare with)
+	//double _valueMean;
+	//double _standardDeviation;
+
+
+
+	//void clearStatistics();//reset for new data type
+	//void newStatisticRound();//reset for new hour
+	//void computeMean();//new mean value
+	//void computeStandardDeviation();//new standard deviation
+
+	//double sigmaOffMean(double dataValue);//how weird is THIS DATA?
+
+	//applyHeatMap(double sigmasOffMean); //color filter THIS DATA FOR ME!
+
+
+
+
 
 };
 

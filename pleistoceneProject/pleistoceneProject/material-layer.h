@@ -4,9 +4,10 @@
 
 namespace pleistocene {
 
-namespace options { class GameOptions; }
-
 namespace simulation {
+
+struct StatRequest;
+
 namespace climate {
 namespace layers {
 
@@ -170,8 +171,8 @@ public:
 	double getBottomElevation() const noexcept;
 	virtual double getTemperature() const noexcept;
 
-	virtual std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
-	virtual double getDrawData(const options::GameOptions &options) const noexcept;
+	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
+	virtual double getStat(const struct StatRequest &statRequest) const noexcept;
 
 };
 
@@ -193,8 +194,8 @@ public:
 	void simulateFlow() noexcept;
 
 	//Message getter
-	virtual std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
-	virtual double getDrawData(const options::GameOptions &options) const noexcept;
+	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
+	virtual double getStat(const struct StatRequest &statRequest) const noexcept;
 
 private:
 	//unique earth member functions
@@ -236,8 +237,8 @@ public:
 	HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept;
 
 	//Message getter
-	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
-	double getDrawData(const options::GameOptions &options) const noexcept;
+	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
+	double getStat(const struct StatRequest &statRequest) const noexcept;
 
 private:
 	//unique horizon member functions
@@ -288,8 +289,8 @@ public:
 	void simulateFlow() noexcept;
 
 	//Message getter
-	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
-	double getDrawData(const options::GameOptions &options) const noexcept;
+	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
+	double getStat(const struct StatRequest &statRequest) const noexcept;
 };
 
 
@@ -331,8 +332,8 @@ public:
 	double getTemperature() const noexcept;
 
 	//Message getter
-	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
-	double getDrawData(const options::GameOptions &options) const noexcept;
+	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
+	double getStat(const struct StatRequest &statRequest) const noexcept;
 };
 
 

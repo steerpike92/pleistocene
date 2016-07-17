@@ -10,7 +10,6 @@ namespace pleistocene {
 //FORWARD DECLARATIONS
 //=============================
 namespace graphics { class Graphics; }
-namespace options { class GameOptions; }
 
 namespace simulation {
 
@@ -102,18 +101,18 @@ public:
 	void updateClimate(int elapsedTime) noexcept;//animation Update
 
 
-	bool drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
+	bool drawClimate(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 private:
 
 	static std::map<std::string, std::string> _climateTextures;
 	static std::map<elevationType, std::string> _elevationTextures;
 
-	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
+	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 
 	//Standard Draw Subroutine
 	void setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept;
 
-	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions, const options::GameOptions &options) noexcept;
+	bool temperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 	//bool surfaceAirTemperatureDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
 
 	//bool materialDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onScreenPositions) noexcept;
@@ -135,19 +134,16 @@ private:
 	double simulateSolarRadiation() noexcept;
 
 
-	static double _valueSum;
-	static int _tileCount;//not always same as number of tiles (not all tiles sea layers to compare with)
-	static double _valueMean;
-	static double _standardDeviation;
+	
 
 
 
 public:
 	//GETTERS
 	//===========================================
-	double getStatistic(const options::GameOptions &options) const noexcept;
+	double getStatistic(const StatRequest &statRequest) const noexcept;
 
-	std::vector<std::string> getMessages(const options::GameOptions &options) const noexcept;
+	std::vector<std::string> getMessages(const StatRequest &statRequest) const noexcept;
 };
 
 }//namespace climate 

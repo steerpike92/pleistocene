@@ -2,7 +2,6 @@
 #include "graphics.h"
 #include "world.h"
 #include "bios.h"
-#include "game-options.h"
 
 namespace pleistocene {
 namespace simulation {
@@ -72,7 +71,7 @@ bool Tile::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const opt
 	}
 
 	//draw and check selection
-	selectionBool = _tileClimate.drawClimate(graphics, _onScreenPositions, options);
+	selectionBool = _tileClimate.drawClimate(graphics, _onScreenPositions);
 	return selectionBool;
 }
 
@@ -84,7 +83,7 @@ my::Address Tile::getAddress() const noexcept { return _address; }
 
 SDL_Rect Tile::getGameRect() const noexcept { return _gameRectangle; }
 
-std::vector<std::string> Tile::sendMessages(const options::GameOptions &options) const noexcept {
+std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) const noexcept {
 
 
 
@@ -94,7 +93,7 @@ std::vector<std::string> Tile::sendMessages(const options::GameOptions &options)
 	stream << "(Lat,Lon): (" << int(this->_latitude_deg) << "," << int(this->_longitude_deg) << ")";
 	messages.push_back(stream.str());
 
-	std::vector<std::string> climateMessages = _tileClimate.getMessages(options);
+	std::vector<std::string> climateMessages = _tileClimate.getMessages(statRequest);
 
 	for (std::string &str : climateMessages) {
 		messages.push_back(str);
