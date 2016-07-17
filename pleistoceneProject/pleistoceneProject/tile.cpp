@@ -102,5 +102,12 @@ std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) cons
 	return messages;
 }
 
+double Tile::getStatistic(const StatRequest &statRequest) noexcept {
+	
+
+	_tileClimate.getStatistic(statRequest);
+
+}
+
 }//namespace simulation
 }//namespace pleistocene

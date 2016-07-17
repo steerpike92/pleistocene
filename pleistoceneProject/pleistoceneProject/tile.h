@@ -55,21 +55,18 @@ public:
 	SDL_Rect getGameRect() const noexcept;
 	std::vector<std::string> sendMessages(const StatRequest &statRequest) const noexcept;//communicates with bios
 
-												  //all simulation happens in TileClimate
+	//all simulation happens in TileClimate
 
 	climate::TileClimate _tileClimate;
 
 	std::map<my::Direction, my::Address> _directionalNeighbors;
 
+	double _statValue; 
 
-
-
-	double _statistic; 
-
+	double getStatistic(const StatRequest &statRequest) noexcept;
 
 private:
 
-	
 	//vector of neighboring tile my::Addresses. Better to store my::Addresses than pointers as pointers miiiight change
 	//std::vector<my::Address> _neighbors;
 
@@ -78,9 +75,6 @@ private:
 
 	//0>= ... <360
 	double _longitude_deg;
-
-
-
 };
 
 

@@ -11,7 +11,6 @@ namespace options { class GameOptions; }
 
 namespace simulation {
 
-
 enum StatType {
 	ELEVATION,		//1
 	TEMPERATURE,		//2
@@ -46,9 +45,20 @@ struct StatRequest {
 		_section(section),
 		_layer(layer)
 	{}
+
 };
 
+class Statistics {
+	double mean;
+	double standardDeviation;
 
+public:
+	Statistics();
+
+	void clear();
+	void contributeValue(double value);
+	double getSigmasOffMean(double value) const;
+};
 
 
 class World {
@@ -98,8 +108,7 @@ private:
 	//int _tileCount;//not always same as number of tiles (not all tiles have sea layers  to compare with)
 	//double _valueMean;
 	//double _standardDeviation;
-
-
+	
 
 	//void clearStatistics();//reset for new data type
 	//void newStatisticRound();//reset for new hour

@@ -226,11 +226,9 @@ void World::simulate(const options::GameOptions &options) noexcept
 		}
 	}
 	
-
-
-	/*for (Tile &tile : _tiles) {
-
-	}*/
+	for (Tile &tile : _tiles) {
+		tile.
+	}
 
 }
 

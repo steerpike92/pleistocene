@@ -1,8 +1,12 @@
 #pragma once
 
+#define DEBUG 0
+
 //Strings and such
+#if DEBUG
 #define NOMINMAX	//fuck off windows.h
 #include <Windows.h>
+#endif
 #include <iostream>
 #include <string>
 #include <sstream>	//string stream
@@ -25,7 +29,6 @@
 #include "SDL.h"	//graphics engine
 #include "SDL_ttf.h"	//true type font
 
-#define DEBUG 1
 
 //LOG to console
 //#if DEBUG
