@@ -49,7 +49,7 @@ void Tile::simulate() noexcept {
 
 bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept
 {
-	if ( onscreenPositionUpdate(graphics, cameraMovementFlag)) {
+	if ( !onscreenPositionUpdate(graphics, cameraMovementFlag)) {
 		return false;
 	}
 
@@ -76,7 +76,7 @@ bool Tile::elevationDraw(graphics::Graphics &graphics, bool cameraMovementFlag, 
 }
 
 
-bool Tile::onscreenPositionUpdate(graphics::Graphics &graphics, bool cameraMovementFlag)
+bool Tile::onscreenPositionUpdate(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept
 {
 	if (cameraMovementFlag) {//only update positions if camera has moved
 		_onscreenPositions = graphics.getOnscreenPositions(&_gameRectangle);
@@ -86,7 +86,7 @@ bool Tile::onscreenPositionUpdate(graphics::Graphics &graphics, bool cameraMovem
 	else { return true; }
 }
 
-std::map<int, std::string> _colorTextures;
+std::map<int, std::string> Tile::_colorTextures;
 
 void Tile::setupTextures(graphics::Graphics &graphics) noexcept
 {
@@ -116,7 +116,7 @@ std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) cons
 	return messages;
 }
 
-double Tile::getStatistic(const StatRequest &statRequest) noexcept {_tileClimate.getStatistic(statRequest);}
+double Tile::getStatistic(const StatRequest &statRequest) noexcept {return _tileClimate.getStatistic(statRequest);}
 
 }//namespace simulation
 }//namespace pleistocene

@@ -403,29 +403,29 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 	}
 }
 
-double MaterialColumn::getStat(const StatRequest &statRequest) const noexcept {
+double MaterialColumn::getStatistic(const StatRequest &statRequest) const noexcept {
 
 	switch (statRequest._section) {
 
 	case(SURFACE_) :
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());
-			return layerReporting->getStat(statRequest);
+			return layerReporting->getStatistic(statRequest);
 		}
 		else {
 			auto layerReporting = &(_horizon.back());
-			return layerReporting->getStat(statRequest);
+			return layerReporting->getStatistic(statRequest);
 		}
 
 	case(HORIZON_) : {
 		auto layerReporting = &(_horizon.back());//BACK
 							 //add layer handling
-		return layerReporting->getStat(statRequest);
+		return layerReporting->getStatistic(statRequest);
 	}
 	case(EARTH_) : {
 		auto layerReporting = &(_earth.back());//BACK
 						       //add layer handling
-		return layerReporting->getStat(statRequest);
+		return layerReporting->getStatistic(statRequest);
 	}
 
 	case(SEA_) : {
@@ -433,7 +433,7 @@ double MaterialColumn::getStat(const StatRequest &statRequest) const noexcept {
 		if (_submerged) {
 			auto layerReporting = &(_sea.back());//BACK
 							     //add layer handling
-			return layerReporting->getStat(statRequest);
+			return layerReporting->getStatistic(statRequest);
 		}
 
 		else return 0.0;
@@ -442,7 +442,7 @@ double MaterialColumn::getStat(const StatRequest &statRequest) const noexcept {
 	case(AIR_) : {
 		auto layerReporting = &(_air.front());//FRONT
 						      //add layer handling
-		return layerReporting->getStat(statRequest);
+		return layerReporting->getStatistic(statRequest);
 	}
 	}
 

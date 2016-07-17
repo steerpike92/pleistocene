@@ -73,7 +73,7 @@ void InfoBar::update(std::vector<std::string> messages) noexcept {
 	_worldReadout = messages;
 }
 
-void InfoBar::draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept {
+void InfoBar::draw(graphics::Graphics &graphics) noexcept {
 	//bar across top of screen
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);
 

@@ -94,7 +94,7 @@ void Game::processInput() noexcept
 void Game::update()  noexcept 
 {
 	_bios.update(_world.getMessages());
-	_infoBar.update();
+	_infoBar.update(_world.getReadout());
 }
 
 
@@ -112,7 +112,7 @@ void Game::draw()  noexcept
 		_cameraMovementFlag = false;//i.e. processed
 	}
 
-	_infoBar.draw(_graphics, _options);
+	_infoBar.draw(_graphics);
 	_bios.draw(_graphics);
 	_graphics.flip();
 }

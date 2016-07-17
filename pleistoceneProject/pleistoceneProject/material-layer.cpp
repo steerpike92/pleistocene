@@ -112,7 +112,7 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 	return messages;
 }
 
-double MaterialLayer::getStat(const StatRequest &statRequest) const noexcept
+double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
@@ -263,7 +263,7 @@ std::vector<std::string> EarthLayer::getMessages(const StatRequest &statRequest)
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
 	}
 }
-double EarthLayer::getStat(const StatRequest &statRequest) const noexcept
+double EarthLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
@@ -328,7 +328,7 @@ std::vector<std::string> HorizonLayer::getMessages(const StatRequest &statReques
 	return messages;
 }
 
-double HorizonLayer::getStat(const StatRequest &statRequest) const noexcept
+double HorizonLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
@@ -394,7 +394,7 @@ std::vector<std::string> SeaLayer::getMessages(const StatRequest &statRequest) c
 	}
 }
 
-double SeaLayer::getStat(const StatRequest &statRequest) const noexcept
+double SeaLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
@@ -575,7 +575,7 @@ std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) c
 	}
 }
 
-double AirLayer::getStat(const StatRequest &statRequest) const noexcept
+double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;

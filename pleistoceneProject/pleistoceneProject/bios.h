@@ -36,7 +36,7 @@ public:
 
 	InfoBar(graphics::Graphics &graphics) noexcept;
 
-	void draw(graphics::Graphics &graphics, const options::GameOptions &options) noexcept;
+	void draw(graphics::Graphics &graphics) noexcept;
 	void update(std::vector<std::string> messages) noexcept;
 
 private:

@@ -181,9 +181,9 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 //GETTERS
 //===========================================
 
-double TileClimate::getStat(const StatRequest &statRequest) const noexcept 
+double TileClimate::getStatistic(const StatRequest &statRequest) const noexcept
 {
-	return _materialColumn.getStat(statRequest);
+	return _materialColumn.getStatistic(statRequest);
 }
 
 std::vector<std::string> TileClimate::getMessages(const StatRequest &statRequest) const noexcept 

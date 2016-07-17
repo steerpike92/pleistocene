@@ -4,6 +4,7 @@
 namespace pleistocene {
 namespace simulation {
 namespace climate {
+namespace layers {
 namespace elements {
 
 //=====================================================================================================================
@@ -467,6 +468,7 @@ elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 const elements::ElementPropertyMap Element::_infraredAbsorptivityMap = Element::buildInfraredAbsorptivityMap();
 
 }//namespace elements
+}//namespace layers
 }//namespace climate
 }//namespace simulation
 }//namespace pleistocene

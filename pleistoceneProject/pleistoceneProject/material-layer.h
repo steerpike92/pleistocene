@@ -172,7 +172,7 @@ public:
 	virtual double getTemperature() const noexcept;
 
 	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
-	virtual double getStat(const struct StatRequest &statRequest) const noexcept;
+	virtual double getStatistic(const struct StatRequest &statRequest) const noexcept;
 
 };
 
@@ -195,7 +195,7 @@ public:
 
 	//Message getter
 	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
-	virtual double getStat(const struct StatRequest &statRequest) const noexcept;
+	virtual double getStatistic(const struct StatRequest &statRequest) const noexcept;
 
 private:
 	//unique earth member functions
@@ -238,7 +238,7 @@ public:
 
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
-	double getStat(const struct StatRequest &statRequest) const noexcept;
+	double getStatistic(const struct StatRequest &statRequest) const noexcept;
 
 private:
 	//unique horizon member functions
@@ -290,7 +290,7 @@ public:
 
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
-	double getStat(const struct StatRequest &statRequest) const noexcept;
+	double getStatistic(const struct StatRequest &statRequest) const noexcept;
 };
 
 
@@ -333,7 +333,7 @@ public:
 
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
-	double getStat(const struct StatRequest &statRequest) const noexcept;
+	double getStatistic(const struct StatRequest &statRequest) const noexcept;
 };
 
 

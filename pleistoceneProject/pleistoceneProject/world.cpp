@@ -269,6 +269,8 @@ void World::setupTextures(graphics::Graphics &graphics) noexcept {
 	graphics.loadImage("../../content/simpleTerrain/whiteOutline.png");
 	graphics.loadImage("../../content/simpleTerrain/blackOutline.png");
 
+	Tile::setupTextures(graphics);
+
 }
 
 void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept 
