@@ -4,8 +4,12 @@
 #include "noise.h"
 
 namespace pleistocene {
+
+class Statistics;
+
 namespace graphics { class Graphics; }
 namespace simulation {
+
 
 struct StatRequest;
 
@@ -29,7 +33,7 @@ public:
 
 	//GRAPHICS
 	//====================
-	bool statDraw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept;
+	bool statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics) noexcept;
 	bool elevationDraw(graphics::Graphics &graphics, bool cameraMovementFlag, bool sunlit) noexcept;
 
 	static std::map<int, std::string> _colorTextures;

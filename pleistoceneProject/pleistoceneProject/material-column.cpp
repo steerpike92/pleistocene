@@ -393,9 +393,18 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 		else return messages;
 
 	}
-	case(AIR_) : {
-		auto layerReporting = &(_air.front());//FRONT
-		//add layer handling
+	case(AIR_) : {		
+		auto layerReporting = _air.begin();
+
+		//advance layer to requested layer;
+		for (int i = 0; i < statRequest._layer; i++) {
+			layerReporting++;
+		}
+
+		if (layerReporting >= _air.end()) {//then this layer doesn't exist
+			return messages;
+		}
+				      
 		subMessages = layerReporting->getMessages(statRequest);
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
 		return messages;
@@ -440,8 +449,13 @@ double MaterialColumn::getStatistic(const StatRequest &statRequest) const noexce
 
 	}
 	case(AIR_) : {
-		auto layerReporting = &(_air.front());//FRONT
-						      //add layer handling
+		auto layerReporting = _air.begin();
+
+		//advance layer to requested layer;
+		for (int i = 0; i < statRequest._layer && layerReporting<_air.end()-1; i++) {
+			layerReporting++;
+		}
+		
 		return layerReporting->getStatistic(statRequest);
 	}
 	}

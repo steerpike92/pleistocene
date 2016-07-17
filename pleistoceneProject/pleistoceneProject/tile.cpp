@@ -2,6 +2,7 @@
 #include "graphics.h"
 #include "world.h"
 #include "bios.h"
+#include "statistics.h"
 
 namespace pleistocene {
 namespace simulation {
@@ -47,13 +48,15 @@ void Tile::simulate() noexcept {
 //=======================
 
 
-bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag) noexcept
+bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics) noexcept
 {
+	_heatMapValue = statistics.getHeatValue(this->_statValue);
+
 	if ( !onscreenPositionUpdate(graphics, cameraMovementFlag)) {
 		return false;
 	}
 
-	double filter = abs(_heatMapValue);
+	double filter = 1-abs(_heatMapValue);
 
 	if (_heatMapValue <= 0) {//Cold (blue)
 		graphics.colorFilter(_colorTextures[0], filter, filter, 1.0);
@@ -116,7 +119,10 @@ std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) cons
 	return messages;
 }
 
-double Tile::getStatistic(const StatRequest &statRequest) noexcept {return _tileClimate.getStatistic(statRequest);}
+double Tile::getStatistic(const StatRequest &statRequest) noexcept {
+	_statValue= _tileClimate.getStatistic(statRequest);
+	return _statValue;
+}
 
 }//namespace simulation
 }//namespace pleistocene

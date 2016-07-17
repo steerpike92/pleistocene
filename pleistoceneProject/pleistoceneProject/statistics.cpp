@@ -1,7 +1,7 @@
 #include "statistics.h"
 #include "math.h"
 #include "algorithm"
-
+#include "globals.h"
 namespace pleistocene {
 
 Statistics::Statistics() noexcept :
@@ -40,7 +40,10 @@ void Statistics::calculateStatistics() noexcept
 		standardDeviationSum += pow(deviation, 2);
 	}
 
-	_standardDeviation = pow(standardDeviationSum, 0.5) / N;
+	_standardDeviation = pow(standardDeviationSum/double(N), 0.5);
+
+	//LOG("mean: " << _mean);
+	//LOG("standard of deviation: " << _standardDeviation);
 
 }
 
@@ -48,14 +51,14 @@ void Statistics::calculateStatistics() noexcept
 double Statistics::getSigmasOffMean(double value) const noexcept
 {
 	if (_standardDeviation == 0) return 0;
-	else return (value - _mean) / _standardDeviation;
+	else return ((value - _mean) / _standardDeviation);
 }
 
 //value between -1 and 1 representing above/below averageness
 double Statistics::getHeatValue(double value) const noexcept
 {
 	if (_standardDeviation == 0) return 0;
-	double heatValue = getSigmasOffMean(value) / 3;
+	double heatValue = getSigmasOffMean(value) / 3.0;
 	heatValue = std::max(heatValue, -1.0);
 	heatValue = std::min(heatValue, 1.0);
 	return heatValue;

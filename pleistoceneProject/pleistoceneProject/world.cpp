@@ -219,6 +219,17 @@ void World::simulate(const options::GameOptions &options) noexcept
 		}
 	}
 
+	_statistics.clear();
+
+	double tileStatValue;
+
+	for (Tile &tile : _tiles) {
+		tileStatValue = tile.getStatistic(_statRequest);
+		_statistics.contributeValue(tileStatValue);
+	}
+
+	_statistics.calculateStatistics();
+
 }
 
 void World::processInput(const Input & input, const options::GameOptions &options) noexcept
@@ -239,25 +250,41 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		simulate(options);
 	}
 
+	_newStatistic = false;
+
+	_newStatistic = true;
 
 	//draw type selection
-	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; }
-	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; }
-	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES;  }
-	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; }
-	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; }
+	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; _newStatistic = true;}
 	//draw section selector
-	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; }
-	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  }
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; }
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; }
-	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; }
+	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; _newStatistic = true;}
 
 	//layer selection
-	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; }
-	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; }
-	_statRequest._layer %= 8;
+	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; _newStatistic = true;}
+	_statRequest._layer = _statRequest._layer%8;
+	if (_statRequest._layer < 0)_statRequest._layer += 8;
 
+	if (_newStatistic) {
+		_statistics.clear();
+
+		double tileStatValue;
+
+		for (Tile &tile : _tiles) {
+			tileStatValue = tile.getStatistic(_statRequest);
+			_statistics.contributeValue(tileStatValue);
+		}
+
+		_statistics.calculateStatistics();
+	}
 	
 }
 
@@ -284,18 +311,8 @@ void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const op
 	}
 
 	else {
-		_statistics.clear();
-		double tileStatValue;
-
 		for (Tile &tile : _tiles) {
-			tileStatValue = tile.getStatistic(_statRequest);
-			_statistics.contributeValue(tileStatValue);
-		}
-
-		_statistics.calculateStatistics();
-
-		for (Tile &tile : _tiles) {
-			if (tile.statDraw(graphics, cameraMovementFlag)) {
+			if (tile.statDraw(graphics, cameraMovementFlag, _statistics)) {
 				_selectedTile = &tile;
 			}
 		}
@@ -346,6 +363,13 @@ std::vector<std::string> World::getReadout() const noexcept
 	}
 
 	readout.push_back(word);
+
+	std::stringstream stream;
+	stream << _statRequest._layer;
+	word = stream.str();
+
+	readout.push_back(word);
+
 	return readout;
 }
 

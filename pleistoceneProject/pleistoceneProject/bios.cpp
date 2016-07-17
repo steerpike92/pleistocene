@@ -51,8 +51,6 @@ void Bios::draw(graphics::Graphics &graphics) noexcept {
 
 	SDL_Rect sourceRect = { 0,0,255,255 };
 	SDL_Rect dest;
-
-	
 }
 
 
@@ -81,7 +79,7 @@ void InfoBar::draw(graphics::Graphics &graphics) noexcept {
 
 	my::Vector2 textDimensions;
 
-	int dateMargin = 40; //otherwise it'll jostle stupidly with changing dates. Should have chosen a monospace font
+	int dateMargin = 50; //otherwise it'll jostle stupidly with changing dates. Should have chosen a monospace font
 
 	for (std::string &message : _timeReadout) {
 		textDimensions = graphics.blitText(message, textPosition, graphics.White, true);

@@ -1,6 +1,6 @@
 #pragma once
 
-#define DEBUG 0
+#define DEBUG 1
 
 //Strings and such
 #if DEBUG

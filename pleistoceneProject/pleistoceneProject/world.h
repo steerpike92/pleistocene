@@ -88,6 +88,8 @@ public:
 
 private:
 
+	bool _newStatistic;
+
 	std::vector<Tile> _tiles;
 
 	StatRequest _statRequest;
