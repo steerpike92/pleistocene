@@ -62,16 +62,16 @@ private:
 	void setupTextures(graphics::Graphics & graphics) noexcept;
 	void buildTileNeighbors() noexcept;
 
-	void generateTileElevations(int seed) noexcept;
+	void generateTileElevations() noexcept;
 	void setupTileClimateAdjacency() noexcept;
 
-	std::vector<double> World::buildNoiseTable(int Rows, int Cols, int seed) noexcept;
+	std::vector<double> World::buildNoiseTable(int Rows, int Cols) noexcept;
 
 	std::vector<double> World::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) noexcept;
 
 public:
 
-	void generateWorld(int seed, const options::GameOptions &options) noexcept;
+	void generateWorld(const options::GameOptions &options) noexcept;
 
 	void draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept;
 
@@ -87,6 +87,8 @@ public:
 	std::vector<std::string> getReadout() const noexcept;
 
 private:
+
+	int _seed;
 
 	bool _newStatistic;
 

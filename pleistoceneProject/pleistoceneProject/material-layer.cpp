@@ -218,12 +218,11 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex) noexcept
 	//depthIndex is from 0 to 1 (0=surface, 1=bedrockBottom)
 	//Not used here yet but eventually probably
 
-	//randomDouble is from 0 to 1;
+	//uniformRandom is from 0 to 1;
 	double soilRV = my::uniformRandom();
-
 	if (soilRV > 0.67) { return CLAY; }
-	if (soilRV > 0.33) { return SILT; }
-	return SAND;
+	else if (soilRV > 0.33) { return SILT; }
+	else return SAND;
 }
 
 //SIMULATION
@@ -283,7 +282,7 @@ double EarthLayer::getStatistic(const StatRequest &statRequest) const noexcept
 HorizonLayer::HorizonLayer() noexcept {}
 
 HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept :
-EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)//calls constructor specifically for horizon
+EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)
 {
 	using namespace elements;
 	using namespace layers;

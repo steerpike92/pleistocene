@@ -10,10 +10,10 @@ namespace simulation {
 
 World::World() noexcept {}
 
-
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
-_selectedTile(nullptr)
+_selectedTile(nullptr),
+_seed(5456)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
 
@@ -21,8 +21,7 @@ _selectedTile(nullptr)
 	setupTiles(graphics);
 	
 	//World generating algorithm
-	int seed = 21;//starting with a determined seed gives a pseudorandom intial map
-	generateWorld(seed, options);
+	generateWorld(options);
 }
 
 void World::setupTiles(graphics::Graphics &graphics) noexcept {
@@ -42,9 +41,9 @@ void World::buildTileVector() noexcept {
 	}
 }
 
-void World::generateWorld(int seed, const options::GameOptions &options) noexcept 
+void World::generateWorld(const options::GameOptions &options) noexcept 
 {
-	generateTileElevations(seed);
+	generateTileElevations();
 	setupTileClimateAdjacency();
 }
 
@@ -55,11 +54,11 @@ void World::buildTileNeighbors() noexcept {
 }
 
 
-std::vector<double> World::buildNoiseTable(int Rows, int Cols, int seed) noexcept {
+std::vector<double> World::buildNoiseTable(int Rows, int Cols) noexcept {
 
 	noise::NoiseParameters noise_parameters;
 	noise_parameters.octaves = 8;			//number of noise octaves. (each octave has twice the frequency of the previous octave, and (persistance) the amplitude
-	noise_parameters.seed = seed;			//seed for pseudorandom number generation
+	noise_parameters.seed = _seed;			//seed for pseudorandom number generation
 	noise_parameters.zoom = 4000;			//determines wavelength of first octave
 	noise_parameters.persistance = 0.55;		//amplitude lost acending each octave
 
@@ -87,37 +86,58 @@ std::vector<double> World::buildNoiseTable(int Rows, int Cols, int seed) noexcep
 std::vector<double> World::blendNoiseTable(std::vector<double> noiseTable, int Rows, int Cols, int vBlendDistance, int  hBlendDistance) noexcept {
 
 	//blend map east/west edge together
-	double blend;
+	double weightedAverage;
 
 	int TileRows = my::Address::GetRows();
 	int TileCols = my::Address::GetCols();
 
+	double nonZeroHBlendDistance = std::max(double(hBlendDistance), 1.0);
+
+	double weight1;//for weighted averages
+	double weight2;
+
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < hBlendDistance; col++) {
-			blend = (col / std::max(double(hBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				((double(hBlendDistance) - col) / std::max(double(hBlendDistance), 1.0))*noiseTable[row*Cols + col + TileCols];
 
-			noiseTable[row*Cols + col] = blend;
+			weight1 = double(col) / nonZeroHBlendDistance;
+			weight2 = double(hBlendDistance - col) / nonZeroHBlendDistance;
+
+			weightedAverage = 
+				weight1 * noiseTable[row*Cols + col] +
+				weight2 * noiseTable[row*Cols + col + TileCols];
+
+			noiseTable[row*Cols + col] = weightedAverage;
 		}
 	}
 
 	//blend north/south pole into water. Walking into a black barrier is kinda lame
+	//this dramatically improves the feel of the map
+
+	double nonZeroVBlendDistance = std::max(double(vBlendDistance), 1.0);
 
 	for (int row = 0; row < vBlendDistance; row++) {
 		for (int col = 0; col < TileCols; col++) {
-			blend = (row / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				(double(vBlendDistance - row) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row + vBlendDistance)*Cols + col]);
+			weight1 = double(row) / nonZeroVBlendDistance;
+			weight2 = double(vBlendDistance - row) / nonZeroVBlendDistance;
 
-			noiseTable[row*Cols + col] = blend;
+			weightedAverage =  
+				weight1 * noiseTable[row*Cols + col] +
+				weight2 * (-.5 + .5*noiseTable[(row + vBlendDistance)*Cols + col]);
+
+			noiseTable[row*Cols + col] = weightedAverage;
 		}
 	}
 
 	for (int row = TileRows - vBlendDistance; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
-			blend = (double(TileRows - row) / std::max(double(vBlendDistance), 1.0)) * noiseTable[row*Cols + col] +
-				(double(vBlendDistance + row - TileRows) / std::max(double(vBlendDistance), 1.0))*(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
+			weight1 = double(TileRows - row) / nonZeroVBlendDistance;
+			weight2 = double(vBlendDistance + row - TileRows) / nonZeroVBlendDistance;
 
-			noiseTable[row*Cols + col] = blend;
+			weightedAverage = 
+				weight1 * noiseTable[row*Cols + col] +
+				weight2 *(-.5 + .5*noiseTable[(row - vBlendDistance)*Cols + col]);
+
+			noiseTable[row*Cols + col] = weightedAverage;
 		}
 	}
 
@@ -125,14 +145,14 @@ std::vector<double> World::blendNoiseTable(std::vector<double> noiseTable, int R
 
 }
 
-void World::generateTileElevations(int seed) noexcept {
+void World::generateTileElevations() noexcept {
 
 	int TileRows = my::Address::GetRows();
 	int TileCols = my::Address::GetCols();
 
 
-	const int		hBlendDistance = TileCols / 10;			//horizontal blend distance for east west map edge blending
-	const int		vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
+	const int hBlendDistance = TileCols / 6;	//horizontal blend distance for east west map edge blending
+	const int vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
 	int Cols = TileCols + hBlendDistance;					//columns needed in noise table
 	int Rows = TileRows;							//rows needed in noise table
 
@@ -140,7 +160,7 @@ void World::generateTileElevations(int seed) noexcept {
 
 
 										//noise generator;
-	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols, seed);
+	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols);
 
 	//noise edge blender
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
@@ -236,7 +256,9 @@ void World::processInput(const Input & input, const options::GameOptions &option
 {
 	//New map (resets all simulation data and generates new tile elevations with a random seed
 	if (input.wasKeyPressed(SDL_SCANCODE_G)) {
-		generateWorld(rand(), options);
+		_seed = rand();
+		LOG("Seed = " << _seed);
+		generateWorld(options);
 		my::SimulationTime::resetGlobalTime();
 		simulate(options);
 	}
@@ -325,7 +347,6 @@ void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const op
 		}
 		graphics.blitSurface("../../content/simpleTerrain/blackOutline.png", NULL, onscreenPositions);
 	}
-
 }
 
 std::vector<std::string> World::getMessages() const noexcept 
@@ -345,18 +366,18 @@ std::vector<std::string> World::getReadout() const noexcept
 	std::string word;
 
 	switch (_statRequest._section) {
-	case(SURFACE_) : word="SURFACE "; break;
-	case(HORIZON_) :  word = "HORIZON "; break;
-	case(EARTH_) :  word = "EARTH "; break;
-	case(SEA_) :  word = "SEA "; break;
-	case(AIR_) :   word = "AIR "; break;
+	case(SURFACE_) : word="Surface "; break;
+	case(HORIZON_) :  word = "Horizon "; break;
+	case(EARTH_) :  word = "Earth "; break;
+	case(SEA_) :  word = "Sea "; break;
+	case(AIR_) :   word = "Air "; break;
 	}
 
 	readout.push_back(word);
 
 	switch (_statRequest._statType) {
-	case(ELEVATION) : word = "ELEVATION "; break;
-	case(TEMPERATURE) :  word = "TEMPERATURE "; break;
+	case(ELEVATION) : word = "Elevation "; break;
+	case(TEMPERATURE) :  word = "Temperature "; break;
 	case(MATERIAL_PROPERTIES) :  word = "MATERIAL PROPERTIES "; break;
 	case(FLOW) : word = "FLOW "; break;
 	case(MOISTURE) : word = "MOISTURE "; break;
@@ -365,7 +386,15 @@ std::vector<std::string> World::getReadout() const noexcept
 	readout.push_back(word);
 
 	std::stringstream stream;
+	stream << "Layer: ";
 	stream << _statRequest._layer;
+	word = stream.str();
+
+	readout.push_back(word);
+
+	stream = std::stringstream();
+	stream << "Seed: ";
+	stream << _seed;
 	word = stream.str();
 
 	readout.push_back(word);

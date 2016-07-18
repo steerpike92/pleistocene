@@ -248,6 +248,7 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	//reflection
 	solarEnergyKJ *= (1 - _albedo);
 
+	//Water and air transmit a lot of energy
 	_totalSolarAbsorbed = _solarAbsorptionIndex*solarEnergyKJ;
 
 	double outputEnergyKJ = (1 - _solarAbsorptionIndex)*solarEnergyKJ;
@@ -290,7 +291,7 @@ double Mixture::filterInfrared(double infraredEnergy) noexcept {
 	double infraredAbsorbed = _infraredAbsorptionIndex*infraredEnergy;
 	_totalInfraredAbsorbed += infraredAbsorbed;
 
-	//TEMPERATURE CHANGE!!!!! (previously this was done twice as a bug)
+	//TEMPERATURE CHANGE
 	_temperature += infraredAbsorbed / _totalHeatCapacity;
 
 
