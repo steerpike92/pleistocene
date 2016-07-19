@@ -4,17 +4,16 @@
 namespace pleistocene {
 namespace noise {
 
-
-inline double Pseudorandom2D(double x, double y, int seed) noexcept;
-
-inline double Interpolate(double a, double b, double x) noexcept;
-
-double Noise2D(double x, double y, int seed) noexcept;
-
 struct NoiseParameters {
-	int seed, octaves; 
-	double zoom, persistance;
+	int octaves;
+	double zoom, persistance, seed;
 };
+
+double Pseudorandom2D(double x, double y, double seed) noexcept;
+
+double Interpolate(double a, double b, double x) noexcept;
+
+double Noise2D(double x, double y, double seed) noexcept;
 
 std::vector<double> PerlinNoise(std::vector<std::pair<double, double>> positions, NoiseParameters parameters) noexcept;
 

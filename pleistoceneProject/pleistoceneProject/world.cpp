@@ -13,7 +13,7 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(5456),
+_seed(9919),
 _statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
@@ -300,6 +300,8 @@ void World::processInput(const Input & input, const options::GameOptions &option
 	else if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; }
 	else if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; }
 
+	else if (input.wasKeyPressed(SDL_SCANCODE_Q)) { _statRequest._section = SURFACE_; _statRequest._statType = ELEVATION; _statRequest._layer = 0; }
+
 	else { newStatistic = false; }
 
 
@@ -365,7 +367,7 @@ std::vector<std::string> World::getMessages() const noexcept
 		double sigmas=_statistics.getSigmasOffMean(_selectedTile->getStatistic(_statRequest));
 
 		std::stringstream stream;
-		stream << "Sigmas off mean: " << sigmas;
+		stream << "Sigmas off mean: " << my::double2string(sigmas);
 		std::vector<std::string> messages;
 		messages.push_back(stream.str());
 

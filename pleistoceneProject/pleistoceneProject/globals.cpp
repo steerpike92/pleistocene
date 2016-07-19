@@ -466,6 +466,8 @@ RGB hsv2rgb(HSV hsv) noexcept
 std::string double2string(double number) noexcept 
 {
 	std::stringstream stream;
+	if (number < 0) stream << "-";
+	number = abs(number);
 	stream << int(number) << "." << int(int(number * 100) % 100);
 	return stream.str();
 }

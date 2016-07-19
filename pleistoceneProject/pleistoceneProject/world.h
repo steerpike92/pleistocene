@@ -89,7 +89,7 @@ public:
 
 private:
 
-	int _seed;
+	double _seed;
 
 	std::vector<Tile> _tiles;
 

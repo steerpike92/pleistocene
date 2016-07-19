@@ -349,11 +349,11 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 
 	if (statRequest._statType == TEMPERATURE) {
 		stream.str(std::string());
-		stream << "Back Radiation: " << int(_backRadiation) << " KJ";
+		stream << "Back Radiation: " << my::double2string(_backRadiation) << " KJ";
 		messages.push_back(stream.str());
 
 		stream.str(std::string());
-		stream << "Escape Radiation: " << int(_escapeRadiation) << " KJ";
+		stream << "Escape Radiation: " << my::double2string(_escapeRadiation) << " KJ";
 		messages.push_back(stream.str());
 	}
 

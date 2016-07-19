@@ -140,7 +140,7 @@ std::vector<std::string> Element::getMessages() const noexcept {
 	messages.push_back(" ");
 	messages.push_back(_elementNameMap.at(_elementType));
 	std::stringstream stream;
-	stream << "Mass: " << _mass << " kg";
+	stream << "Mass: " << my::double2string(_mass) << " kg";
 	messages.push_back(stream.str());
 	messages.push_back(" ");
 	return messages;

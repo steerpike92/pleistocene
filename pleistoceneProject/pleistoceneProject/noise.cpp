@@ -7,10 +7,10 @@ namespace pleistocene {
 namespace noise {
 
 //not written by me
-double Pseudorandom2D(double x, double y, int seed) noexcept
+double Pseudorandom2D(double x, double y, double seed) noexcept
 {
-	int n = (int)x*seed + (int)y * 57;
-	n = (n << 13) ^ n;
+	int n = int(x*seed + y * 57);
+	n = int(n << 13) ^ n;
 	int nn = (n*(n*n * 60493 + 19990303) + 1376312589) & INT_MAX;
 	return 1.0 - ((double)nn / 1073741824.0);
 }
@@ -24,7 +24,7 @@ double Interpolate(double a, double b, double x) noexcept
 }
 
 //not written by me
-double Noise2D(double x, double y, int seed) noexcept
+double Noise2D(double x, double y, double seed) noexcept
 {
 	int floor_x = int(x);
 	int floor_y = int(y);
@@ -51,7 +51,7 @@ std::vector<double> PerlinNoise(std::vector<std::pair<double, double>> positions
 	std::vector<double> noise_table;
 
 	//parameter unpacking
-	int seed = parameters.seed;
+	double seed = parameters.seed;
 	int octave_count= parameters.octaves;
 	double zoom= parameters.zoom;
 	double persistance = parameters.persistance;
