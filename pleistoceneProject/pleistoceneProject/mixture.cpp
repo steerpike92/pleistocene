@@ -311,10 +311,10 @@ double Mixture::getVolume() const noexcept { return _totalVolume; }
 double Mixture::getMass() const noexcept { return _totalMass; }
 double Mixture::getMols() const noexcept { return _totalMols; }
 
-std::vector<std::string> Mixture::getMessages() const noexcept {
+std::vector<std::string> Mixture::getThermalMessages() const noexcept {
 	std::vector<std::string> messages;
 
-	/*std::stringstream stream;
+	std::stringstream stream;
 	stream << "Temperature: " << round(_temperature - 273.15) << " °C";
 	messages.push_back(stream.str());
 
@@ -336,10 +336,24 @@ std::vector<std::string> Mixture::getMessages() const noexcept {
 
 	stream = std::stringstream();
 	stream << " ";
-	messages.push_back(stream.str());*/
+	messages.push_back(stream.str());
 
 	return messages;
 }
+
+std::vector<std::string> Mixture::getElementMessages() const noexcept 
+{
+	std::vector<std::string> messages;
+	std::vector<std::string> subMessages;
+
+	for (const ElementPair &elementPair : _elements) {
+		subMessages=elementPair.second.getMessages();
+		messages.insert(messages.begin(), subMessages.begin(), subMessages.end());
+	}
+
+	return messages;
+}
+
 
 }//namespace elements
 }//namespace layers

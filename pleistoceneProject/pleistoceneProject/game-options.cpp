@@ -6,7 +6,7 @@ namespace pleistocene {
 namespace options {
 
 GameOptions::GameOptions() noexcept {
-	setWorldSize(0);
+	setWorldSize(2);
 	my::Address::getOptions(*this);
 }
 

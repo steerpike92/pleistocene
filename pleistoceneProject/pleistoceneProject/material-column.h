@@ -92,6 +92,9 @@ public:
 
 	double getStatistic(const StatRequest &statRequest) const noexcept;
 
+private:
+	void chooseLayer(const StatRequest &statRequest) const noexcept;
+	mutable MaterialLayer *_chosenLayer;
 };
 
 }//namespace layers

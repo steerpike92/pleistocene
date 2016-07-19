@@ -95,7 +95,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime, const options:
 	if (input.wasKeyHeld(SDL_SCANCODE_D)) {
 		_cameraPosition.x += elapsedTime / 2;
 		if (_cameraPosition.x > 0 && options._loopOption) {
-			_cameraPosition.x = -globals::kTileWidth * _zoomScale*options.getCols();
+			_cameraPosition.x = int(-globals::kTileWidth * _zoomScale*options.getCols());
 		}
 		movementflag = true;
 

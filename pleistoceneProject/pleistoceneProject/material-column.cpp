@@ -60,7 +60,7 @@ double MaterialColumn::buildEarth() noexcept
 
 double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
-	_horizon.emplace_back(_landElevation, _initialTemperature, baseElevation);
+	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation);
 	double currentElevation = _horizon.back().getTopElevation();
 	return currentElevation;
 }
@@ -348,120 +348,148 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 		messages.push_back(stream.str());
 	}
 
-	switch (statRequest._section) {
-
-	case(SURFACE_) :
-		if (_submerged) {
-			auto layerReporting = &(_sea.back());
-			subMessages = layerReporting->getMessages(statRequest);
-			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-			return messages;
-		}
-		else {
-			auto layerReporting = &(_horizon.back());
-			subMessages = layerReporting->getMessages(statRequest);
-			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-			return messages;
-		}
-
-	case(HORIZON_) : {
-		auto layerReporting = &(_horizon.back());//BACK
-		//add layer handling
-		subMessages = layerReporting->getMessages(statRequest);
+	chooseLayer(statRequest);
+	if (_chosenLayer != nullptr) {
+		subMessages = _chosenLayer->getMessages(statRequest);
 		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-		return messages;
 	}
-
-	case(EARTH_) : {
-		auto layerReporting = &(_earth.back());//BACK
-		//add layer handling
-		subMessages = layerReporting->getMessages(statRequest);
-		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-		return messages;
-	}
-
-	case(SEA_) : {
-
-		if (_submerged) {
-			auto layerReporting = &(_sea.back());//BACK
-							     //add layer handling
-			subMessages = layerReporting->getMessages(statRequest);
-			messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-			return messages;
-		}
-
-		else return messages;
-
-	}
-	case(AIR_) : {		
-		auto layerReporting = _air.begin();
-
-		//advance layer to requested layer;
-		for (int i = 0; i < statRequest._layer; i++) {
-			layerReporting++;
-		}
-
-		if (layerReporting >= _air.end()) {//then this layer doesn't exist
-			return messages;
-		}
-				      
-		subMessages = layerReporting->getMessages(statRequest);
-		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
-		return messages;
-	}
-	}
+	return messages;
 }
 
 double MaterialColumn::getStatistic(const StatRequest &statRequest) const noexcept {
 
+	chooseLayer(statRequest);
+
+	if (_chosenLayer == nullptr) return my::kFakeDouble;
+
+	return _chosenLayer->getStatistic(statRequest);
+}
+
+
+void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept {
+
+	_chosenLayer = nullptr;
+
 	switch (statRequest._section) {
 
 	case(SURFACE_) :
-		if (_submerged) {
-			auto layerReporting = &(_sea.back());
-			return layerReporting->getStatistic(statRequest);
-		}
-		else {
-			auto layerReporting = &(_horizon.back());
-			return layerReporting->getStatistic(statRequest);
+
+		if (statRequest._layer == 0) {
+			if (_submerged) {
+				auto layerReporting = &(_sea.back());
+				_chosenLayer = const_cast<SeaLayer*>(layerReporting);
+				return;
+			}
+			else {
+				auto layerReporting = &(_horizon.back());
+				_chosenLayer = const_cast<HorizonLayer*>(layerReporting);
+				return;
+			}
 		}
 
+		else {
+			_chosenLayer = const_cast<AirLayer*>(&_air.front());
+			return;
+		}
+		
+
 	case(HORIZON_) : {
-		auto layerReporting = &(_horizon.back());//BACK
-							 //add layer handling
-		return layerReporting->getStatistic(statRequest);
+
+		if (_submerged) {
+			return;//_chosenLayer stays nullptr;
+		}
+
+		auto layerReporting = &(_horizon.back());
+		_chosenLayer = const_cast<HorizonLayer*>(layerReporting);
+		return;
 	}
+
 	case(EARTH_) : {
-		auto layerReporting = &(_earth.back());//BACK
-						       //add layer handling
-		return layerReporting->getStatistic(statRequest);
+
+		//5 bedrock
+		//4 substratum 3
+		//3 substratum 2
+		//2 substratum 1
+		//1 subsoil
+		//0 horizon
+
+
+		if (statRequest._layer == 0) {
+			auto layerReporting = &(_horizon.back());
+			_chosenLayer= const_cast<HorizonLayer*>(layerReporting);
+			return;
+		}
+
+		auto layerReporting = _earth.rbegin();
+		for (int i = 0; i < statRequest._layer; i++) {//advance downward to requested layer
+			layerReporting++;
+			if (layerReporting == _earth.rend()) {//below bedrock bottom. not valid
+				return;
+			}
+		}
+		//1) dereference iterator, 2) get pointer to object, 3) cast to non-const.
+		_chosenLayer = const_cast<EarthLayer*>(&(*layerReporting));//this is a ridiculous line. 
+		return;
 	}
 
 	case(SEA_) : {
 
-		if (_submerged) {
-			auto layerReporting = &(_sea.back());//BACK
-							     //add layer handling
-			return layerReporting->getStatistic(statRequest);
-		}
+		if (!_submerged) return;
 
-		else return 0.0;
+		//5 does not exist
+		//4 2000 - 20000 m
+		//3 200-2000 m
+		//2 20-200 m
+		//1 2-20 m
+		//0 sea surface 0-2 meters deep
 
-	}
-	case(AIR_) : {
-		auto layerReporting = _air.begin();
-
-		//advance layer to requested layer;
-		for (int i = 0; i < statRequest._layer && layerReporting<_air.end()-1; i++) {
+		auto layerReporting = _sea.rbegin();//surface
+		for (int i = 0; i < statRequest._layer; i++) {//advance downward to requested layer
 			layerReporting++;
+			if (layerReporting == _sea.rend()) {//hit sea bottom. not valid
+				return;
+			}
 		}
-		
-		return layerReporting->getStatistic(statRequest);
-	}
+		//1) dereference iterator, 2) get pointer to object, 3) cast to non-const.
+		_chosenLayer = const_cast<SeaLayer*>(&(*layerReporting));
+		return;
 	}
 
-	return 0.0;
+	case(AIR_) : {
+
+		//Boundary layer
+		if (statRequest._layer == 0) {
+			_chosenLayer = const_cast<AirLayer*>(&_air.front());
+			return;
+		}
+
+		//other layers
+
+		//start at stratosphere and work back to desired layer
+		auto layerReporting = _air.rbegin();
+
+		//5 stratosphere
+		//4 trop 4
+		//3 trop 3
+		//2 trop 2  (this layer rarely does not exist)
+		//1 trop 1  (this layer often does not exist)
+		//0 boundary layer (this layer always exists, it morphs to the terrain)
+
+		for (int i = 5; i > statRequest._layer; i--) {
+			layerReporting++; //advance reverse iterator to go down
+			if (layerReporting == _air.rend() - 1) {//kill the return to the boundary layer
+				return;
+			}
+		}
+		//layerReporting is now the desired layer
+		//1) dereference iterator, 2) get pointer to object, 3) cast to non-const.
+		_chosenLayer = const_cast<AirLayer*>(&(*layerReporting));
+		return;
+	}
+
+	}//end switch
 }
+
 
 }//namespace layers
 }//namespace climate

@@ -69,15 +69,21 @@ double MaterialLayer::getTemperature() const noexcept { return _mixture->getTemp
 std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statRequest) const noexcept
 {
 	std::vector<std::string> messages;
+	std::vector<std::string> subMessages;
+
 	std::stringstream stream;
 
 	switch (statRequest._statType) {
 	case(ELEVATION) :
 		stream = std::stringstream();
-		stream << "Elevation: " << int(_topElevation);
+		stream << "Elevation: " << int(_bottomElevation);
 		messages.push_back(stream.str());
-		break;
+		return messages;
+
 	case(TEMPERATURE) :
+
+		messages = _mixture->getThermalMessages();
+
 		stream = std::stringstream();
 		stream << "Temperature: " << int(getTemperature() - 273) << " °C";
 		messages.push_back(stream.str());
@@ -86,8 +92,11 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 		stream << "Heat Capacity: " << int(_mixture->getHeatCapacity()) << " kJ/K";
 		messages.push_back(stream.str());
 
-		break;
+		return messages;
+
 	case(MATERIAL_PROPERTIES) :
+
+		messages = _mixture->getElementMessages();
 
 		stream = std::stringstream();
 		stream << "Albedo: " << int(_mixture->getAlbedo() * 100) << "%";
@@ -100,27 +109,24 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 		stream = std::stringstream();
 		stream << "Height: " << int(_height) << " m";
 		messages.push_back(stream.str());
-		break;
-	case(FLOW) :
 
-		break;
-	case(MOISTURE) :
+		return messages;
 
-		break;
+	case(FLOW) : return messages;
+	case(MOISTURE) : return messages;
 	}
-
 	return messages;
 }
 
 double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
-	case(ELEVATION) : return _topElevation;
+	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return _mixture->getTemperature();
-	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(MATERIAL_PROPERTIES) : return _mixture->getAlbedo();
 	case(FLOW) : return 0; //stub
 	case(MOISTURE) : return 0; //stub
-	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
+	default: LOG("Not a stat type"); exit(EXIT_FAILURE); return 1;
 	}
 
 }
@@ -136,13 +142,13 @@ MaterialLayer(baseElevation, bottomElevation),
 _solidPtr(new elements::SolidMixture())
 {//normal constructor
 	using namespace elements;
-	using namespace layers;
+	
 
 	_layerType = EARTH;
 
 	std::vector<Element> elementVector;
 
-	elementVector = generateSoil(-_bottomRelativeElevation, layerHeight);//-_bottomRelativeElevation is depth below surface
+	elementVector = generateSoil(earth::bedrockDepth-_bottomRelativeElevation, layerHeight);//-_bottomRelativeElevation is depth below surface
 
 	//unique_ptr setup.
 	std::unique_ptr<SolidMixture> temp(new SolidMixture(elementVector, temperature));
@@ -181,9 +187,9 @@ std::vector<elements::Element> EarthLayer::generateSoil(double depth, double hei
 	default://"CLAY" is stand in for soil layer
 
 		//up to three types of soil mixed together
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			soilLayerType = determineSoilType(depthIndex);
-			element = Element(VOLUME, soilLayerType, height, SOLID);
+			element = Element(VOLUME, soilLayerType, height/4.0, SOLID);
 			elementVector.push_back(element);
 		}
 		return elementVector;
@@ -204,8 +210,8 @@ elements::ElementType EarthLayer::determineEarthType(double depthIndex) noexcept
 	//high values correspond to bedrock types (at bedrock bottom, soilRV > 0.5)
 	double soilRV = (depthIndex + randomDouble) / 2;
 
-	if (soilRV > 0.6) { return BEDROCK; }
-	if (soilRV > 0.4) { return ROCK; }
+	if (soilRV > 0.65) { return BEDROCK; }
+	if (soilRV > 0.48) { return ROCK; }
 	return CLAY; //stand in for "SOIL".  Move on to soil determination
 }
 
@@ -243,31 +249,32 @@ std::vector<std::string> EarthLayer::getMessages(const StatRequest &statRequest)
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) :
 	{
-		std::vector<std::string> subMessages = MaterialLayer::getMessages(statRequest);
-		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		messages = MaterialLayer::getMessages(statRequest);
 
 		stream = std::stringstream();
-		stream << "Porousness: " << int(_solidPtr->getPorosity());
+		stream << "Porosity: " << _solidPtr->getPorosity();
 		messages.push_back(stream.str());
 
 		stream = std::stringstream();
-		stream << "Permeability: " << int(_solidPtr->getPermeability());
+		stream << "Permeability: " << _solidPtr->getPermeability();
 		messages.push_back(stream.str());
 
 		return messages;
 
 	}
-	case(FLOW) : return messages; //stub
-	case(MOISTURE) : return messages; //stub
+	case(FLOW) : return MaterialLayer::getMessages(statRequest);
+	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
+
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
+
 	}
 }
 double EarthLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
-	case(TEMPERATURE) : return _mixture->getTemperature();
-	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(TEMPERATURE) : return _solidPtr->getTemperature();
+	case(MATERIAL_PROPERTIES) : return _solidPtr->getPermeability();
 	case(FLOW) : return 0;
 	case(MOISTURE) : return 0;
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
@@ -284,9 +291,6 @@ HorizonLayer::HorizonLayer() noexcept {}
 HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept :
 EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)
 {
-	using namespace elements;
-	using namespace layers;
-
 	_layerType = HORIZON;//overwrite
 }
 
@@ -296,16 +300,11 @@ std::vector<std::string> HorizonLayer::getMessages(const StatRequest &statReques
 	std::stringstream stream;
 
 	switch (statRequest._statType) {
-	case(ELEVATION) :
-		return MaterialLayer::getMessages(statRequest);
-
-	case(TEMPERATURE) :
-		return MaterialLayer::getMessages(statRequest);
-
+	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
+	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) :
 	{
-		std::vector<std::string> subMessages = MaterialLayer::getMessages(statRequest);
-		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		messages=MaterialLayer::getMessages(statRequest);
 
 		stream = std::stringstream();
 		stream << "Porousness: " << int(_solidPtr->getPorosity());
@@ -317,12 +316,8 @@ std::vector<std::string> HorizonLayer::getMessages(const StatRequest &statReques
 
 		return messages;
 	}
-
-	case(FLOW) :
-		return messages;
-
-	case(MOISTURE) :
-		return messages;
+	case(FLOW) : return MaterialLayer::getMessages(statRequest);
+	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	}
 	return messages;
 }
@@ -331,8 +326,8 @@ double HorizonLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _topElevation;
-	case(TEMPERATURE) : return _mixture->getTemperature();
-	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(TEMPERATURE) : return _solidPtr->getTemperature();
+	case(MATERIAL_PROPERTIES) : return  _solidPtr->getAlbedo();
 	case(FLOW) : return 0;
 	case(MOISTURE) : return 0;
 	default: return 0;
@@ -350,7 +345,7 @@ MaterialLayer(baseElevation, bottomElevation),
 _liquidPtr(new elements::LiquidMixture())
 {
 	using namespace elements;
-	using namespace layers;
+	
 
 	_layerType = layers::SEA;
 	_topElevation = topElevation;
@@ -380,27 +375,28 @@ void SeaLayer::simulateFlow() noexcept {} //STUB
 
 std::vector<std::string> SeaLayer::getMessages(const StatRequest &statRequest) const noexcept
 {
-	std::vector<std::string> messages;
-	std::stringstream stream;
+	std::vector<std::string> messages=MaterialLayer::getMessages(statRequest);
+	//std::stringstream stream;
 
-	switch (statRequest._statType) {
+	/*switch (statRequest._statType) {
 	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(statRequest);
-	case(FLOW) : return messages; //stub
-	case(MOISTURE) : return messages; //stub
+	case(FLOW) : return MaterialLayer::getMessages(statRequest);
+	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
-	}
+	}*/
+	return messages;
 }
 
 double SeaLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
-	case(ELEVATION) : return _topElevation;
+	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return _mixture->getTemperature();
 	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
-	case(FLOW) : return 0;
-	case(MOISTURE) : return 0;
+	case(FLOW) : return 1;
+	case(MOISTURE) : return 1;
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
@@ -417,7 +413,7 @@ MaterialLayer(baseElevation, bottomElevation),
 _gasPtr(new elements::GaseousMixture)
 {
 	using namespace elements;
-	using namespace layers;
+	
 
 	_layerType = AIR;
 	_topElevation = fixedTopElevation;
@@ -561,28 +557,29 @@ double AirLayer::getTemperature() const noexcept { return _gasPtr->getTemperatur
 
 std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) const noexcept
 {
-	std::vector<std::string> messages;
-	std::stringstream stream;
+	std::vector<std::string> messages= MaterialLayer::getMessages(statRequest);
+	//std::stringstream stream;
 
-	switch (statRequest._statType) {
+	/*switch (statRequest._statType) {
 	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(statRequest);
-	case(FLOW) : return messages; //STUB
-	case(MOISTURE) : return messages; //STUB
+	case(FLOW) : return MaterialLayer::getMessages(statRequest);
+	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return messages;
-	}
+	}*/
+	return messages;
 }
 
 double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 {
 	switch (statRequest._statType) {
-	case(ELEVATION) : return _topElevation;
-	case(TEMPERATURE) : return _mixture->getTemperature();
+	case(ELEVATION) : return _bottomElevation;
+	case(TEMPERATURE) : return this->getTemperature();
 	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
 	case(FLOW) : return 0;
 	case(MOISTURE) : return 0;
-	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
+	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return 1;
 	}
 }
 

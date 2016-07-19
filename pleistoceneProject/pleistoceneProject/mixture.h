@@ -78,7 +78,8 @@ public:
 	//GETTERS
 	//=======================================
 
-	std::vector<std::string> getMessages() const noexcept;
+	std::vector<std::string> getThermalMessages() const noexcept;
+	std::vector <std::string> getElementMessages() const noexcept;
 	double getTemperature() const noexcept;
 	double getHeatCapacity() const noexcept;
 	double getHeight() const noexcept;

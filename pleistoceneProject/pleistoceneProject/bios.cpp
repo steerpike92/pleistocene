@@ -31,8 +31,6 @@ void Bios::update(std::vector<std::string> messages) noexcept {
 }
 
 void Bios::draw(graphics::Graphics &graphics) noexcept {
-
-
 	if (_display == false) return;
 
 	graphics.blitRectangle(&_displayRect, graphics.Grey, true);//background
@@ -48,9 +46,6 @@ void Bios::draw(graphics::Graphics &graphics) noexcept {
 		graphics.blitText(message, textPos, graphics.White, true);
 		textPos.y += textDimensions.y + _textMargin;;
 	}
-
-	SDL_Rect sourceRect = { 0,0,255,255 };
-	SDL_Rect dest;
 }
 
 

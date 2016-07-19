@@ -85,7 +85,8 @@ const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
 
 namespace sea {
 
-const double seaLayerElevations[] = { 0,-2,-20,-200,-2000,-20000 };
+const int kMaxSeaLayers = 5;
+const double seaLayerElevations[kMaxSeaLayers+1] = { 0,-2,-20,-200,-2000,-20000 };
 
 }
 
@@ -93,14 +94,17 @@ const double seaLayerElevations[] = { 0,-2,-20,-200,-2000,-20000 };
 
 namespace air {
 
+const int kMaxAirLayers = 6;//IF CHANGED, UPDATE airElevations!!!!!
+
 const double boundaryLayerHeight = 200;
 const double tropopauseElevation = 11000;
 
-const double troposphereLayerHeight = tropopauseElevation / 4.0;
+const double troposphereLayerHeight = tropopauseElevation / (kMaxAirLayers-2); //-boundary layer, -stratosphere gives -2
 
 const double stratopauseElevation = 32000;
 
-const double airElevations[] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
+//Rather ineligant, but I don't anticipate many changes to the number of max layers
+const double airElevations[kMaxAirLayers] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
 	3 * troposphereLayerHeight, 4 * troposphereLayerHeight, stratopauseElevation };
 
 

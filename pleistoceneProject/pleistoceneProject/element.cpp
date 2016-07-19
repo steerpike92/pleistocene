@@ -13,8 +13,8 @@ namespace elements {
 
 Element::Element() noexcept {}
 
-Element::Element(elements::ConstructorType constructorType, elements::ElementType elementType, double value, elements::State state) noexcept {
-	using namespace elements;
+Element::Element(ConstructorType constructorType, ElementType elementType, double value, State state) noexcept {
+	
 
 	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);exit(EXIT_FAILURE);}
 
@@ -134,22 +134,32 @@ void Element::resizeBy(double proportion) noexcept {
 //GETTER CALCULATORS
 //=====================================================================================
 
-elements::ElementType Element::getElementType() const noexcept { return _elementType; }
-elements::State Element::getState() const noexcept { return _state; }
+std::vector<std::string> Element::getMessages() const noexcept {
+	std::vector<std::string> messages;
+
+	messages.push_back(" ");
+	messages.push_back(_elementNameMap.at(_elementType));
+	std::stringstream stream;
+	stream << "Mass: " << _mass << " kg";
+	messages.push_back(stream.str());
+	messages.push_back(" ");
+	return messages;
+}
+
+
+ElementType Element::getElementType() const noexcept { return _elementType; }
+State Element::getState() const noexcept { return _state; }
 double Element::getHeatCapacity() const noexcept { return _mass*_specificHeatMap.at(_elementType); }
 
 double Element::getAlbedo() const noexcept {
-	using namespace elements;
 	if (_state == SOLID || _state == LIQUID) { return _albedoMap.at(_elementType); }
 	else { return std::min(_reflectivityMap.at(_elementType)*_mass, 1.0); }
 }
 double Element::getSolarAbsorptivity() const noexcept {
-	using namespace elements;
 	if (_state == SOLID) { return 1; }
 	else { return std::min(_solarAbsorptivityMap.at(_elementType)*_mass, 1.0); }
 }
 double Element::getInfraredAbsorptivity() const noexcept {
-	using namespace elements;
 	if (_state == SOLID) { return 1; }
 	else { return std::min(_infraredAbsorptivityMap.at(_elementType)*_mass, 1.0); }
 }
@@ -160,7 +170,7 @@ double Element::getMols() const noexcept { return _mols; }
 double Element::getVoidSpace() const noexcept { return _volume*_porosityMap.at(_elementType); }
 double Element::getPermeability() const noexcept { return _permeabilityMap.at(_elementType); }
 
-bool Element::getStateConflict(elements::State state) const noexcept {
+bool Element::getStateConflict(State state) const noexcept {
 	//check if this type is in the "state" list of accepted types 
 	if (_acceptedTypesMap.at(state).count(_elementType)) { return false; }//no conflict}
 	else { return true; }//conflict}
@@ -171,8 +181,7 @@ bool Element::getStateConflict(elements::State state) const noexcept {
 //PROPERTY MAPS
 //=====================================================================================================================
 
-elements::ElementPropertyMap Element::buildSpecificHeatMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildSpecificHeatMap() noexcept {
 	ElementPropertyMap specificHeat;
 	specificHeat[DRY_AIR] = 1.00;
 	specificHeat[WATER_VAPOR] = 3.985;
@@ -190,10 +199,9 @@ elements::ElementPropertyMap Element::buildSpecificHeatMap() noexcept {
 
 	return specificHeat;
 }
-const elements::ElementPropertyMap Element::_specificHeatMap = Element::buildSpecificHeatMap();
+const ElementPropertyMap Element::_specificHeatMap = Element::buildSpecificHeatMap();
 
-std::map<elements::ElementCoupling, double> Element::buildLatentHeatMap() noexcept {
-	using namespace elements;
+std::map<ElementCoupling, double> Element::buildLatentHeatMap() noexcept {
 	std::map<ElementCoupling, double> latentHeat;
 
 	latentHeat[ElementCoupling(ICE, SNOW)] = 0;
@@ -222,10 +230,9 @@ std::map<elements::ElementCoupling, double> Element::buildLatentHeatMap() noexce
 
 	return fullLatentHeat;
 }
-const std::map<elements::ElementCoupling, double> Element::_latentHeatMap = Element::buildLatentHeatMap();
+const std::map<ElementCoupling, double> Element::_latentHeatMap = Element::buildLatentHeatMap();
 
-elements::ElementPropertyMap Element::buildDensityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildDensityMap() noexcept {
 	ElementPropertyMap density;
 
 	density[CLOUD] = 1000;
@@ -241,11 +248,11 @@ elements::ElementPropertyMap Element::buildDensityMap() noexcept {
 
 	return density;
 }
-const elements::ElementPropertyMap Element::_densityMap = Element::buildDensityMap();
+const ElementPropertyMap Element::_densityMap = Element::buildDensityMap();
 
-elements::ElementPropertyMap Element::buildMolarMassMap() noexcept {
-	using namespace elements;
-	using namespace layers::air;
+ElementPropertyMap Element::buildMolarMassMap() noexcept {
+	
+	using namespace air;
 	ElementPropertyMap molarMass;
 
 	molarMass[DRY_AIR] = Md;
@@ -257,10 +264,10 @@ elements::ElementPropertyMap Element::buildMolarMassMap() noexcept {
 
 	return molarMass;
 }
-const elements::ElementPropertyMap Element::_molarMassMap = Element::buildMolarMassMap();
+const ElementPropertyMap Element::_molarMassMap = Element::buildMolarMassMap();
 
-std::map<elements::ElementType, elements::State> Element::buildStateMap() noexcept {
-	using namespace elements;
+std::map<ElementType, State> Element::buildStateMap() noexcept {
+	
 	std::map<ElementType, State> stateMap;
 
 	//now somewhat redundant as I like accepted types map more
@@ -282,10 +289,10 @@ std::map<elements::ElementType, elements::State> Element::buildStateMap() noexce
 	stateMap[CLAY] = SOLID;
 	return stateMap;
 }
-const std::map<elements::ElementType, elements::State> Element::_stateMap = Element::buildStateMap();
+const std::map<ElementType, State> Element::_stateMap = Element::buildStateMap();
 
-elements::ElementPropertyMap Element::buildPermeabilityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildPermeabilityMap() noexcept {
+	
 	ElementPropertyMap permeabilityMap;
 
 	//meters per hour
@@ -299,10 +306,10 @@ elements::ElementPropertyMap Element::buildPermeabilityMap() noexcept {
 
 	return permeabilityMap;
 }
-const elements::ElementPropertyMap Element::_permeabilityMap = Element::buildPermeabilityMap();
+const ElementPropertyMap Element::_permeabilityMap = Element::buildPermeabilityMap();
 
-elements::ElementPropertyMap Element::buildPorosityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildPorosityMap() noexcept {
+	
 	ElementPropertyMap porosityMap;
 
 	//Porosity is defined as the void space of a rock or unconsolidated material
@@ -317,10 +324,10 @@ elements::ElementPropertyMap Element::buildPorosityMap() noexcept {
 
 	return porosityMap;
 }
-const elements::ElementPropertyMap Element::_porosityMap = Element::buildPorosityMap();
+const ElementPropertyMap Element::_porosityMap = Element::buildPorosityMap();
 
-elements::ElementPropertyMap Element::buildParticleDensityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildParticleDensityMap() noexcept {
+	
 	ElementPropertyMap particleDensityMap;
 
 	particleDensityMap[ICE] = 961;
@@ -331,10 +338,10 @@ elements::ElementPropertyMap Element::buildParticleDensityMap() noexcept {
 
 	return particleDensityMap;
 }
-const elements::ElementPropertyMap Element::_particleDensityMap = Element::buildParticleDensityMap();
+const ElementPropertyMap Element::_particleDensityMap = Element::buildParticleDensityMap();
 
-elements::ElementPropertyMap Element::buildParticleRadiusMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildParticleRadiusMap() noexcept {
+	
 	ElementPropertyMap particleRadiusMap;
 
 	particleRadiusMap[ICE] = 5 * pow(10, -3);//hail
@@ -345,10 +352,10 @@ elements::ElementPropertyMap Element::buildParticleRadiusMap() noexcept {
 
 	return particleRadiusMap;
 }
-const elements::ElementPropertyMap Element::_particleRadiusMap = Element::buildParticleRadiusMap();
+const ElementPropertyMap Element::_particleRadiusMap = Element::buildParticleRadiusMap();
 
-elements::ElementPropertyMap Element::buildDynamicViscosityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildDynamicViscosityMap() noexcept {
+	
 	ElementPropertyMap dynamicViscosityMap;
 
 	//This should really depend on temperature
@@ -358,10 +365,10 @@ elements::ElementPropertyMap Element::buildDynamicViscosityMap() noexcept {
 
 	return dynamicViscosityMap;
 }
-const elements::ElementPropertyMap Element::_dynamicViscosityMap = Element::buildDynamicViscosityMap();
+const ElementPropertyMap Element::_dynamicViscosityMap = Element::buildDynamicViscosityMap();
 
-std::map<elements::State, std::set<elements::ElementType>> Element::buildAcceptedTypesMap() noexcept {
-	using namespace elements;
+std::map<State, std::set<ElementType>> Element::buildAcceptedTypesMap() noexcept {
+	
 	std::map<State, std::set<ElementType>> acceptedTypesMap;
 
 	std::set<ElementType> gasTypes{ DRY_AIR, WATER_VAPOR };
@@ -381,27 +388,27 @@ std::map<elements::State, std::set<elements::ElementType>> Element::buildAccepte
 
 	return acceptedTypesMap;
 }
-const std::map<elements::State, std::set<elements::ElementType>> Element::_acceptedTypesMap = Element::buildAcceptedTypesMap();
+const std::map<State, std::set<ElementType>> Element::_acceptedTypesMap = Element::buildAcceptedTypesMap();
 
-elements::ElementPropertyMap Element::buildAlbedoMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildAlbedoMap() noexcept {
+	
 	ElementPropertyMap albedo;
 
 	albedo[WATER] = 0.06;
 	albedo[SNOW] = 0.85;
 	albedo[ICE] = 0.6;
 
-	albedo[BEDROCK] = 0.1;
-	albedo[ROCK] = 0.3;
+	albedo[BEDROCK] = 0.0;
+	albedo[ROCK] = 0.1;
 	albedo[SAND] = 0.4;
-	albedo[SILT] = 0.2;
+	albedo[SILT] = 0.3;
 	albedo[CLAY] = 0.2;
 	return albedo;
 }
-const elements::ElementPropertyMap Element::_albedoMap = Element::buildAlbedoMap();
+const ElementPropertyMap Element::_albedoMap = Element::buildAlbedoMap();
 
-elements::ElementPropertyMap Element::buildReflectivityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildReflectivityMap() noexcept {
+	
 	ElementPropertyMap reflectivityMap;
 
 	//Cloudless:
@@ -421,10 +428,10 @@ elements::ElementPropertyMap Element::buildReflectivityMap() noexcept {
 
 	return reflectivityMap;
 }
-const elements::ElementPropertyMap Element::_reflectivityMap = Element::buildReflectivityMap();
+const ElementPropertyMap Element::_reflectivityMap = Element::buildReflectivityMap();
 
-elements::ElementPropertyMap Element::buildSolarAbsorptivityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildSolarAbsorptivityMap() noexcept {
+	
 	ElementPropertyMap solarAbsorptivityMap;
 
 	solarAbsorptivityMap[DRY_AIR] = 2.2*pow(10, -5);
@@ -442,10 +449,10 @@ elements::ElementPropertyMap Element::buildSolarAbsorptivityMap() noexcept {
 
 	return solarAbsorptivityMap;
 }
-const elements::ElementPropertyMap Element::_solarAbsorptivityMap = Element::buildSolarAbsorptivityMap();
+const ElementPropertyMap Element::_solarAbsorptivityMap = Element::buildSolarAbsorptivityMap();
 
-elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
-	using namespace elements;
+ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
+	
 	ElementPropertyMap infraredAbsorptivityMap;
 
 	//stub
@@ -465,7 +472,29 @@ elements::ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 
 	return infraredAbsorptivityMap;
 }
-const elements::ElementPropertyMap Element::_infraredAbsorptivityMap = Element::buildInfraredAbsorptivityMap();
+const ElementPropertyMap Element::_infraredAbsorptivityMap = Element::buildInfraredAbsorptivityMap();
+
+std::map<ElementType, std::string> Element::buildElementNameMap() noexcept {
+	std::map<ElementType, std::string> elementNameMap;
+	elementNameMap[DRY_AIR] = "Dry Air";
+	elementNameMap[WATER_VAPOR] = "Water Vapor";
+	elementNameMap[CLOUD] = "Cloud";
+
+	elementNameMap[WATER] = "Liquid Water";
+	elementNameMap[SNOW] = "Snow";
+	elementNameMap[ICE] = "Ice";
+
+	elementNameMap[BEDROCK] = "Bedrock";
+	elementNameMap[ROCK] = "Rock";
+	elementNameMap[SAND] = "Sand";
+	elementNameMap[SILT] = "Silt";
+	elementNameMap[CLAY] = "Clay";
+
+	return elementNameMap;
+}
+const std::map<ElementType, std::string> Element::_elementNameMap = Element::buildElementNameMap();
+
+
 
 }//namespace elements
 }//namespace layers

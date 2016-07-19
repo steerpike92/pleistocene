@@ -22,6 +22,7 @@ enum StatType {
 	MOISTURE		//5. soil moisture, groundwater, ---, humidity.
 };
 
+
 enum Section {
 	SURFACE_,		//6
 	HORIZON_,		//7
@@ -90,9 +91,11 @@ private:
 
 	int _seed;
 
-	bool _newStatistic;
-
 	std::vector<Tile> _tiles;
+
+	bool _statisticsUpToDate;
+
+	void performStatistics() noexcept;
 
 	StatRequest _statRequest;
 

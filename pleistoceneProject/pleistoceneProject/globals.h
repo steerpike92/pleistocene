@@ -74,6 +74,8 @@ class options::GameOptions;
 
 namespace my {
 
+
+
 const double kFakeDouble = -6666.0;
 const int kFakeInt = -6666;
 const int kFakeIndex = -6666;
@@ -88,7 +90,6 @@ enum Direction {
 	WEST,
 	NORTH_WEST
 };
-
 
 //my::Vector2
 //Mostly abandoned in favor of outsourcing to EIGEN to handle linear algebra

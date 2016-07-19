@@ -13,7 +13,8 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(5456)
+_seed(5456),
+_statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
 
@@ -239,18 +240,26 @@ void World::simulate(const options::GameOptions &options) noexcept
 		}
 	}
 
+	_statisticsUpToDate = false;
+}
+
+void World::performStatistics() noexcept 
+{
 	_statistics.clear();
 
 	double tileStatValue;
 
 	for (Tile &tile : _tiles) {
 		tileStatValue = tile.getStatistic(_statRequest);
-		_statistics.contributeValue(tileStatValue);
+		if (tileStatValue != my::kFakeDouble) {//don't contribute fake values.
+			_statistics.contributeValue(tileStatValue);
+		}
 	}
 
 	_statistics.calculateStatistics();
-
+	_statisticsUpToDate = true;
 }
+
 
 void World::processInput(const Input & input, const options::GameOptions &options) noexcept
 {
@@ -272,42 +281,34 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		simulate(options);
 	}
 
-	_newStatistic = false;
-
-	_newStatistic = true;
+	bool newStatistic = false;
 
 	//draw type selection
-	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; newStatistic = true;}
 	//draw section selector
-	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; _newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; newStatistic = true;}
 
 	//layer selection
-	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; _newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; _newStatistic = true;}
-	_statRequest._layer = _statRequest._layer%8;
-	if (_statRequest._layer < 0)_statRequest._layer += 8;
+	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; newStatistic = true;}
 
-	if (_newStatistic) {
-		_statistics.clear();
+	if (_statRequest._layer < 0)  _statRequest._layer = 0;
+	if (_statRequest._layer > 5)  _statRequest._layer = 5;
 
-		double tileStatValue;
-
-		for (Tile &tile : _tiles) {
-			tileStatValue = tile.getStatistic(_statRequest);
-			_statistics.contributeValue(tileStatValue);
-		}
-
-		_statistics.calculateStatistics();
+	
+	if (newStatistic) {
+		_statisticsUpToDate = false;
 	}
 	
+
 }
 
 void World::setupTextures(graphics::Graphics &graphics) noexcept {
@@ -324,6 +325,12 @@ void World::setupTextures(graphics::Graphics &graphics) noexcept {
 
 void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const options::GameOptions &options, user_interface::Bios &bios) noexcept 
 {
+
+	if (!_statisticsUpToDate) {
+		performStatistics();
+	}
+
+
 	if (_statRequest._statType == ELEVATION && _statRequest._section == SURFACE_) {
 		for (Tile &tile : _tiles) {
 			if (tile.elevationDraw(graphics, cameraMovementFlag, options._sunlit)) {
@@ -352,7 +359,17 @@ void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const op
 std::vector<std::string> World::getMessages() const noexcept 
 {
 	if (_selectedTile != nullptr) {
-		return _selectedTile->sendMessages(_statRequest);
+		double sigmas=_statistics.getSigmasOffMean(_selectedTile->getStatistic(_statRequest));
+
+		std::stringstream stream;
+		stream << "Sigmas off mean: " << sigmas;
+		std::vector<std::string> messages;
+		messages.push_back(stream.str());
+
+		std::vector<std::string> subMessages;
+		subMessages= _selectedTile->sendMessages(_statRequest);
+		messages.insert(messages.end(), subMessages.begin(), subMessages.end());
+		return messages;
 	}
 	else return std::vector<std::string> {};
 }

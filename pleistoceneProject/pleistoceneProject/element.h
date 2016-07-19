@@ -71,8 +71,8 @@ class Element {
 
 public:
 	Element() noexcept;
-	Element(elements::ConstructorType constructorType, elements::ElementType elementType,
-		double value, elements::State state = elements::NO_STATE) noexcept;
+	Element(ConstructorType constructorType, ElementType elementType,
+		double value, State state = NO_STATE) noexcept;
 
 	void combineLike(Element like) noexcept;
 	void addMass(double mass) noexcept;
@@ -81,8 +81,10 @@ public:
 
 	//getters
 	//================================
-	elements::ElementType getElementType() const noexcept;
-	elements::State getState() const noexcept;
+	ElementType getElementType() const noexcept;
+	State getState() const noexcept;
+
+	std::vector<std::string> getMessages() const noexcept;
 
 	double getAlbedo() const noexcept;
 	double getSolarAbsorptivity() const noexcept;
@@ -93,7 +95,7 @@ public:
 	double getMols()const noexcept;
 	double getVoidSpace()const noexcept;
 	double getPermeability()const noexcept;
-	bool getStateConflict(elements::State state)const noexcept;
+	bool getStateConflict(State state)const noexcept;
 
 private:
 	//======================================================
@@ -101,68 +103,71 @@ private:
 	//======================================================
 
 	//KJ/(kg*K)
-	static const elements::ElementPropertyMap _specificHeatMap;
-	static elements::ElementPropertyMap buildSpecificHeatMap() noexcept;
+	static const ElementPropertyMap _specificHeatMap;
+	static ElementPropertyMap buildSpecificHeatMap() noexcept;
 
 	//KJ/kg
 	//heat released(+) or consumed(-) in transition from "first" to "second"
-	static const std::map<elements::ElementCoupling, double> _latentHeatMap;
-	static std::map<elements::ElementCoupling, double> buildLatentHeatMap() noexcept;
+	static const std::map<ElementCoupling, double> _latentHeatMap;
+	static std::map<ElementCoupling, double> buildLatentHeatMap() noexcept;
 
 
 
 	//kg/m3
-	static const elements::ElementPropertyMap _densityMap;//maybe add specific volume map (m3/kg)
-	static elements::ElementPropertyMap buildDensityMap() noexcept;
+	static const ElementPropertyMap _densityMap;//maybe add specific volume map (m3/kg)
+	static ElementPropertyMap buildDensityMap() noexcept;
 
 	//kg/mol
-	static const elements::ElementPropertyMap _molarMassMap;//maybe add specific... mols? (mols/kg)
-	static elements::ElementPropertyMap buildMolarMassMap() noexcept;
+	static const ElementPropertyMap _molarMassMap;//maybe add specific... mols? (mols/kg)
+	static ElementPropertyMap buildMolarMassMap() noexcept;
 
 	//solid/liquid/gas (natural state for element)
-	static const std::map<elements::ElementType, elements::State> _stateMap;
-	static std::map<elements::ElementType, elements::State> buildStateMap() noexcept;
+	static const std::map<ElementType, State> _stateMap;
+	static std::map<ElementType, State> buildStateMap() noexcept;
 
 	//permeability. Meters per hour per unit pressure gradient
-	static const elements::ElementPropertyMap _permeabilityMap;
-	static elements::ElementPropertyMap buildPermeabilityMap() noexcept;
+	static const ElementPropertyMap _permeabilityMap;
+	static ElementPropertyMap buildPermeabilityMap() noexcept;
 
 	//porousness. Void Space per total volume
-	static const elements::ElementPropertyMap _porosityMap;
-	static elements::ElementPropertyMap buildPorosityMap() noexcept;
+	static const ElementPropertyMap _porosityMap;
+	static ElementPropertyMap buildPorosityMap() noexcept;
 
 	//particle density, assuming spherical volume (so snow gets super low density) kg/m3
-	static const elements::ElementPropertyMap _particleDensityMap;
-	static elements::ElementPropertyMap buildParticleDensityMap() noexcept;
+	static const ElementPropertyMap _particleDensityMap;
+	static ElementPropertyMap buildParticleDensityMap() noexcept;
 
 	//particle radius (m)
-	static const elements::ElementPropertyMap _particleRadiusMap;
-	static elements::ElementPropertyMap buildParticleRadiusMap() noexcept;
+	static const ElementPropertyMap _particleRadiusMap;
+	static ElementPropertyMap buildParticleRadiusMap() noexcept;
 
 	//Viscosity
-	static const elements::ElementPropertyMap _dynamicViscosityMap;
-	static elements::ElementPropertyMap buildDynamicViscosityMap() noexcept;
+	static const ElementPropertyMap _dynamicViscosityMap;
+	static ElementPropertyMap buildDynamicViscosityMap() noexcept;
 
 	//accepted type mixtures (can't add rocks to a gas)
-	static const std::map<elements::State, std::set<elements::ElementType>> _acceptedTypesMap;
-	static std::map<elements::State, std::set<elements::ElementType>> buildAcceptedTypesMap() noexcept;
+	static const std::map<State, std::set<ElementType>> _acceptedTypesMap;
+	static std::map<State, std::set<ElementType>> buildAcceptedTypesMap() noexcept;
 
 
 	//reflective index for solids/water surface 
-	static const elements::ElementPropertyMap _albedoMap;
-	static elements::ElementPropertyMap buildAlbedoMap() noexcept;
+	static const ElementPropertyMap _albedoMap;
+	static ElementPropertyMap buildAlbedoMap() noexcept;
 
 	//reflective index for diffuse elements (reflected/kg)
-	static const elements::ElementPropertyMap _reflectivityMap;
-	static elements::ElementPropertyMap buildReflectivityMap() noexcept;
+	static const ElementPropertyMap _reflectivityMap;
+	static ElementPropertyMap buildReflectivityMap() noexcept;
 
 	//solar absorption rate (proportion absorbed/kg)
-	static const elements::ElementPropertyMap _solarAbsorptivityMap;
-	static elements::ElementPropertyMap buildSolarAbsorptivityMap() noexcept;
+	static const ElementPropertyMap _solarAbsorptivityMap;
+	static ElementPropertyMap buildSolarAbsorptivityMap() noexcept;
 
 	//Infrared absorption rate (proportion absorbed/kg)
-	static const elements::ElementPropertyMap _infraredAbsorptivityMap;
-	static elements::ElementPropertyMap buildInfraredAbsorptivityMap() noexcept;
+	static const ElementPropertyMap _infraredAbsorptivityMap;
+	static ElementPropertyMap buildInfraredAbsorptivityMap() noexcept;
+
+	static const std::map<ElementType, std::string> _elementNameMap;
+	static std::map<ElementType, std::string> buildElementNameMap() noexcept;
 
 
 };

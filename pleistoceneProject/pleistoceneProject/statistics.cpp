@@ -15,6 +15,8 @@ Statistics::Statistics() noexcept :
 void Statistics::clear() noexcept
 {
 	_sum = 0;
+	_mean = 0;
+	_standardDeviation = 0;
 	_values.clear();
 }
 

@@ -50,12 +50,20 @@ void Tile::simulate() noexcept {
 
 bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics) noexcept
 {
-	_heatMapValue = statistics.getHeatValue(this->_statValue);
-
-	if ( !onscreenPositionUpdate(graphics, cameraMovementFlag)) {
+	//onscreen guard against wasting time. Also updates onscreen position.
+	if (!onscreenPositionUpdate(graphics, cameraMovementFlag)) {
 		return false;
 	}
+	
+	if (_statValue == my::kFakeDouble) {//no legitimate value
+		graphics.colorFilter(_colorTextures[0], 0, 0, 0);//filter to black
+		return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);
+	}
 
+
+	//determine draw color
+	_heatMapValue = statistics.getHeatValue(this->_statValue);
+	
 	double filter = 1-abs(_heatMapValue);
 
 	if (_heatMapValue <= 0) {//Cold (blue)
@@ -109,6 +117,7 @@ std::vector<std::string> Tile::sendMessages(const StatRequest &statRequest) cons
 	std::stringstream stream;
 	stream << "(Lat,Lon): (" << int(this->_latitude_deg) << "," << int(this->_longitude_deg) << ")";
 	messages.push_back(stream.str());
+
 
 	std::vector<std::string> climateMessages = _tileClimate.getMessages(statRequest);
 
