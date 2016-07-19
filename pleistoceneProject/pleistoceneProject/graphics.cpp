@@ -23,7 +23,7 @@ Graphics::Graphics() noexcept {
 	_windowRect = { 0,0,globals::kScreenWidth, globals::kScreenHeight };
 
 
-	this->_font = TTF_OpenFont("../../content/fonts/Roboto-Black.ttf", 10);
+	this->_font = TTF_OpenFont("../../content/fonts/FreeMono.ttf", 14);
 }
 
 Graphics::~Graphics() noexcept {

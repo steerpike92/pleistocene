@@ -8,6 +8,17 @@ namespace options { class GameOptions; }
 
 namespace user_interface {
 
+const int kTextMargin = 2;
+const int kTextHeight = 7;
+
+const int kInfoBarHeight = 20;
+const int kDateMargin = 65;
+
+const int kScreenMargin = 0;
+const int kBiosWidth = 250;
+const int kBiosHeight = 600;
+
+
 class Bios {
 public:
 	Bios() noexcept;
@@ -24,9 +35,6 @@ private:
 
 	std::vector<std::string> _messages;
 	SDL_Rect _displayRect;
-	int _textMargin;
-	int _textHeight;
-
 };
 
 
@@ -42,8 +50,6 @@ public:
 private:
 
 	SDL_Rect _displayRect;
-	int _textMargin;
-	int _textHeight;
 
 	std::vector<std::string> _timeReadout;
 	std::vector<std::string> _worldReadout;

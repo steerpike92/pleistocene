@@ -1,7 +1,14 @@
 #include "game.h"
 namespace pleistocene {
 
-Game::Game() noexcept 
+Game::Game() noexcept :
+_options(options::GameOptions()),
+_graphics(graphics::Graphics()),
+_input(Input()),
+_infoBar(user_interface::InfoBar(_graphics)),
+_bios(user_interface::Bios(_graphics)),
+_camera(graphics::Camera(my::Vector2(0, 0), pow(.8, 10), _options)),
+_world(simulation::World(_graphics, _options))
 {
 	initialize();
 	gameLoop();
@@ -9,15 +16,7 @@ Game::Game() noexcept
 
 void Game::initialize() noexcept 
 {
-
-	_options = options::GameOptions();
-	_infoBar = user_interface::InfoBar(_graphics);
-	_bios = user_interface::Bios(_graphics);
-	_world = simulation::World(_graphics, _options);
-
 	//sets initial camera position/zoomout level
-	_camera =graphics::Camera(my::Vector2(0, 0), pow(.8, 10), _options);
-
 	_graphics.setCamera(_camera);
 	_graphics.setInput(_input);
 	_input.setCamera(_camera);

@@ -62,7 +62,7 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 
 
 	//determine draw color
-	_heatMapValue = statistics.getHeatValue(this->_statValue);
+	_heatMapValue = statistics.getHeatMapValue(this->_statValue);
 	
 	double filter = 1-abs(_heatMapValue);
 

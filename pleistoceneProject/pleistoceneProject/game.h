@@ -56,6 +56,9 @@ private:
 	//However it gets passed around as const to guard against changes
 	options::GameOptions _options;
 
+	//holds textures, rederer, window. Performs rendering
+	graphics::Graphics _graphics;
+
 	//Input
 	//Processes direct user input
 	//Holds input information (key press maps, mouse button maps, mouse location)
@@ -66,9 +69,6 @@ private:
 
 	//displays date and current map draw state
 	user_interface::InfoBar _infoBar;
-
-	//holds textures, rederer, window. Performs rendering
-	graphics::Graphics _graphics;
 
 	//holds camera position, 
 	graphics::Camera _camera;

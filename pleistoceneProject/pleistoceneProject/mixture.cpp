@@ -320,23 +320,23 @@ std::vector<std::string> Mixture::getThermalMessages() const noexcept {
 	stream << "Temperature: " << round(_temperature - 273.15) << " °C";
 	messages.push_back(stream.str());
 
-	stream = std::stringstream();
+	stream.str(std::string());
 	stream << "Heat Capacity: " << int(_totalHeatCapacity);
 	messages.push_back(stream.str());
 
-	stream = std::stringstream();
+	stream.str(std::string());
 	stream << "Absorbed Solar Energy: " << int(this->_totalSolarAbsorbed);
 	messages.push_back(stream.str());
 
-	stream = std::stringstream();
+	stream.str(std::string());
 	stream << "Absorbed Infrared Energy: " << int(this->_totalInfraredAbsorbed);
 	messages.push_back(stream.str());
 
-	stream = std::stringstream();
+	stream.str(std::string());
 	stream << "Emitted Energy (KJ): " << int(this->_totalInfraredEmitted);
 	messages.push_back(stream.str());
 
-	stream = std::stringstream();
+	stream.str(std::string());
 	stream << " ";
 	messages.push_back(stream.str());
 

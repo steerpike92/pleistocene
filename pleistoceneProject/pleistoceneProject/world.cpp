@@ -249,7 +249,7 @@ void World::performStatistics() noexcept
 
 	double tileStatValue;
 
-	for (Tile &tile : _tiles) {
+	for (Tile &tile : _tiles) {//must be reference as the tile stores and needs the result of getStatistic
 		tileStatValue = tile.getStatistic(_statRequest);
 		if (tileStatValue != my::kFakeDouble) {//don't contribute fake values.
 			_statistics.contributeValue(tileStatValue);
@@ -281,34 +281,37 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		simulate(options);
 	}
 
-	bool newStatistic = false;
+	bool newStatistic = true;
 
 	//draw type selection
-	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; newStatistic = true;}
+	if	(input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE;}
 	//draw section selector
-	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; newStatistic = true;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; }
+	else if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; }
+	else if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; }
+	else if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; }
 
 	//layer selection
-	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; newStatistic = true;}
+	else if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; }
+	else if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; }
+
+	else { newStatistic = false; }
+
 
 	if (_statRequest._layer < 0)  _statRequest._layer = 0;
 	if (_statRequest._layer > 5)  _statRequest._layer = 5;
 
 	
 	if (newStatistic) {
+		_statistics.newStatistic();
 		_statisticsUpToDate = false;
 	}
 	
-
 }
 
 void World::setupTextures(graphics::Graphics &graphics) noexcept {
@@ -380,41 +383,40 @@ std::vector<std::string> World::getReadout() const noexcept
 {
 	std::vector<std::string> readout;
 
-	std::string word;
+	std::string statement;
+	std::stringstream stream;
 
 	switch (_statRequest._section) {
-	case(SURFACE_) : word="Surface "; break;
-	case(HORIZON_) :  word = "Horizon "; break;
-	case(EARTH_) :  word = "Earth "; break;
-	case(SEA_) :  word = "Sea "; break;
-	case(AIR_) :   word = "Air "; break;
+	case(SURFACE_) : stream<<"Surface "; break;
+	case(HORIZON_) : stream<< "Horizon "; break;
+	case(EARTH_) : stream<< "Earth "; break;
+	case(SEA_) : stream<< "Sea "; break;
+	case(AIR_) : stream<< "Air "; break;
 	}
-
-	readout.push_back(word);
 
 	switch (_statRequest._statType) {
-	case(ELEVATION) : word = "Elevation "; break;
-	case(TEMPERATURE) :  word = "Temperature "; break;
-	case(MATERIAL_PROPERTIES) :  word = "MATERIAL PROPERTIES "; break;
-	case(FLOW) : word = "FLOW "; break;
-	case(MOISTURE) : word = "MOISTURE "; break;
+	case(ELEVATION) : stream<< "elevation. "; break;
+	case(TEMPERATURE) : stream<< "temperature. "; break;
+	case(MATERIAL_PROPERTIES) : stream<< "material properties. "; break;
+	case(FLOW) : stream<< "flow. "; break;
+	case(MOISTURE) : stream<< "moisture. "; break;
 	}
 
-	readout.push_back(word);
+	readout.push_back(stream.str());
 
-	std::stringstream stream;
-	stream << "Layer: ";
-	stream << _statRequest._layer;
-	word = stream.str();
+	stream.str(std::string());
+	stream << "Layer: " << _statRequest._layer << ". ";
+	
+	readout.push_back(stream.str());
 
-	readout.push_back(word);
+	stream.str(std::string());
+	stream << "Seed: "<< _seed<< ". ";
 
-	stream = std::stringstream();
-	stream << "Seed: ";
-	stream << _seed;
-	word = stream.str();
+	readout.push_back(stream.str());
 
-	readout.push_back(word);
+	std::vector<std::string> subReadout = _statistics.getMessages();
+
+	readout.insert(readout.end(), subReadout.begin(), subReadout.end());
 
 	return readout;
 }

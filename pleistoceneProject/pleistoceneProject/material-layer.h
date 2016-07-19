@@ -75,7 +75,7 @@ const double bedrockDepth = 201; //201 m of simulated subterranian activity
 const int earthLayers = 6;//if changed, update earthLayerHeights
 const double earthLayerHeight = (bedrockDepth - 2) / (double(earthLayers - 1));
 const double subSoilHeight = 0.8; //80 cm of subsoil
-const double topSoilHeight = 1; //20 cm of topsoil in horizon
+const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
 //const double topSoilHeight = 1; //1 m of topsoil in horizon
 
 const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,

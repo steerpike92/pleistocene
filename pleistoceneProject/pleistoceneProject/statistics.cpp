@@ -1,23 +1,33 @@
 #include "statistics.h"
-#include "math.h"
-#include "algorithm"
 #include "globals.h"
+
 namespace pleistocene {
 
 Statistics::Statistics() noexcept :
+	_trackedMeans{},
+	_trackedSigmas{},
 	_mean(0),
-	_standardDeviation(0),
+	_sigma(0),
 	_sum(0),
-	_values{}
+	_values{},
+	_valid(false)
 {
 }
 
 void Statistics::clear() noexcept
 {
-	_sum = 0;
+	_sigma = 0;
 	_mean = 0;
-	_standardDeviation = 0;
+	_sum = 0;
 	_values.clear();
+	_valid = false;
+}
+
+void Statistics::newStatistic() noexcept
+{
+	_trackedMeans.clear();
+	_trackedSigmas.clear();
+	this->clear();
 }
 
 void Statistics::contributeValue(double value) noexcept
@@ -29,41 +39,84 @@ void Statistics::contributeValue(double value) noexcept
 void Statistics::calculateStatistics() noexcept
 {
 	int N = _values.size();
-	
-	if (N == 0) return;
+	if (N == 0) {//no values for this statistic
+		clear();
+		return;
+	}
 
-	_mean = _sum / N;
+	_valid = true;
+
+	double currentMean = _sum / N;
 	
-	double standardDeviationSum = 0;
+	_trackedMeans.push_front(currentMean);
+
+	size_t valuesTracked = _trackedMeans.size();
+	if (valuesTracked > kTrackedFrames) { _trackedMeans.pop_back(); _trackedSigmas.pop_back(); valuesTracked--; }
+
+	//Average tracked means to get mean
+	_mean = 0;
+	for (double mean : _trackedMeans) {
+		_mean += mean;
+	}
+	_mean /= valuesTracked;
+
+	//compute this data sets standard of deviation
 	double deviation;
+	double varianceSum = 0;
 
 	for (double value : _values) {
 		deviation = value - _mean;
-		standardDeviationSum += pow(deviation, 2);
+		varianceSum += pow(deviation, 2);
 	}
 
-	_standardDeviation = pow(standardDeviationSum/double(N), 0.5);
+	double variance = varianceSum / N;
 
-	//LOG("mean: " << _mean);
-	//LOG("standard of deviation: " << _standardDeviation);
+	double currentSigma= pow(variance, 0.5);
 
+	_trackedSigmas.push_front(currentSigma);
+
+	 //Average tracked sigmas to get sigma
+	_sigma = 0;
+	for (double sigma : _trackedSigmas) {
+		_sigma += sigma;
+	}
+	_sigma /= double(valuesTracked);
 }
 
 //does what it says
 double Statistics::getSigmasOffMean(double value) const noexcept
 {
-	if (_standardDeviation == 0) return 0;
-	else return ((value - _mean) / _standardDeviation);
+	if (!_valid || _sigma == 0) return 0;
+	else return ((value - _mean) / _sigma);
 }
 
 //value between -1 and 1 representing above/below averageness
-double Statistics::getHeatValue(double value) const noexcept
+double Statistics::getHeatMapValue(double value) const noexcept
 {
-	if (_standardDeviation == 0) return 0;
 	double heatValue = getSigmasOffMean(value) / 3.0;
 	heatValue = std::max(heatValue, -1.0);
 	heatValue = std::min(heatValue, 1.0);
 	return heatValue;
+}
+
+std::vector<std::string> Statistics::getMessages() const noexcept {
+	std::vector<std::string> messages;
+	std::stringstream stream;
+	stream << "STATISTICS ";
+	messages.push_back(stream.str());
+
+
+
+	stream.str(std::string());
+
+	stream << "Mean: " << my::double2string(_mean) <<" ";
+	messages.push_back(stream.str());
+
+	stream.str(std::string());
+	stream << "Sigma: " << my::double2string(_sigma) <<" ";
+	messages.push_back(stream.str());
+
+	return messages;
 }
 
 

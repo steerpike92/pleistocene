@@ -210,74 +210,7 @@ public:
 	void print() {
 		std::cout << "(" << int(x) << "," << int(y) << ")" << std::endl;
 	}
-
-
 };
-
-//my::Vector3d
-
-//class MyVector3d {
-//public:
-//	double x; double y; double z;
-//
-//	//Default constructor
-//	MyVector3d() { x = 0.0; y = 0.0; z = 0.0; }
-//
-//	//Specified constructor
-//	MyVector3d(double X, double Y, double Z) { x = X; y = Y; z = Z; }
-//
-//	//Addition overload
-//	MyVector3d operator + (MyVector3d v2) {
-//		MyVector3d v3;
-//		v3.x = this->x + v2.x;
-//		v3.y = this->y + v2.y;
-//		v3.z = this->z + v2.z;
-//		return v3;
-//	}
-//	void operator +=(MyVector3d v2) {
-//		x += v2.x;
-//		y += v2.y;
-//		z += v2.z;
-//	}
-//	//Subtraction overload
-//	MyVector3d operator - (MyVector3d v2) {
-//		MyVector3d v3;
-//		v3.x = this->x - v2.x;
-//		v3.y = this->y - v2.y;
-//		v3.z = this->z - v2.z;
-//		return v3;
-//	}
-//	void operator -=(MyVector3d v2) {
-//		x -= v2.x;
-//		y -= v2.y;
-//		z -= v2.z;
-//	}
-//	MyVector3d operator * (int a) {
-//		MyVector3d v2;
-//		v2.x = x*double(a);
-//		v2.y = y*double(a);
-//		v2.z = z*double(a);
-//		return v2;
-//	}
-//
-//	MyVector3d operator * (double a) {
-//		MyVector3d v2;
-//		v2.x = x*a;
-//		v2.y = y*a;
-//		v2.z = z*a;
-//		return v2;
-//	}
-//
-//	double size() {
-//		return double(pow(pow(x, 2) + pow(y, 2) + pow(z, 2), .5));
-//	}
-//
-//	void print() {
-//		std::cout << "(" << int(x) << "," << int(y) << "," << int(z) << ")" << std::endl;
-//	}
-//
-//};
-
 
 
 class Rectangle {
@@ -389,6 +322,28 @@ private:
 
 double degToRad(double deg) noexcept;
 double radToDeg(double rad) noexcept;
+
+
+//Proudly found elsewhere{
+typedef struct {
+	double r;       // percent
+	double g;       // percent
+	double b;       // percent
+} RGB;
+
+typedef struct {
+	double h;       // angle in degrees
+	double s;       // percent
+	double v;       // percent
+} HSV;
+
+
+HSV rgb2hsv(RGB rgb)noexcept;
+
+RGB hsv2rgb(HSV hsv)noexcept;
+//}Proudly found elsewhere
+
+std::string double2string(double) noexcept;
 
 }//namespace my
 

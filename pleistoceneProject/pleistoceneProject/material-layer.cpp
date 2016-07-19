@@ -79,7 +79,7 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 	switch (statRequest._statType) {
 	case(ELEVATION) :
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Elevation: " << int(_bottomElevation);
 		messages.push_back(stream.str());
 		return messages;
@@ -88,11 +88,11 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 		messages = _mixture->getThermalMessages();
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Temperature: " << int(getTemperature() - 273) << " °C";
 		messages.push_back(stream.str());
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Heat Capacity: " << int(_mixture->getHeatCapacity()) << " kJ/K";
 		messages.push_back(stream.str());
 
@@ -102,15 +102,15 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 		messages = _mixture->getElementMessages();
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Albedo: " << int(_mixture->getAlbedo() * 100) << "%";
 		messages.push_back(stream.str());
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Mass: " << int(_mixture->getMass()) << " kg";
 		messages.push_back(stream.str());
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Height: " << int(_height) << " m";
 		messages.push_back(stream.str());
 
@@ -255,11 +255,11 @@ std::vector<std::string> EarthLayer::getMessages(const StatRequest &statRequest)
 	{
 		messages = MaterialLayer::getMessages(statRequest);
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Porosity: " << _solidPtr->getPorosity();
 		messages.push_back(stream.str());
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Permeability: " << _solidPtr->getPermeability();
 		messages.push_back(stream.str());
 
@@ -310,11 +310,11 @@ std::vector<std::string> HorizonLayer::getMessages(const StatRequest &statReques
 	{
 		messages=MaterialLayer::getMessages(statRequest);
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Porousness: " << int(_solidPtr->getPorosity());
 		messages.push_back(stream.str());
 
-		stream = std::stringstream();
+		stream.str(std::string());
 		stream << "Permeability: " << int(_solidPtr->getPermeability());
 		messages.push_back(stream.str());
 
