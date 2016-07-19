@@ -233,12 +233,14 @@ double Mixture::pullSpecific(Element pulledElement) noexcept {
 //SIMULATION
 //========================================================================================================
 
-double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
-	if (solarEnergyKJ <= 0) { return 0; }
-
+void Mixture::beginNewHour() noexcept {
 	_totalSolarAbsorbed = 0;
 	_totalInfraredAbsorbed = 0;
 	_totalInfraredEmitted = 0;
+}
+
+double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
+	if (solarEnergyKJ <= 0) { return 0; }
 
 	int mixtureCount = _elements.size();
 	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ; }

@@ -8,9 +8,9 @@ namespace simulation {
 namespace climate {
 namespace layers {
 
-////////////==================================
-////////////INITIALIZATION
-////////////==================================
+//==================================
+//INITIALIZATION
+//==================================
 
 MaterialColumn::MaterialColumn()  noexcept {}
 
@@ -34,6 +34,8 @@ _initialTemperature(initialTemperature)
 	buildUniversalColumn();
 }
 
+//Layer Builders
+//================
 double MaterialColumn::buildEarth() noexcept
 {
 	using namespace layers::earth;
@@ -56,7 +58,6 @@ double MaterialColumn::buildEarth() noexcept
 	}
 	return currentElevation;
 }
-
 
 double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
@@ -120,7 +121,9 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 	}
 }
 
-//needs to be rebuilt after every insertion/deletion
+//Relation Builders
+//=================
+//need to be rebuilt after every insertion/deletion
 void MaterialColumn::buildUniversalColumn() noexcept
 {
 
@@ -158,6 +161,9 @@ void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &ad
 	buildEarthLayerSurfaces();
 	buildHorizonNeighborhood();
 }
+
+//Surface Builders
+//=================
 
 void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 {
@@ -246,9 +252,14 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 
 }
 
-////////////==================================
-////////////SIMULATION
-////////////==================================
+//==================================
+//SIMULATION
+//==================================
+void MaterialColumn::beginNewHour() noexcept {
+	for (auto layer : _column) {
+		layer->beginNewHour();
+	}
+}
 
 void MaterialColumn::filterSolarRadiation(double energyKJ) noexcept
 {
@@ -317,11 +328,9 @@ void MaterialColumn::simulateAirFlow()  noexcept {}
 void MaterialColumn::simulateWaterFlow() noexcept {}
 void MaterialColumn::simulatePlants()  noexcept {}
 
-
-
-////////////==================================
-////////////GETTERS
-////////////==================================
+//==================================
+//GETTERS
+//==================================
 
 double MaterialColumn::getLandElevation() const noexcept { return _horizon.back().getTopElevation(); }
 double MaterialColumn::getSurfaceTemperature()const noexcept

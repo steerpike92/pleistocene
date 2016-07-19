@@ -41,20 +41,25 @@ public:
 	MaterialColumn() noexcept;
 	MaterialColumn(double landElevation, double initialTemperature) noexcept;
 
-	void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept;
 
 private:
 	//layer builders
+	//================
 	double buildEarth() noexcept;
 	double buildHorizon(double baseElevation) noexcept;
 	double buildSea(double baseElevation, double seaSurfaceElevation) noexcept;
 	void buildAir(double baseElevation) noexcept;
 
+	//Relation Builders
+	//=================
+public: 
+	void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept;
+private:
 	void buildUniversalColumn() noexcept;
 
-	//layer relationship builders
+	//Surface Builders
+	//=================
 	void buildMaterialLayerSurfaces() noexcept;
-
 	void buildVerticalSurfaces() noexcept;
 	void buildNeighborSurfaces(my::Direction) noexcept;
 
@@ -67,6 +72,8 @@ private:
 	//SIMULATION
 	//====================================================
 public:
+	void beginNewHour() noexcept;
+
 	void filterSolarRadiation(double incidentSolarRadiation) noexcept;
 	void simulateEvaporation() noexcept;
 	void simulateInfraredRadiation() noexcept;
@@ -76,8 +83,6 @@ public:
 	void simulateAirFlow() noexcept;
 	void simulateWaterFlow() noexcept;
 	void simulatePlants() noexcept;
-
-
 
 
 	//====================================================

@@ -76,6 +76,7 @@ void TileClimate::simulateClimate() noexcept {
 
 	switch (_simulationStep) {
 	case(1) :
+		_materialColumn.beginNewHour();
 		solarEnergyPerHour = simulateSolarRadiation();
 		if (solarEnergyPerHour > 0) { _materialColumn.filterSolarRadiation(solarEnergyPerHour); }
 		_materialColumn.simulateEvaporation();

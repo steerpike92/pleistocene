@@ -161,6 +161,8 @@ public:
 	//SIMULATION
 	//============================
 
+	void beginNewHour() noexcept;
+
 	//chains downward
 	void filterSolarRadiation(double energyKJ) noexcept;
 

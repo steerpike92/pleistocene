@@ -156,8 +156,7 @@
     <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="june13notes.txt" />
-    <Text Include="surfaces.txt" />
+    <Text Include="July19todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

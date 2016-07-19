@@ -8,12 +8,6 @@ namespace climate {
 namespace layers {
 namespace elements {
 
-class Mixture;
-
-//======================================================================================
-//MIXTURE
-//======================================================================================
-
 class Mixture {
 protected:
 	std::map<elements::ElementType, Element> _elements;//main constituent elements
@@ -41,8 +35,9 @@ public:
 	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
 	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
 
+	//=======================================
 	//PARAMETER CALCULATIONS
-	//=====================================================================================================================
+	//=======================================
 	virtual void calculateParameters() noexcept;
 protected:
 	virtual void calculateVolume() noexcept;
@@ -55,8 +50,9 @@ protected:
 	virtual void calculateInfraredAbsorptionIndex() noexcept;
 
 public:
+	//=======================================
 	//MIXING MIXTURES
-	//=====================================================================================================================
+	//=======================================
 	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept;
 	void resizeBy(double proportion) noexcept;
 
@@ -69,6 +65,11 @@ protected:
 	double pullSpecific(Element subtractedSpecificElement) noexcept;
 
 public:
+	//=======================================
+	//SIMULATION
+	//=======================================
+
+	void beginNewHour() noexcept;
 	double filterSolarRadiation(double incidentSolarEnergyKJ) noexcept;
 	double emitInfrared() noexcept;
 	double filterInfrared(double infraredEnergyKJ) noexcept;

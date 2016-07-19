@@ -34,6 +34,10 @@ void MaterialLayer::clearSurfaces() noexcept
 //SIMULATION
 //==============================
 
+void MaterialLayer::beginNewHour() noexcept {
+	_mixture->beginNewHour();
+}
+
 void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 {
 	energyKJ = _mixture->filterSolarRadiation(energyKJ);
@@ -419,7 +423,6 @@ _gasPtr(new elements::GaseousMixture)
 	_topElevation = fixedTopElevation;
 
 	std::vector<Element> air = generateAirElements(_bottomElevation, _topElevation);
-
 	//unique_ptr setup.
 	std::unique_ptr<GaseousMixture> temp(new GaseousMixture(air, temperature, _bottomElevation, _topElevation));
 	_gasPtr = std::move(temp);
@@ -434,9 +437,7 @@ std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevat
 {
 	using namespace elements;
 	using namespace layers::air;
-
 	double mols = expectedMolsCalculator(bottomElevation, topElevation);
-
 	Element air = Element(MOLAR, DRY_AIR, mols, GAS);
 
 	std::vector<Element> elementVector{ air };
@@ -470,11 +471,21 @@ double AirLayer::expectedHydrostaticPressureCalculator(double elevation) noexcep
 	double ho = StandardElevation[i];
 	double M = Md;
 
-	//calculation
-	double exponent = (g*M) / (R*L);
-	double base = To / (To + L*(h - ho));
+	double Pressure;
 
-	double Pressure = Po * pow(base, exponent);
+	if (L != 0) {
+		//calculation with lapse
+		double exponent = (g*M) / (R*L);
+		double base = To / (To + L*(h - ho));
+		Pressure = Po * pow(base, exponent);
+	}
+	else {
+		//calculation when lapse == 0
+		double exponent = (-g*M*(h - ho)) / (R*To);
+		Pressure = Po * exp(exponent);
+	}
+
+
 
 	return Pressure;
 }
@@ -484,6 +495,7 @@ double AirLayer::expectedMolsCalculator(double bottomElevation, double topElevat
 	using namespace layers::air;
 	double BottomPressure = expectedHydrostaticPressureCalculator(bottomElevation);
 	double TopPressure = expectedHydrostaticPressureCalculator(topElevation);
+
 	double PressureDifference = BottomPressure - TopPressure;
 	double ExpectedMols = PressureDifference / (g*Md);
 

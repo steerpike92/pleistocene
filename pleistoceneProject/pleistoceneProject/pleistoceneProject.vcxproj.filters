@@ -133,11 +133,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="surfaces.txt">
-      <Filter>Source Files</Filter>
-    </Text>
-    <Text Include="june13notes.txt">
-      <Filter>Source Files</Filter>
+    <Text Include="July19todo.txt">
+      <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
 </Project>
