@@ -183,7 +183,7 @@ bool Element::getStateConflict(State state) const noexcept {
 
 ElementPropertyMap Element::buildSpecificHeatMap() noexcept {
 	ElementPropertyMap specificHeat;
-	specificHeat[DRY_AIR] = 1.00;
+	specificHeat[DRY_AIR] = 0.718;
 	specificHeat[WATER_VAPOR] = 3.985;
 	specificHeat[CLOUD] = 4.186;
 
@@ -456,7 +456,7 @@ ElementPropertyMap Element::buildInfraredAbsorptivityMap() noexcept {
 	ElementPropertyMap infraredAbsorptivityMap;
 
 	//stub
-	infraredAbsorptivityMap[DRY_AIR] = 1.6*pow(10, -4);
+	infraredAbsorptivityMap[DRY_AIR] = 2.0*pow(10, -4);
 	infraredAbsorptivityMap[WATER_VAPOR] = 1 * pow(10, -3);
 
 	infraredAbsorptivityMap[CLOUD] = 1 * pow(10, -3);

@@ -164,7 +164,7 @@ public:
 	//chains downward
 	void filterSolarRadiation(double energyKJ) noexcept;
 
-	double emitInfraredRadiation() noexcept;
+	double emitInfraredRadiation(double fraction) noexcept;
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
 	virtual void simulateFlow() = 0;

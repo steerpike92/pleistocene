@@ -131,7 +131,7 @@ void Mixture::calculateSolarAbsorptionIndex() noexcept {
 			_solarAbsorptionIndex += elementPair.second.getSolarAbsorptivity();
 		}
 		_solarAbsorptionIndex = std::min(_solarAbsorptionIndex, 1.0);
-		LOG("Non-Solid solar absorption: " << _solarAbsorptionIndex);
+		//LOG("Non-Solid solar absorption: " << _solarAbsorptionIndex);
 	}
 }
 
@@ -261,7 +261,7 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	return outputEnergyKJ;
 }
 
-double Mixture::emitInfrared() noexcept {
+double Mixture::emitInfrared(double fraction) noexcept {
 
 	int mixtureCount = _elements.size();
 	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return 0; }
@@ -269,7 +269,7 @@ double Mixture::emitInfrared() noexcept {
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 8 * pow(10, -4);
+		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
 
 	}
 	else {

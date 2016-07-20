@@ -51,9 +51,9 @@ void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 	}
 }
 
-double MaterialLayer::emitInfraredRadiation() noexcept
+double MaterialLayer::emitInfraredRadiation(double fraction) noexcept
 {
-	double energyKJ = _mixture->emitInfrared();
+	double energyKJ = _mixture->emitInfrared(fraction);
 	return energyKJ;
 }
 
@@ -208,7 +208,8 @@ elements::ElementType EarthLayer::determineEarthType(double depthIndex) noexcept
 	//depthIndex is from 0 to 1 (0=surface, 1=bedrockBottom)
 
 	//randomDouble is from 0 to 1;
-	double randomDouble = my::uniformRandom();
+	//double randomDouble = my::uniformRandom();
+	double randomDouble = 0.3;
 
 	//soilRV : soil Random Variable from 0 to 1. 
 	//low values correspond to near surface type soils (at surface, soilRV < 0.5)
@@ -230,7 +231,8 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex) noexcept
 	//Not used here yet but eventually probably
 
 	//uniformRandom is from 0 to 1;
-	double soilRV = my::uniformRandom();
+	//double soilRV = my::uniformRandom();
+	double soilRV = 0.36;
 	if (soilRV > 0.67) { return CLAY; }
 	else if (soilRV > 0.33) { return SILT; }
 	else return SAND;

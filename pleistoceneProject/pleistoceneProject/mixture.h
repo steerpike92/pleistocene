@@ -71,7 +71,7 @@ public:
 
 	void beginNewHour() noexcept;
 	double filterSolarRadiation(double incidentSolarEnergyKJ) noexcept;
-	double emitInfrared() noexcept;
+	double emitInfrared(double fraction) noexcept;
 	double filterInfrared(double infraredEnergyKJ) noexcept;
 	static void conduction(Mixture &mixture1, Mixture &mixture2) noexcept;
 

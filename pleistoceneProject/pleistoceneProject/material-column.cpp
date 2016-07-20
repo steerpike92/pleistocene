@@ -286,13 +286,14 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 	double emittedEnergy;
 	std::vector<double> downRadiation;//radiation incident downwards upon layer
 
+	double fraction = 1.0;
 	
-	upRadiation = surfaceLayer->emitInfraredRadiation();
+	upRadiation = surfaceLayer->emitInfraredRadiation(fraction);
 	downRadiation.clear();
 
 	//filter/emit upwards
 	for (AirLayer &air : _air) {
-		emittedEnergy = air.emitInfraredRadiation();
+		emittedEnergy = air.emitInfraredRadiation(fraction);
 		downRadiation.push_back(emittedEnergy / 2.0);
 		upRadiation = air.filterInfraredRadiation(upRadiation) + emittedEnergy / 2.0;
 	}
