@@ -10,7 +10,7 @@ The project uses:
 
 My main concern right now though is building a simple world climate model.
 
-(Note, I don't actually commit directly to master (as I commit this edit directly to master), it just looks like that because I only have one development branch because I'm so lone.ly)
+(Note, I don't actually commit directly to master (as I commit this edit directly to master), it just looks like that because I only have one development branch.)
 
 =============================
 TILE MAP
