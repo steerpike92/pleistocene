@@ -79,6 +79,7 @@ public:
 	void filterSolarRadiation(double incidentSolarRadiation) noexcept;
 	void simulateEvaporation() noexcept;
 	void simulateInfraredRadiation() noexcept;
+	void simulateConduction() noexcept;
 	void simulatePressure() noexcept;
 	void simulateCondensation() noexcept;
 	void simulatePrecipitation() noexcept;

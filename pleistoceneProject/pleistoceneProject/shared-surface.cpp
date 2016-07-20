@@ -25,6 +25,9 @@ _materialLayer(materialLayer),
 _midpointElevation((topElevation + bottomElevation) / 2),
 _area((topElevation - bottomElevation) * (6.2 * 1000))//height*width
 {
+	if (topElevation < bottomElevation) {
+		LOG("Inverted Surface"); exit(EXIT_FAILURE);
+	}
 }
 
 double SharedSurface::getArea() const noexcept { return _area; }

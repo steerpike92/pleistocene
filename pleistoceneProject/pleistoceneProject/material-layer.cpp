@@ -57,9 +57,16 @@ double MaterialLayer::emitInfraredRadiation(double fraction) noexcept
 	return energyKJ;
 }
 
-//for earth/horizon/sea     air has an override
-double MaterialLayer::filterInfraredRadiation(double energyKJ) noexcept {
+double MaterialLayer::filterInfraredRadiation(double energyKJ) noexcept 
+{
 	return _mixture->filterInfrared(energyKJ);
+}
+
+void MaterialLayer::simulateConduction() noexcept
+{
+	for (SharedSurface &surface : _sharedSurfaces) {
+		elements::Mixture::conduction(*(surface._materialLayer->_mixture), *(this->_mixture), surface.getArea());
+	}
 }
 
 

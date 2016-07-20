@@ -284,7 +284,6 @@ double Mixture::emitInfrared(double fraction) noexcept {
 	return emissionEnergy;
 }
 
-
 double Mixture::filterInfrared(double infraredEnergy) noexcept {
 	int mixtureCount = _elements.size();
 	if (mixtureCount == 0) { LOG("NO COMPONENTS");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
@@ -302,8 +301,22 @@ double Mixture::filterInfrared(double infraredEnergy) noexcept {
 	return infraredEnergy;
 }
 
+void Mixture::conduction(Mixture &mixture1, Mixture &mixture2, double area) noexcept 
+{
+	double deltaT = mixture2._temperature - mixture1._temperature;
 
-void Mixture::conduction(Mixture &mixture1, Mixture &mixture2) noexcept {//STUB
+	double conductivity=pow(10, -4);
+
+	//Shitty conductivity estimate
+	if (mixture1._state == GAS || mixture2._state == GAS) {
+		conductivity *= 0.02;
+	}
+
+	double heatExchanged = deltaT*conductivity*area;
+	//if(heatExchanged>10) LOG("Heat Exchanged: " << heatExchanged);
+
+	mixture1._temperature += heatExchanged / mixture1._totalHeatCapacity;
+	mixture2._temperature -= heatExchanged / mixture2._totalHeatCapacity;
 }
 
 double Mixture::getTemperature() const noexcept { return _temperature; }

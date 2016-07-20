@@ -135,7 +135,7 @@ void MaterialColumn::buildUniversalColumn() noexcept
 	//build vertical ptrs
 	MaterialLayer* previous = nullptr;
 
-	for (auto layer : _column) {
+	for (MaterialLayer *layer : _column) {
 		layer->_down = previous;
 		if (previous) previous->_up = layer;
 
@@ -182,7 +182,7 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 	SharedSurface surface;
 
 	MaterialLayer *A = _column.front();//this column's layer
-	MaterialLayer *B = _adjacientColumns[direction]->_column.front();//neighbors column's layer
+	MaterialLayer *B = _adjacientColumns[direction]->_column.front();//neighbor column's layer
 
 	double A_bot, A_top, B_bot, B_top;
 	double top, bot;
@@ -193,26 +193,41 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 		A_top = A->getTopElevation();
 
 		B_bot = B->getBottomElevation();
+		B_top = B->getTopElevation();
 
 		while (A_top > B_bot) {
-			B_bot = B->getBottomElevation();
-			B_top = B->getTopElevation();
+			while(B_top < A_bot) {
+				if (B->_up != nullptr) {//if more B layers above this ... advance
+					B = B->_up;
+					B_bot = B->getBottomElevation();
+					B_top = B->getTopElevation();
+				}
+				else break;
+			}
+			//if (B_bot > B_top) { LOG("Already Fucked"); }
+			//if (A_bot > A_top) { LOG("Already Fucked"); }
 
 			bot = std::max(A_bot, B_bot);
 			top = std::min(A_top, B_top);
 
+			if (bot > top) { 
+				LOG("A_bot: "<<A_bot<<" A_top: " <<A_top);  
+				LOG("B_bot: " << B_bot << " B_top: " << B_top);
+			}
+
 			surface = SharedSurface(sDirection, B, bot, top);
 			A->addSurface(surface);
 
-			if (B->_up != nullptr) {
+			if (B->_up != nullptr) {//if more B layers above this ... advance
 				B = B->_up;
+				B_bot = B->getBottomElevation();
+				B_top = B->getTopElevation();
 			}
-			else break;
+			else break;//break instead of return as the next A layer might want a piece of B
 		}
 
 		A = A->_up;
 	} while (A != nullptr);
-
 }
 
 
@@ -309,6 +324,12 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 	_backRadiation = *radiation_rit;
 
 	surfaceLayer->filterInfraredRadiation(*radiation_rit);
+}
+
+void MaterialColumn::simulateConduction() noexcept{
+	for (MaterialLayer *layer : _column) {
+		layer->simulateConduction();
+	}
 }
 
 void MaterialColumn::simulatePressure() noexcept

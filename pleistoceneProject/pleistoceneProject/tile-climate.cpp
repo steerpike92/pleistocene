@@ -83,6 +83,7 @@ void TileClimate::simulateClimate() noexcept {
 		_materialColumn.simulateInfraredRadiation();
 		break;
 	case(2) :
+		_materialColumn.simulateConduction();
 		_materialColumn.simulatePressure();
 		break;
 	case(3) :

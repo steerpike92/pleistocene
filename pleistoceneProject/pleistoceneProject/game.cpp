@@ -49,7 +49,7 @@ void Game::determineElapsedTime() noexcept
 	_elapsedTime_MS = SDL_GetTicks() - _lastUpdateTime_MS;
 	size_t delay;
 
-	if (_elapsedTime_MS < 10 && 0) {//STUB "delay"
+	if (_elapsedTime_MS < 10) {//STUB "delay"
 		delay = 10 - _elapsedTime_MS;
 		SDL_Delay(delay);
 		_elapsedTime_MS = 10;

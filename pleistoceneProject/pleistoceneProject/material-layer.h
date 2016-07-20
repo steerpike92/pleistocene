@@ -121,6 +121,8 @@ public:
 	double emitInfraredRadiation(double fraction) noexcept;
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
+	void simulateConduction() noexcept;
+
 	virtual void simulateFlow() = 0;
 
 	//GETTERS
