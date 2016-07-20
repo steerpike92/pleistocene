@@ -9,6 +9,7 @@ namespace layers {
 
 SharedSurface::SharedSurface() noexcept{}
 
+
 SharedSurface::SharedSurface(MaterialLayer *materialLayer, double elevaton)  noexcept :
 _spatialDirection(UP),
 _materialLayer(materialLayer),

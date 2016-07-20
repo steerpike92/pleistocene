@@ -165,12 +165,14 @@ void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 
 void MaterialColumn::buildVerticalSurfaces() noexcept
 {
-	//SharedSurface surface;
+	SharedSurface surface;
 	for (MaterialLayer *layer : _column) {
-		//surface._area = 100*1000*1000;
-		//surface._spatialDirection = UP;
-		//surface._materialLayer = layer->_up;
-		//layer->addSurface(surface);
+		if (layer->_up != nullptr) {
+			surface._area = 100 * 1000 * 1000;
+			surface._spatialDirection = UP;
+			surface._materialLayer = layer->_up;
+			layer->addSurface(surface);
+		}
 	}
 }
 

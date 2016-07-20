@@ -6,6 +6,8 @@ namespace climate {
 namespace layers {
 
 class MaterialLayer;
+class EarthLayer;
+class HorizonLayer;
 
 enum SpatialDirection {
 	NORTH_EAST,
@@ -21,7 +23,6 @@ enum SpatialDirection {
 
 class SharedSurface {
 public:
-
 	SpatialDirection _spatialDirection;
 	MaterialLayer *_materialLayer;
 	double _area;
@@ -37,18 +38,18 @@ public:
 	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept;
 };
 
-//
-//struct SharedEarthSurface {
-//	SpatialDirection _spatialDirection;
-//	EarthLayer *_earthLayer;
-//	double _area;
-//	double _heightGradient;
-//};
-//
-//struct NeighborHorizon {
-//	HorizonLayer *neighbor;
-//	double heightGradient;
-//};
+
+struct SharedEarthSurface {
+	SpatialDirection _spatialDirection;
+	EarthLayer *_earthLayer;
+	double _area;
+	double _heightGradient;
+};
+
+struct NeighborHorizon {
+	HorizonLayer *neighbor;
+	double heightGradient;
+};
 
 
 }//namespace layers

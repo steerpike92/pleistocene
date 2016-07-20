@@ -31,7 +31,6 @@ const int earthLayers = 6;//if changed, update earthLayerHeights
 const double earthLayerHeight = (bedrockDepth - 1) / (double(earthLayers - 1));
 const double subSoilHeight = 0.8; //80 cm of subsoil
 const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
-//const double topSoilHeight = 1; //1 m of topsoil in horizon
 
 const double earthLayerHeights[] = { earthLayerHeight, earthLayerHeight,
 	earthLayerHeight, earthLayerHeight, earthLayerHeight, subSoilHeight };
@@ -97,7 +96,7 @@ protected:
 	layers::LayerType _layerType;
 
 
-	std::vector<layers::SharedSurface> _sharedSurfaces;
+	std::vector<SharedSurface> _sharedSurfaces;
 
 public:
 	//INITIALIZATION
@@ -135,6 +134,7 @@ public:
 
 };
 
+
 ////////////================================
 ////////////EARTH
 ////////////================================
@@ -142,7 +142,7 @@ public:
 class EarthLayer : public MaterialLayer {
 protected:
 	//unique earth member variables
-	//std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
+	std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
 
 	std::unique_ptr<elements::SolidMixture> _solidPtr;
 
@@ -169,6 +169,7 @@ private:
 	static elements::ElementType determineSoilType(double depthIndex) noexcept;
 };
 
+
 //////////==================================
 //////////HORIZON
 //////////==================================
@@ -176,7 +177,7 @@ private:
 class HorizonLayer : public EarthLayer {
 	//unique horizon member variables
 
-	//std::map<my::Direction, layers::NeighborHorizon> neighbors;
+	std::map<my::Direction, layers::NeighborHorizon> neighbors;
 
 	//TO DO
 
@@ -253,8 +254,6 @@ public:
 };
 
 
-
-
 //////////==================================
 //////////AIR
 //////////==================================
@@ -295,8 +294,6 @@ public:
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
 	double getStatistic(const struct StatRequest &statRequest) const noexcept;
 };
-
-
 
 
 }//namespace layers
