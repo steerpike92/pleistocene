@@ -13,7 +13,7 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(545687),
+_seed(5456873),
 _statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
