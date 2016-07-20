@@ -90,7 +90,7 @@ bool Camera::processCommands(const Input &input, int elapsedTime, const options:
 
 		//World loop
 		if ((_cameraPosition.x < (-globals::kTileWidth *options.getCols()+ kEdgeOffset) * _zoomScale)  && options._loopOption) {
-			_cameraPosition.x = kEdgeOffset*_zoomScale;
+			_cameraPosition.x = int(kEdgeOffset*_zoomScale);
 		}
 	}
 

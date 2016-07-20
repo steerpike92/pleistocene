@@ -466,10 +466,34 @@ RGB hsv2rgb(HSV hsv) noexcept
 std::string double2string(double number) noexcept 
 {
 	std::stringstream stream;
+
+	if (number == 0) return stream.str();
+
 	if (number < 0) stream << "-";
 	number = abs(number);
-	stream << int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10)<< int (int(number*1000)%10);
-	return stream.str();
+
+	//reasonably sized number
+	if (number >= 0.001) {
+		stream << int(number);
+		if (number < 1000) stream << "." << int(int(number * 10) % 10);
+		if (number < 100) stream << int(int(number * 100) % 10);
+		if (number< 10) stream << int(int(number * 1000) % 10);
+		if (number< 1) stream << int(int(number * 10000) % 10);
+		return stream.str();
+	}
+
+	//tiny number
+	if (number < 0.001) {
+		//determine order of magnitude
+		int order = -3;
+		while (pow(10, order)>number) {
+			order--;
+		}
+
+
+
+	}
+	
 }
 
 
