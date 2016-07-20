@@ -64,7 +64,7 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 	//determine draw color
 	_heatMapValue = statistics.getSigmasOffMean(this->_statValue);
 	double amplitudeScale = 55;
-	double centralHue = 110;
+	double centralHue = 2*amplitudeScale;
 
 	if (_heatMapValue > 2) _heatMapValue -= 360.0/ amplitudeScale;
 	my::HSV hsv_color{ centralHue-_heatMapValue*amplitudeScale,0.8, 0.8 };

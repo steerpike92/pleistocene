@@ -1,6 +1,7 @@
 #pragma once
 #include "globals.h"
 #include "state-mixture.h"
+#include "shared-surface.h"
 
 namespace pleistocene {
 
@@ -11,10 +12,6 @@ struct StatRequest;
 namespace climate {
 namespace layers {
 
-class MaterialLayer;
-class EarthLayer;
-class HorizonLayer;
-
 enum LayerType {
 	EARTH,
 	SEA,
@@ -22,58 +19,16 @@ enum LayerType {
 	AIR
 };
 
-enum SpatialDirection {
-	NORTH_EAST,
-	EAST,
-	SOUTH_EAST,
-	SOUTH_WEST,
-	WEST,
-	NORTH_WEST,
-	UP,
-	DOWN
-};
+
 
 const std::vector<my::Direction> ownedDirections{ my::NORTH_EAST, my::EAST, my::SOUTH_EAST };
-
-class SharedSurface {
-	SpatialDirection _spatialDirection;
-	MaterialLayer *_materialLayer;
-	double _area;
-	double _midpointElevation;
-	SharedSurface() {}
-
-	//top shared surface constructor
-	/*SharedSurface(MaterialLayer *materialLayer, double topElevaton, ) noexcept :
-		_spatialDirection(UP), _materialLayer(materialLayer), _midpointElevation(topElevaton), _area(100 * 1000) {}*/
-
-		//side shared surface constructor
-	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept :
-	_spatialDirection(spatialDirection), _materialLayer(materialLayer)
-	{
-		_midpointElevation = (topElevation + bottomElevation) / 2;
-		_area = (topElevation - bottomElevation)*10.75 * 1000;
-	}
-};
-
-
-struct SharedEarthSurface {
-	SpatialDirection _spatialDirection;
-	EarthLayer *_earthLayer;
-	double _area;
-	double _heightGradient;
-};
-
-struct NeighborHorizon {
-	HorizonLayer *neighbor;
-	double heightGradient;
-};
 
 
 namespace earth {
 const double bedrockDepth = 201; //201 m of simulated subterranian activity
 
 const int earthLayers = 6;//if changed, update earthLayerHeights
-const double earthLayerHeight = (bedrockDepth - 2) / (double(earthLayers - 1));
+const double earthLayerHeight = (bedrockDepth - 1) / (double(earthLayers - 1));
 const double subSoilHeight = 0.8; //80 cm of subsoil
 const double topSoilHeight = 0.2; //20 cm of topsoil in horizon
 //const double topSoilHeight = 1; //1 m of topsoil in horizon
@@ -153,7 +108,7 @@ public:
 	MaterialLayer *_up = nullptr;
 	MaterialLayer *_down = nullptr;
 
-	void addSurface(layers::SharedSurface &surface) noexcept;
+	void addSurface(SharedSurface &surface) noexcept;
 	void clearSurfaces() noexcept;
 
 	//SIMULATION
@@ -221,7 +176,7 @@ private:
 class HorizonLayer : public EarthLayer {
 	//unique horizon member variables
 
-	std::map<my::Direction, layers::NeighborHorizon> neighbors;
+	//std::map<my::Direction, layers::NeighborHorizon> neighbors;
 
 	//TO DO
 

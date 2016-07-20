@@ -269,6 +269,7 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		LOG("Seed = " << _seed);
 		generateWorld(options);
 		my::SimulationTime::resetGlobalTime();
+		_statistics.newStatistic();
 		simulate(options);
 	}
 
@@ -281,32 +282,47 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		simulate(options);
 	}
 
-	bool newStatistic = true;
+
+	bool newStatistic = false;
 
 	//draw type selection
-	if	(input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION;}
-	else if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE;}
-	else if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES;}
-	else if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW;}
-	else if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE;}
+	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; newStatistic = true;}
 	//draw section selector
-	else if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0;}
-	else if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0; }
-	else if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0; }
-	else if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0; }
-	else if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0; }
+	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0;  newStatistic = true;}
 
 	//layer selection
-	else if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--; }
-	else if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++; }
+	if (input.wasKeyPressed(SDL_SCANCODE_LEFTBRACKET)) { _statRequest._layer--;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_RIGHTBRACKET)) { _statRequest._layer++;  newStatistic = true;}
 
-	else if (input.wasKeyPressed(SDL_SCANCODE_Q)) { _statRequest._section = SURFACE_; _statRequest._statType = ELEVATION; _statRequest._layer = 0; }
+	//return to default
+	if (input.wasKeyPressed(SDL_SCANCODE_Q)) {
+		_statRequest._section = SURFACE_;
+		_statRequest._statType = ELEVATION; 
+		_statRequest._layer = 0;  
+		newStatistic = true;
+	}
 
-	else { newStatistic = false; }
+	////ascend above surface to air
+	if (_statRequest._section == SURFACE_ && _statRequest._layer == 1) {
+		_statRequest._section = AIR_; 
+		_statRequest._layer = 0;
+	}
 
+	if (_statRequest._section == AIR_ && _statRequest._layer == -1) {
+		_statRequest._section = SURFACE_;
+		_statRequest._layer = 0;
+	}
 
 	if (_statRequest._layer < 0)  _statRequest._layer = 0;
-	if (_statRequest._layer > 5)  _statRequest._layer = 5;
+	if (_statRequest._layer > 6)  _statRequest._layer = 6;
 
 	
 	if (newStatistic) {

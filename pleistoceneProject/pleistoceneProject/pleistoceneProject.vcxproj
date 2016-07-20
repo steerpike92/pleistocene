@@ -127,6 +127,7 @@
     <ClCompile Include="material-layer.cpp" />
     <ClCompile Include="mixture.cpp" />
     <ClCompile Include="noise.cpp" />
+    <ClCompile Include="shared-surface.cpp" />
     <ClCompile Include="solar-radiation.cpp" />
     <ClCompile Include="state-mixture.cpp" />
     <ClCompile Include="statistics.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="material-layer.h" />
     <ClInclude Include="mixture.h" />
     <ClInclude Include="noise.h" />
+    <ClInclude Include="shared-surface.h" />
     <ClInclude Include="solar-radiation.h" />
     <ClInclude Include="state-mixture.h" />
     <ClInclude Include="statistics.h" />

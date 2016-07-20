@@ -13,6 +13,8 @@ struct StatRequest;
 namespace climate {
 namespace layers {
 
+
+
 class MaterialColumn {
 	//Object owning vectors
 	std::vector<EarthLayer> _earth;

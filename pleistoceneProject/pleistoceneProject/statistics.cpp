@@ -86,7 +86,7 @@ void Statistics::calculateStatistics() noexcept
 //does what it says
 double Statistics::getSigmasOffMean(double value) const noexcept
 {
-	if (!_valid || _sigma == 0) return 0;
+	if (!_valid || abs(_sigma)<0.000001) return 0;
 	else return ((value - _mean) / _sigma);
 }
 

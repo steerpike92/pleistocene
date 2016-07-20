@@ -25,7 +25,7 @@ const double kTileArea = 100000000.0; //m^2
 
 const double kG = 9.81;		//acceleration of gravity (m/s/s)
 const int kMaxLatitude = 70;
-const int kSolarYear_d = 40;	//Length of a solar year in days
+const int kSolarYear_d = 60;	//Length of a solar year in days
 const int kSolarDay_h = 24;	//length of a solar day in hours
 const int kHour_s = 3600;
 

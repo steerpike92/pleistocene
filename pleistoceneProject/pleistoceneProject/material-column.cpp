@@ -1,6 +1,5 @@
 #include "material-column.h"
-#include "material-layer.h"
-#include "globals.h"
+#include "tile-climate.h"
 #include "world.h"
 
 namespace pleistocene {
@@ -23,7 +22,7 @@ _initialTemperature(initialTemperature)
 
 	baseElevation = buildHorizon(baseElevation);
 
-	if (_landElevation < 0) {
+	if (_landElevation < -2) {//TODO. sand bars? reefs? marshes? lagoons?
 		baseElevation = buildSea(baseElevation, 0);
 		_submerged = true;
 	}
@@ -40,18 +39,10 @@ double MaterialColumn::buildEarth() noexcept
 {
 	using namespace layers::earth;
 
-	//build bedrock layer
 	double bedrockElevation = _landElevation - bedrockDepth;
+	double currentElevation=bedrockElevation;
 
-	double currentElevation;
-
-
-	_earth.emplace_back(bedrockElevation, _initialTemperature, bedrockElevation, earthLayerHeights[0]);
-
-	currentElevation = _earth.back().getTopElevation();
-
-	//build remaining earth layers
-	for (int i = 1; i < earthLayers; i++) {
+	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
 		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
 		currentElevation = _earth.back().getTopElevation();
@@ -174,13 +165,13 @@ void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 
 void MaterialColumn::buildVerticalSurfaces() noexcept
 {
-	/*SharedSurface surface;
+	//SharedSurface surface;
 	for (MaterialLayer *layer : _column) {
-		surface.area = climate::planetary::tileArea;
-		surface.spatialDirection = UP;
-		surface.materialLayer = layer->_up;
-		layer->addSurface(surface);
-	}*/
+		//surface._area = 100*1000*1000;
+		//surface._spatialDirection = UP;
+		//surface._materialLayer = layer->_up;
+		//layer->addSurface(surface);
+	}
 }
 
 void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
@@ -214,8 +205,6 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 	//			A->addSurface()
 	//	}
 	//}
-
-
 
 }
 
@@ -436,7 +425,7 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 		}
 
 		auto layerReporting = _earth.rbegin();
-		for (int i = 0; i < statRequest._layer; i++) {//advance downward to requested layer
+		for (int i = 0; i < statRequest._layer-1; i++) {//advance downward to requested layer
 			layerReporting++;
 			if (layerReporting == _earth.rend()) {//below bedrock bottom. not valid
 				return;

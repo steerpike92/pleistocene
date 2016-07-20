@@ -18,7 +18,6 @@ _baseElevation(baseElevation),
 _bottomElevation(bottomElevation),
 _bottomRelativeElevation(_bottomElevation - _baseElevation)
 {
-
 }
 
 void MaterialLayer::addSurface(layers::SharedSurface &surface) noexcept
@@ -208,8 +207,8 @@ elements::ElementType EarthLayer::determineEarthType(double depthIndex) noexcept
 	//depthIndex is from 0 to 1 (0=surface, 1=bedrockBottom)
 
 	//randomDouble is from 0 to 1;
-	//double randomDouble = my::uniformRandom();
-	double randomDouble = 0.3;
+	double randomDouble = my::uniformRandom();
+	//double randomDouble = 0.3;
 
 	//soilRV : soil Random Variable from 0 to 1. 
 	//low values correspond to near surface type soils (at surface, soilRV < 0.5)
@@ -217,7 +216,7 @@ elements::ElementType EarthLayer::determineEarthType(double depthIndex) noexcept
 	double soilRV = (depthIndex + randomDouble) / 2;
 
 	if (soilRV > 0.65) { return BEDROCK; }
-	if (soilRV > 0.48) { return ROCK; }
+	if (soilRV > 0.51) { return ROCK; }
 	return CLAY; //stand in for "SOIL".  Move on to soil determination
 }
 
@@ -231,8 +230,8 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex) noexcept
 	//Not used here yet but eventually probably
 
 	//uniformRandom is from 0 to 1;
-	//double soilRV = my::uniformRandom();
-	double soilRV = 0.36;
+	double soilRV = my::uniformRandom();
+	//double soilRV = 0.36;
 	if (soilRV > 0.67) { return CLAY; }
 	else if (soilRV > 0.33) { return SILT; }
 	else return SAND;
