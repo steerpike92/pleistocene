@@ -13,7 +13,7 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(5456873),
+_seed(1187),
 _statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
@@ -152,12 +152,12 @@ void World::generateTileElevations() noexcept {
 	int TileCols = my::Address::GetCols();
 
 
-	const int hBlendDistance = TileCols / 6;	//horizontal blend distance for east west map edge blending
-	const int vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
+	const int hBlendDistance = TileCols / 4;	//horizontal blend distance for east west map edge blending
+	const int vBlendDistance = std::max(1,int (double(TileRows) / 10.0));	//vertical blend distance for blending poles into sea
 	int Cols = TileCols + hBlendDistance;					//columns needed in noise table
 	int Rows = TileRows;							//rows needed in noise table
 
-
+	
 
 
 										//noise generator;
@@ -167,6 +167,9 @@ void World::generateTileElevations() noexcept {
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
 
+	//must be ~0. never outside of (-1, 1)
+	const double shiftBias = -0.1; //moves from neutrally land/sea to biasing one while retaining the same shapes
+	
 
 	//Elevation shape parameters
 	const double shelfPower = 1.5;
@@ -181,6 +184,20 @@ void World::generateTileElevations() noexcept {
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
+
+			//shift
+			noiseValue += shiftBias;
+			
+			//stretch back
+			if (noiseValue < 0) {
+				noiseValue /= (1 - shiftBias);
+			}
+			else {
+				noiseValue /= (1 + shiftBias);
+			}
+
+
+			//noise power adjust
 			if (noiseValue > 0) {
 				noiseValue = pow(noiseValue, landPower);
 			}

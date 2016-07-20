@@ -1,6 +1,9 @@
 
 
 Solid Seeds
+
+old (biasless seeds)
+
 21 		original
 20098		3 narrowly split continents
 9919
@@ -18,6 +21,12 @@ Solid Seeds
 1972		
 32360		3 continents, 2 connected by ithsmus. third by straight
 
+
+new (biased seeds)
+
+1187		many near connect continents
+
+const double shiftBias = -0.1;
 
 
 shelfPower = 1.5;
