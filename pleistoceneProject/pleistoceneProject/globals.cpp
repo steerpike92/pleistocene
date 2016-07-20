@@ -469,31 +469,59 @@ std::string double2string(double number) noexcept
 
 	if (number == 0) return stream.str();
 
+	//display sign
 	if (number < 0) stream << "-";
+
+	//abs is easier to work with
 	number = abs(number);
 
-	//reasonably sized number
-	if (number >= 0.001) {
-		stream << int(number);
-		if (number < 1000) stream << "." << int(int(number * 10) % 10);
-		if (number < 100) stream << int(int(number * 100) % 10);
-		if (number< 10) stream << int(int(number * 1000) % 10);
-		if (number< 1) stream << int(int(number * 10000) % 10);
-		return stream.str();
+	//enormous number
+	if (number > pow(10, 6)) {
+		//determine order of magnitude
+		int order = 6;
+		while (pow(10, order)<number) {
+			order++;
+		}
+		order--;//shift back one
+
+		//shift number (shrink)
+		number = number*pow(10, -order);
+
+		//stream number
+		stream << int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10);
+
+		//display order
+		stream << " e+" << order;
 	}
 
-	//tiny number
-	if (number < 0.001) {
+	//reasonably sized number
+	else if (number >= 0.001) {
+		stream << int(number);
+		if (number < 100) stream << "." << int(int(number * 10) % 10);
+		if (number < 10) stream << int(int(number * 100) % 10);
+		if (number< 1) stream << int(int(number * 1000) % 10);
+		if (number< 0.1) stream << int(int(number * 10000) % 10);
+		
+	}
+
+	//tiny number, scientific notation
+	else {
 		//determine order of magnitude
 		int order = -3;
 		while (pow(10, order)>number) {
 			order--;
 		}
+		//shift number
+		number = number*pow(10, -order);
 
+		//stream number
+		stream <<int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10);
 
-
+		//display order
+		stream << " e-" << -order;
 	}
-	
+
+	return stream.str();
 }
 
 
