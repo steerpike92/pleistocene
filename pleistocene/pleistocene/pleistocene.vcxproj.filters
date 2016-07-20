@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="bios.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="element.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="game-options.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="world.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="tile-climate.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="statistics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="state-mixture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="solar-radiation.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="shared-surface.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="noise.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="mixture.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="material-layer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="material-column.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bios.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="element.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="game-options.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="material-column.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="material-layer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mixture.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="noise.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="shared-surface.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="solar-radiation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="state-mixture.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="statistics.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="tile.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="tile-climate.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="july-19-todo.txt">
+      <Filter>Resource</Filter>
+    </Text>
+    <Text Include="solid-seeds.txt">
+      <Filter>Resource</Filter>
+    </Text>
+    <Text Include="user-commands.txt">
+      <Filter>Resource</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{8858a2e3-47b7-407c-b37f-c69188c0033a}</UniqueIdentifier>
+      <Extensions>.h;.hpp</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{2ce26e5d-119f-4d44-9b85-a6c7ab4ce994}</UniqueIdentifier>
+      <Extensions>.cpp;.cc;</Extensions>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{152a1af2-9d92-4eae-af8c-0f7593821ad9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
