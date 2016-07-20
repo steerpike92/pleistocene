@@ -1,0 +1,59 @@
+
+GRAPHICS COMMANDS
+===============================
+
+	CAMERA COMMANDS
+	===============================
+	(ASWD)	-pan camera
+	(-)		-zoom out
+	(+ =)	-zoom in		
+
+
+	STATISTICAL DISPLAY 
+	===============================
+		TYPE
+		===============================
+		(1)		-elevation
+		(2)		-temperature
+		(3)		-material properties
+		(4)		-flow (unimplemented)
+		(5)		-moisture (unimplemented)
+
+		SECTION
+		===============================
+		(6)		-surface
+		(7)		-horizon
+		(8)		-earth
+		(9)		-sea
+		(0)		-air
+
+		SUB-LAYER
+		===============================
+		([)		-decrement sublayer
+		(])		-increment sublayer
+
+		(earth <---> horizon <---> surface <---> air)  can be accessed via sublayer movement
+
+		DETAILED-DISPLAY
+		===============================
+		(LClick)	-display extended statistics for clicked tile
+					-extended statistics depends on display type (1-5)
+
+		(RClick)	-dismiss/deselect
+
+		MISCELLANEOUS
+		===============================
+		(Q)		-return to surface/elevation stat
+
+		(` ~)	-toggle day/night shading
+		(tab)	-toggle daily draw
+
+		
+
+SIMULATION COMMANDS
+===============================
+(Enter)	-run one hour of simulation
+(\)		-run continuous simulation while held
+(space)	-toggle continuous simulation
+
+(G)		-generate new world with randomly generated seed
