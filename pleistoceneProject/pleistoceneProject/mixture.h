@@ -28,7 +28,7 @@ protected:
 
 	double _totalSolarAbsorbed = 0;
 	double _totalInfraredAbsorbed = 0;
-	double _totalInfraredEmitted = 0;
+	double _infraredEmitted = 0;
 
 public:
 	Mixture() noexcept;

@@ -16,7 +16,7 @@ Element::Element() noexcept {}
 Element::Element(ConstructorType constructorType, ElementType elementType, double value, State state) noexcept {
 	
 
-	//if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);exit(EXIT_FAILURE);}
+	if (value < 0) {LOG("inappropriately small element construction value"); LOG(value);exit(EXIT_FAILURE);}
 
 	_elementType = elementType;
 
@@ -30,13 +30,13 @@ Element::Element(ConstructorType constructorType, ElementType elementType, doubl
 	switch (constructorType) {
 	case(VOLUME) :
 		_volume = value;
-		//if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); exit(EXIT_FAILURE); } //NOEXCEPT
+		if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); exit(EXIT_FAILURE); } //NOEXCEPT
 		if (_state == PARTICULATE) { _mass = _volume*_particleDensityMap.at(_elementType); }
 		else { _mass = _volume*_densityMap.at(_elementType); }
 		break;
 	case(MOLAR) :
 		_mols = value;
-		//if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); exit(EXIT_FAILURE); } //NOEXCEPT
+		if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); exit(EXIT_FAILURE); } //NOEXCEPT
 		_mass = _mols*_molarMassMap.at(_elementType);
 		break;
 	case(MASS) :
@@ -59,8 +59,8 @@ Element::Element(ConstructorType constructorType, ElementType elementType, doubl
 			break;
 		}
 		break;
-		//default:
-			//LOG("No mixture constructor type"); exit(EXIT_FAILURE); return; //NOEXCEPT
+	default:
+		LOG("No mixture constructor type"); exit(EXIT_FAILURE); return; //NOEXCEPT
 	}
 }
 
@@ -157,11 +157,11 @@ double Element::getAlbedo() const noexcept {
 }
 double Element::getSolarAbsorptivity() const noexcept {
 	if (_state == SOLID) { return 1; }
-	else { return std::min(_solarAbsorptivityMap.at(_elementType)*_mass, 1.0); }
+	else { return (_solarAbsorptivityMap.at(_elementType)*_mass); }
 }
 double Element::getInfraredAbsorptivity() const noexcept {
 	if (_state == SOLID) { return 1; }
-	else { return std::min(_infraredAbsorptivityMap.at(_elementType)*_mass, 1.0); }
+	else { return (_infraredAbsorptivityMap.at(_elementType)*_mass); }
 }
 
 double Element::getMass() const noexcept { return _mass; }

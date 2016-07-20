@@ -259,6 +259,8 @@ void MaterialColumn::beginNewHour() noexcept {
 	for (auto layer : _column) {
 		layer->beginNewHour();
 	}
+	_backRadiation = 0;
+	_escapeRadiation = 0;
 }
 
 void MaterialColumn::filterSolarRadiation(double energyKJ) noexcept
@@ -284,7 +286,9 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 	double emittedEnergy;
 	std::vector<double> downRadiation;//radiation incident downwards upon layer
 
+	
 	upRadiation = surfaceLayer->emitInfraredRadiation();
+	downRadiation.clear();
 
 	//filter/emit upwards
 	for (AirLayer &air : _air) {
@@ -294,19 +298,20 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 	}
 	_escapeRadiation = upRadiation;
 
-	//this may be the most unnecessarily complex thing I've ever done in c++
+
 	double currentDownRadiation;
 	auto radiation_rit = downRadiation.rbegin();//end of down radiation vector
+	
 	//filter downwards
 	for (auto air_rit = _air.rbegin() + 1; air_rit != _air.rend(); ++air_rit) {
 		currentDownRadiation = *radiation_rit;
-		radiation_rit++;//advance down radiation reverse iterator
+		++radiation_rit;//advance down radiation reverse iterator
 		*radiation_rit += air_rit->filterInfraredRadiation(currentDownRadiation);//filter radiation
 	}
-	_backRadiation = *radiation_rit; //I think
+		
+	_backRadiation = *radiation_rit;
 
-	surfaceLayer->filterInfraredRadiation(_backRadiation);
-
+	surfaceLayer->filterInfraredRadiation(*radiation_rit);
 }
 
 void MaterialColumn::simulatePressure() noexcept

@@ -88,13 +88,14 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 		messages = _mixture->getThermalMessages();
 
-		stream.str(std::string());
+		//redundant
+		/*stream.str(std::string());
 		stream << "Temperature: " << my::double2string(getTemperature() - 273) << " °C";
 		messages.push_back(stream.str());
 
 		stream.str(std::string());
 		stream << "Heat Capacity: " << my::double2string(_mixture->getHeatCapacity()) << " kJ/K";
-		messages.push_back(stream.str());
+		messages.push_back(stream.str());*/
 
 		return messages;
 

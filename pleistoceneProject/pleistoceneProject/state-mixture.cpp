@@ -23,7 +23,7 @@ SolidMixture::SolidMixture(std::vector<Element> theElements, double temperature)
 
 
 void SolidMixture::calculateParameters() noexcept {
-	Mixture::calculateParameters();
+	//Mixture::calculateParameters();
 	calcualtePorosity();
 	calculatePermeability();
 	calculateGroundWaterFlow();
@@ -99,26 +99,20 @@ Mixture(element, temperature, elements::DROPLET) {}
 GaseousMixture::GaseousMixture() noexcept {}
 
 GaseousMixture::GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation) noexcept :
-Mixture(element, temperature, elements::GAS, topElevation - bottomElevation),
-_bottomElevation(bottomElevation),
-_topElevation(topElevation)
+GaseousMixture(std::vector<Element>{element}, temperature, bottomElevation, topElevation)
 {
-	calculateParameters();
 }
-
-
 
 GaseousMixture::GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation) noexcept :
 Mixture(elementVector, temperature, elements::GAS, topElevation - bottomElevation),
 _bottomElevation(bottomElevation),
 _topElevation(topElevation)
 {
-	calculateParameters();
+	//calculateParameters();
 }
 
 void GaseousMixture::simulateCondensation() noexcept
 {
-
 }
 
 DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation) noexcept
@@ -128,11 +122,11 @@ DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipita
 
 void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
-	Mixture::calculateParameters();
+	//Mixture::calculateParameters();
 
-	calculateSpecificHeatCapacity();
+	/*calculateSpecificHeatCapacity();
 	calculateSaturationDensity();
-	calculateLapseRate();
+	calculateLapseRate();*/
 }
 
 

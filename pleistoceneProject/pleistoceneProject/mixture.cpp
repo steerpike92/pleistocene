@@ -130,8 +130,8 @@ void Mixture::calculateSolarAbsorptionIndex() noexcept {
 		for (const ElementPair &elementPair : _elements) {
 			_solarAbsorptionIndex += elementPair.second.getSolarAbsorptivity();
 		}
-		//AUX
 		_solarAbsorptionIndex = std::min(_solarAbsorptionIndex, 1.0);
+		LOG("Non-Solid solar absorption: " << _solarAbsorptionIndex);
 	}
 }
 
@@ -236,7 +236,7 @@ double Mixture::pullSpecific(Element pulledElement) noexcept {
 void Mixture::beginNewHour() noexcept {
 	_totalSolarAbsorbed = 0;
 	_totalInfraredAbsorbed = 0;
-	_totalInfraredEmitted = 0;
+	_infraredEmitted = 0;
 }
 
 double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
@@ -253,9 +253,9 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	//Water and air transmit a lot of energy
 	_totalSolarAbsorbed = _solarAbsorptionIndex*solarEnergyKJ;
 
-	double outputEnergyKJ = (1 - _solarAbsorptionIndex)*solarEnergyKJ;
+	double outputEnergyKJ = solarEnergyKJ-_totalSolarAbsorbed;
 
-	//TEMPERATURE CHANGE!!!!	
+	//TEMPERATURE CHANGE!!!!
 	_temperature += _totalSolarAbsorbed / _totalHeatCapacity;
 
 	return outputEnergyKJ;
@@ -269,13 +269,14 @@ double Mixture::emitInfrared() noexcept {
 
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
+		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 8 * pow(10, -4);
+
 	}
 	else {
 		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4);
 	}
 
-	_totalInfraredEmitted += emissionEnergy;
+	_infraredEmitted = emissionEnergy;
 
 	//TEMPERATURE CHANGE!!!!
 	_temperature -= emissionEnergy / _totalHeatCapacity; //emmision cooling
@@ -333,7 +334,7 @@ std::vector<std::string> Mixture::getThermalMessages() const noexcept {
 	messages.push_back(stream.str());
 
 	stream.str(std::string());
-	stream << "Emitted Energy (KJ): " << my::double2string(this->_totalInfraredEmitted);
+	stream << "Emitted Energy (KJ): " << my::double2string(this->_infraredEmitted);
 	messages.push_back(stream.str());
 
 	stream.str(std::string());
@@ -352,6 +353,14 @@ std::vector<std::string> Mixture::getElementMessages() const noexcept
 		subMessages=elementPair.second.getMessages();
 		messages.insert(messages.begin(), subMessages.begin(), subMessages.end());
 	}
+
+	std::stringstream stream;
+	stream << "Solar Absorption Index: " << my::double2string(this->_solarAbsorptionIndex);
+	messages.push_back(stream.str());
+
+	stream.str(std::string());
+	stream << "Infrared Absorption Index: " << my::double2string(this->_infraredAbsorptionIndex);
+	messages.push_back(stream.str());
 
 	return messages;
 }

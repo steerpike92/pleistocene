@@ -91,7 +91,6 @@ const double seaLayerElevations[kMaxSeaLayers+1] = { 0,-2,-20,-200,-2000,-20000 
 }
 
 
-
 namespace air {
 
 const int kMaxAirLayers = 6;//IF CHANGED, UPDATE airElevations!!!!!
@@ -118,7 +117,6 @@ const double StandardPressure[2] = { 101325, 22632 };
 const double StandardTemperature[2] = { 288.15, 216.65 };
 const double StandardLapseRate[2] = { -0.0065, 0 };
 }
-
 
 
 
@@ -334,6 +332,7 @@ private:
 	double truePressureCalculator(double elevation) const noexcept;
 
 public:
+
 
 	double getTemperature() const noexcept;
 

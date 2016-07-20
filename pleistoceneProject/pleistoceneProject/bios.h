@@ -15,7 +15,7 @@ const int kInfoBarHeight = 20;
 const int kDateMargin = 65;
 
 const int kScreenMargin = 0;
-const int kBiosWidth = 250;
+const int kBiosWidth = 300;
 const int kBiosHeight = 600;
 
 

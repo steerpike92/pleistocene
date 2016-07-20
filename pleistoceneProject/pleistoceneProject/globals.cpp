@@ -468,7 +468,7 @@ std::string double2string(double number) noexcept
 	std::stringstream stream;
 	if (number < 0) stream << "-";
 	number = abs(number);
-	stream << int(number) << "." << int(int(number * 100) % 100);
+	stream << int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10)<< int (int(number*1000)%10);
 	return stream.str();
 }
 
