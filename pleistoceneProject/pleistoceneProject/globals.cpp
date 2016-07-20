@@ -467,18 +467,20 @@ std::string double2string(double number) noexcept
 {
 	std::stringstream stream;
 
-	if (number == 0) return stream.str();
-
+	if (number == 0) {
+		stream << "0";
+		return stream.str();
+	}
 	//display sign
 	if (number < 0) stream << "-";
 
 	//abs is easier to work with
 	number = abs(number);
 
-	//enormous number
-	if (number > pow(10, 6)) {
+	//enormous number, scientific notation
+	if (number > pow(10, 4)) {
 		//determine order of magnitude
-		int order = 6;
+		int order = 4;
 		while (pow(10, order)<number) {
 			order++;
 		}
