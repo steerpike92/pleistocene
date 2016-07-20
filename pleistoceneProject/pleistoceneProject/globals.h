@@ -254,7 +254,7 @@ public:
 
 	int r;//row
 	int c;//column
-	int i;//tile index (-1 if doesn't exist)
+	int i;//tile index (my::fakeIndex if doesn't exist)
 	bool exists = false;//existance or validity flag
 	bool odd = false;//odd row flag
 

@@ -29,7 +29,7 @@ void Tile::buildNeighborhood() noexcept {
 	my::Address neighborAddress;
 	for (int j = 0; j < 6; j++) {
 		neighborAddress = this->_address.adjacent(j);
-		if (neighborAddress.i != -1) {
+		if (neighborAddress.i != my::kFakeIndex) {
 			this->_directionalNeighbors[static_cast<my::Direction>(j)] = neighborAddress;
 		}
 	}

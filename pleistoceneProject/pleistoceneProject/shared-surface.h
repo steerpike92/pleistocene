@@ -22,13 +22,11 @@ enum SpatialDirection {
 
 
 class SharedSurface {
-public:
-	SpatialDirection _spatialDirection;
-	MaterialLayer *_materialLayer;
 	double _area;
 	double _midpointElevation;
-
-
+	
+public:
+	
 	SharedSurface() noexcept;
 
 	//top shared surface constructor
@@ -36,6 +34,14 @@ public:
 
 	//side shared surface constructor
 	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept;
+
+	double getArea() const noexcept;
+
+	double getMidpointElevation() const noexcept;
+
+	SpatialDirection _spatialDirection;
+
+	MaterialLayer *_materialLayer;
 };
 
 

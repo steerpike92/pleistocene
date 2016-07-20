@@ -79,7 +79,7 @@ void Mixture::calculateVolume() noexcept {
 void Mixture::calculateMols() noexcept {
 	using namespace elements;
 
-	if (_state != GAS) { _totalMols = -1; return; }
+	if (_state != GAS) { _totalMols = my::kFakeDouble; return; }//Throw? //TODO
 
 	_totalMols = 0;
 	for (const ElementPair &elementPair : _elements) {

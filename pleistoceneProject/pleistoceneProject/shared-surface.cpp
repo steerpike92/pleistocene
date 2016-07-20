@@ -27,6 +27,9 @@ _area((topElevation - bottomElevation) * (6.2 * 1000))//height*width
 {
 }
 
+double SharedSurface::getArea() const noexcept { return _area; }
+double SharedSurface::getMidpointElevation() const noexcept { return _midpointElevation; }
+
 }//namespace layers
 }//namespace climate
 }//namespace simulation

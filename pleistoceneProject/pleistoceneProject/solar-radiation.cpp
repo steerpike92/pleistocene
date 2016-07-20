@@ -54,7 +54,7 @@ void SolarRadiation::buildRotationMatrix(double angle_rad) noexcept {
 	//LOG(_rotationMatrix);
 }
 
-double SolarRadiation::_oldRotation = -1.0;
+double SolarRadiation::_oldRotation = my::kFakeDouble;
 
 void SolarRadiation::setupSolarRadiation() noexcept
 {

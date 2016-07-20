@@ -159,7 +159,9 @@ void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &ad
 void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 {
 	for (my::Direction direction : ownedDirections) {
-		buildNeighborSurfaces(direction);
+		if (this->_adjacientColumns.count(direction)) {
+			buildNeighborSurfaces(direction);
+		}
 	}
 }
 
@@ -168,9 +170,7 @@ void MaterialColumn::buildVerticalSurfaces() noexcept
 	SharedSurface surface;
 	for (MaterialLayer *layer : _column) {
 		if (layer->_up != nullptr) {
-			surface._area = 100 * 1000 * 1000;
-			surface._spatialDirection = UP;
-			surface._materialLayer = layer->_up;
+			surface = SharedSurface(layer->_up, layer->getTopElevation());
 			layer->addSurface(surface);
 		}
 	}
@@ -179,34 +179,39 @@ void MaterialColumn::buildVerticalSurfaces() noexcept
 void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 {
 
-	//SharedSurface surface;
+	SharedSurface surface;
 
-	//MaterialLayer *A = _column.front();//this column's layer
-	//MaterialLayer *B = _adjacientColumns[direction]->_column.front();//neighbors column's layer
+	MaterialLayer *A = _column.front();//this column's layer
+	MaterialLayer *B = _adjacientColumns[direction]->_column.front();//neighbors column's layer
 
-	//double height;
+	double A_bot, A_top, B_bot, B_top;
+	double top, bot;
+	const SpatialDirection sDirection = static_cast<SpatialDirection>(direction);
 
-	//double A_bot, A_top, B_bot, B_top;
+	do {
+		A_bot = A->getBottomElevation();
+		A_top = A->getTopElevation();
 
-	//const SpatialDirection sDirection = static_cast<SpatialDirection>(direction);
+		B_bot = B->getBottomElevation();
 
-	//while (A != nullptr) {
-	//	A_bot = A->getBottomElevation();
-	//	A_top = A->getTopElevation();
+		while (A_top > B_bot) {
+			B_bot = B->getBottomElevation();
+			B_top = B->getTopElevation();
 
-	//	B_bot = B->getBottomElevation();
-	//	B_top = B->getTopElevation();
+			bot = std::max(A_bot, B_bot);
+			top = std::min(A_top, B_top);
 
-	//	while (A_top > B_bot) {
+			surface = SharedSurface(sDirection, B, bot, top);
+			A->addSurface(surface);
 
-	//		height = A_top - std::max(A_bot, B_bot);
-	//		surface.area = width*height;
-	//		surface.materialLayer = B;
-	//		surface
+			if (B->_up != nullptr) {
+				B = B->_up;
+			}
+			else break;
+		}
 
-	//			A->addSurface()
-	//	}
-	//}
+		A = A->_up;
+	} while (A != nullptr);
 
 }
 
