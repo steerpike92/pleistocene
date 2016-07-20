@@ -1,0 +1,30 @@
+surfaces:
+	earth surface building
+	horizon relations
+
+
+conduction accross surfaces ----(done. Needs tuning though)
+
+cross surface pressure flow
+
+graphically representing cross surface pressure flow (vector arrows?)
+
+Auxiliary mixtures
+
+particulate physics
+
+evaporation/condensation
+precipitation
+
+graphically representing preciptation
+
+surface runoff handling
+river handling
+
+groundwater flow.
+
+adjusting soil composition maps to depend on elevation and moisture levels
+
+
+Graphical user interface
+
