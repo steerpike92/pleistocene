@@ -93,9 +93,9 @@ double Statistics::getSigmasOffMean(double value) const noexcept
 //value between -1 and 1 representing above/below averageness
 double Statistics::getHeatMapValue(double value) const noexcept
 {
-	double heatValue = getSigmasOffMean(value) / 3.0;
-	heatValue = std::max(heatValue, -1.0);
-	heatValue = std::min(heatValue, 1.0);
+	double heatValue = getSigmasOffMean(value);
+	heatValue = std::max(heatValue, -3.5);
+	heatValue = std::min(heatValue, 3.5);
 	return heatValue;
 }
 

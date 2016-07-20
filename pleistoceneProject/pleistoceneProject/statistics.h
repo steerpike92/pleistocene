@@ -14,8 +14,9 @@ class Statistics{
 	bool _valid;//Are there any values in _values? Guard against divide by zero.
 
 	//24 so that we have a full day of data to compare with.
-	//Larger multiples of 24 are also appropriate.
-	const int kTrackedFrames=(simulation::climate::kSolarDay_h)*(simulation::climate::kSolarYear_d);
+	//Larger multiples of 24 also may be appropriate.
+	//const int kTrackedFrames=(simulation::climate::kSolarDay_h)*(simulation::climate::kSolarYear_d);
+	const int kTrackedFrames = (simulation::climate::kSolarDay_h);
 
 	std::list<double> _trackedMeans;//list of previously computed mean values for this statistic
 	std::list<double> _trackedSigmas;//list of previously computed standards of deviation for this statistic

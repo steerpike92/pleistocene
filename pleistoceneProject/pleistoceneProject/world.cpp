@@ -321,6 +321,21 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		_statRequest._layer = 0;
 	}
 
+	if (_statRequest._section == AIR_ && _statRequest._layer == 6) {
+		_statRequest._layer = 5;
+	}
+
+	if (_statRequest._section == SURFACE_ && _statRequest._layer == -1) {
+		_statRequest._section = HORIZON_;
+		_statRequest._layer = 0;
+	}
+
+	if (_statRequest._section == HORIZON_ && _statRequest._layer == 1) {
+		_statRequest._section = SURFACE_;
+		_statRequest._layer = 0;
+	}
+
+
 	if (_statRequest._layer < 0)  _statRequest._layer = 0;
 	if (_statRequest._layer > 6)  _statRequest._layer = 6;
 
