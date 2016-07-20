@@ -42,7 +42,7 @@ void Graphics::clear() noexcept {
 }
 
 
-void Graphics::loadImage(const std::string pathName) noexcept {
+void Graphics::loadImage(const std::string &pathName) noexcept {
 	//Add surface to _spriteSheets map
 	if (_spriteSheets.count(pathName) == 0) {
 		_spriteSheets[pathName] = IMG_Load(pathName.c_str());
@@ -55,11 +55,11 @@ void Graphics::loadImage(const std::string pathName) noexcept {
 	}
 }
 
-my::Vector2 Graphics::imageDimensions(const std::string pathName)  noexcept {
+my::Vector2 Graphics::imageDimensions(const std::string &pathName)  noexcept {
 	return my::Vector2(_spriteSheets[pathName]->w, _spriteSheets[pathName]->h);
 }
 
-void  Graphics::freeImage(const std::string pathName) noexcept {
+void  Graphics::freeImage(const std::string &pathName) noexcept {
 	_spriteSheets.erase(pathName);
 	_textures.erase(pathName);
 	_pathNames.erase(std::remove(_pathNames.begin(), _pathNames.end(), pathName), _pathNames.end());
@@ -143,7 +143,7 @@ std::vector<SDL_Rect> Graphics::getOnscreenPositions(const SDL_Rect * const game
 	return onscreenPositions;
 }
 
-bool Graphics::blitSurface(const std::string pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onscreenPositions,
+bool Graphics::blitTexture(const std::string &pathName, const SDL_Rect * const sourceRect, std::vector<SDL_Rect> onscreenPositions,
 	double degreesRotated, bool mirrorH, bool mirrorV)  noexcept {
 
 	bool selectionFlag = false;

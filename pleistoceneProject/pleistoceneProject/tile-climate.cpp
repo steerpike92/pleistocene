@@ -135,7 +135,7 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 
 	graphics.darkenTexture(_elevationTextures[elevationDrawType], textureShader);
 
-	return graphics.blitSurface(_elevationTextures[elevationDrawType], nullptr, onscreenPositions);
+	return graphics.blitTexture(_elevationTextures[elevationDrawType], nullptr, onscreenPositions);
 }
 
 

@@ -55,7 +55,7 @@ namespace options { class GameOptions; }
 
 
 namespace globals {
-const int kScreenWidth = 1200;
+const int kScreenWidth = 1000;
 const int kScreenHeight = 600;
 
 const int kTileWidth = 256;

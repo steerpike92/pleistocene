@@ -32,6 +32,7 @@ private:
 	int _gameWidth_pixels;
 	int _gameHeight_pixels;
 
+	const int kEdgeOffset = 300;
 
 };
 

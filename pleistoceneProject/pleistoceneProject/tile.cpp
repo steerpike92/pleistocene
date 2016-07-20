@@ -57,7 +57,7 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 	
 	if (_statValue == my::kFakeDouble) {//no legitimate value
 		graphics.colorFilter(_colorTextures[0], 0, 0, 0);//filter to black
-		return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);
+		return graphics.blitTexture(_colorTextures[0], NULL, _onscreenPositions);
 	}
 	
 
@@ -87,7 +87,7 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 	//}
 
 
-	return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);
+	return graphics.blitTexture(_colorTextures[0], NULL, _onscreenPositions);
 }
 
 

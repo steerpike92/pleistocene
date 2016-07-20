@@ -85,20 +85,23 @@ bool Camera::processCommands(const Input &input, int elapsedTime, const options:
 	//==========================================================================================================================
 	if (input.wasKeyHeld(SDL_SCANCODE_A)) {
 		_cameraPosition.x -= elapsedTime / 2;
-
-		if (_cameraPosition.x < -globals::kTileWidth * _zoomScale*options.getCols()  && options._loopOption) {
-			_cameraPosition.x = 0;
-		}
 		movementflag = true;
+
+
+		//World loop
+		if ((_cameraPosition.x < (-globals::kTileWidth *options.getCols()+ kEdgeOffset) * _zoomScale)  && options._loopOption) {
+			_cameraPosition.x = kEdgeOffset*_zoomScale;
+		}
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_D)) {
 		_cameraPosition.x += elapsedTime / 2;
-		if (_cameraPosition.x > 0 && options._loopOption) {
-			_cameraPosition.x = int(-globals::kTileWidth * _zoomScale*options.getCols());
-		}
 		movementflag = true;
 
+		//World loop
+		if ((_cameraPosition.x > kEdgeOffset*_zoomScale) && options._loopOption) {
+			_cameraPosition.x = int( (-globals::kTileWidth*options.getCols()+ kEdgeOffset) * _zoomScale);
+		}
 	}
 
 	if (input.wasKeyHeld(SDL_SCANCODE_W)) {

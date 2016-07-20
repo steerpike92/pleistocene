@@ -388,7 +388,7 @@ void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const op
 		if (onscreenPositions.empty()) {
 			return;
 		}
-		graphics.blitSurface("../../content/simpleTerrain/blackOutline.png", NULL, onscreenPositions);
+		graphics.blitTexture("../../content/simpleTerrain/blackOutline.png", NULL, onscreenPositions);
 	}
 }
 
