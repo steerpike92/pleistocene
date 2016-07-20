@@ -2,6 +2,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include "tile-climate.h"
 
 namespace pleistocene {
 
@@ -14,7 +15,7 @@ class Statistics{
 
 	//24 so that we have a full day of data to compare with.
 	//Larger multiples of 24 are also appropriate.
-	const size_t kTrackedFrames=24;
+	const int kTrackedFrames=(simulation::climate::kSolarDay_h)*(simulation::climate::kSolarYear_d);
 
 	std::list<double> _trackedMeans;//list of previously computed mean values for this statistic
 	std::list<double> _trackedSigmas;//list of previously computed standards of deviation for this statistic

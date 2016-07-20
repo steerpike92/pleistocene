@@ -356,7 +356,7 @@ double uniformRandom() noexcept
 }
 
 
-//Proudly found elsewhere{
+//Proudly found elsewhere (except why are people so shit at naming their variables?){
 HSV rgb2hsv(RGB rgb) noexcept
 {
 	HSV         hsv;

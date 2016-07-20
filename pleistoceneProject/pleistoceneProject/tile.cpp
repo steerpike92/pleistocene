@@ -59,19 +59,28 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 		graphics.colorFilter(_colorTextures[0], 0, 0, 0);//filter to black
 		return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);
 	}
-
+	
 
 	//determine draw color
-	_heatMapValue = statistics.getHeatMapValue(this->_statValue);
-	
-	double filter = 1-abs(_heatMapValue);
+	_heatMapValue = statistics.getSigmasOffMean(this->_statValue);
+	double amplitudeScale = 55;
+	double centralHue = 110;
 
-	if (_heatMapValue <= 0) {//Cold (blue)
-		graphics.colorFilter(_colorTextures[0], filter, filter, 1.0);
-	}
-	else {//Hot (red)
-		graphics.colorFilter(_colorTextures[0], 1.0, filter, filter);
-	}
+	if (_heatMapValue > 2) _heatMapValue -= 360.0/ amplitudeScale;
+	my::HSV hsv_color{ centralHue-_heatMapValue*amplitudeScale,0.8, 0.8 };
+	my::RGB rgb_color = my::hsv2rgb(hsv_color);
+
+	graphics.colorFilter(_colorTextures[0], rgb_color.r, rgb_color.g, rgb_color.b);
+
+
+	//old heat map coloring
+
+	//if (_heatMapValue <= 0) {//Cold (blue)
+	//	graphics.colorFilter(_colorTextures[0], filter, filter, 1.0);
+	//}
+	//else {//Hot (red)
+	//	graphics.colorFilter(_colorTextures[0], 1.0, filter, filter);
+	//}
 
 
 	return graphics.blitSurface(_colorTextures[0], NULL, _onscreenPositions);

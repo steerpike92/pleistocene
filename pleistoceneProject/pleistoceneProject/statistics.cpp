@@ -50,7 +50,7 @@ void Statistics::calculateStatistics() noexcept
 	
 	_trackedMeans.push_front(currentMean);
 
-	size_t valuesTracked = _trackedMeans.size();
+	int valuesTracked = _trackedMeans.size();
 	if (valuesTracked > kTrackedFrames) { _trackedMeans.pop_back(); _trackedSigmas.pop_back(); valuesTracked--; }
 
 	//Average tracked means to get mean
