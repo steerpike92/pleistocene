@@ -233,12 +233,6 @@ double Mixture::pullSpecific(Element pulledElement) noexcept {
 //SIMULATION
 //========================================================================================================
 
-void Mixture::beginNewHour() noexcept {
-	_totalSolarAbsorbed = 0;
-	_totalInfraredAbsorbed = 0;
-	_infraredEmitted = 0;
-}
-
 double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	if (solarEnergyKJ <= 0) { return 0; }
 
@@ -251,34 +245,29 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept {
 	solarEnergyKJ *= (1 - _albedo);
 
 	//Water and air transmit a lot of energy
-	_totalSolarAbsorbed = _solarAbsorptionIndex*solarEnergyKJ;
+	double solarAbsorbed = _solarAbsorptionIndex*solarEnergyKJ;
 
-	double outputEnergyKJ = solarEnergyKJ-_totalSolarAbsorbed;
+	double outputEnergyKJ = solarEnergyKJ- solarAbsorbed;
 
 	//TEMPERATURE CHANGE!!!!
-	_temperature += _totalSolarAbsorbed / _totalHeatCapacity;
+	_temperature += solarAbsorbed / _totalHeatCapacity;
 
 	return outputEnergyKJ;
 }
 
-double Mixture::emitInfrared(double fraction) noexcept {
-
+double Mixture::emitInfrared() noexcept {
 	int mixtureCount = _elements.size();
 	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return 0; }
 	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  exit(EXIT_FAILURE); return 0; }
-
+	if (_temperature <= 0) { LOG("BELOW ABSOLUTE ZERO"); exit(EXIT_FAILURE); return 0; }
 	double emissionEnergy;
 	if (_state == elements::GAS) {
-		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
-
+		emissionEnergy = kEmissionConstantPerHour * pow(_temperature, 4)*_totalMass * 4 * pow(10, -4);
 	}
 	else {
-		emissionEnergy = kEmmisionConstantPerHour * pow(_temperature, 4);
+		emissionEnergy = kEmissionConstantPerHour * pow(_temperature, 4);
 	}
 
-	_infraredEmitted = emissionEnergy;
-
-	//TEMPERATURE CHANGE!!!!
 	_temperature -= emissionEnergy / _totalHeatCapacity; //emmision cooling
 
 	return emissionEnergy;
@@ -291,11 +280,9 @@ double Mixture::filterInfrared(double infraredEnergy) noexcept {
 
 	//absorption heating
 	double infraredAbsorbed = _infraredAbsorptionIndex*infraredEnergy;
-	_totalInfraredAbsorbed += infraredAbsorbed;
 
 	//TEMPERATURE CHANGE
 	_temperature += infraredAbsorbed / _totalHeatCapacity;
-
 
 	infraredEnergy -= infraredAbsorbed;
 	return infraredEnergy;
@@ -305,18 +292,35 @@ void Mixture::conduction(Mixture &mixture1, Mixture &mixture2, double area) noex
 {
 	double deltaT = mixture2._temperature - mixture1._temperature;
 
-	double conductivity=pow(10, -4);
+	double conductivity=pow(10, -6);
+
+	if (area<0) { LOG("Negative Area");  exit(EXIT_FAILURE); return; }
 
 	//Shitty conductivity estimate
 	if (mixture1._state == GAS || mixture2._state == GAS) {
-		conductivity *= 0.02;
+		conductivity *= 0.01;
 	}
 
+	//Calculate heat exchanged in conduction
 	double heatExchanged = deltaT*conductivity*area;
-	//if(heatExchanged>10) LOG("Heat Exchanged: " << heatExchanged);
+	bool sign = signbit(heatExchanged);
+	heatExchanged = abs(heatExchanged);
+
+	//Check overstep
+	double totalHeat = mixture1._totalHeatCapacity*mixture1._temperature + mixture2._totalHeatCapacity*mixture2._temperature;
+	double equalizationTemp = totalHeat / (mixture1._totalHeatCapacity + mixture2._totalHeatCapacity);
+
+	//heat exchange required to equilize temperatures
+	double maxHeatExchange = abs(equalizationTemp - mixture1._temperature)*mixture1._totalHeatCapacity;
+
+	//minimum
+	heatExchanged = std::min(maxHeatExchange, heatExchanged);
+	if (sign) heatExchanged = -heatExchanged;
 
 	mixture1._temperature += heatExchanged / mixture1._totalHeatCapacity;
 	mixture2._temperature -= heatExchanged / mixture2._totalHeatCapacity;
+
+	if(mixture1._temperature<=0 || mixture2._temperature <= 0){ LOG("BELOW ABSOLUTE ZERO"); exit(EXIT_FAILURE); }
 }
 
 double Mixture::getTemperature() const noexcept { return _temperature; }
@@ -338,17 +342,17 @@ std::vector<std::string> Mixture::getThermalMessages() const noexcept {
 	stream << "Heat Capacity: " << my::double2string(_totalHeatCapacity);
 	messages.push_back(stream.str());
 
-	stream.str(std::string());
+	/*stream.str(std::string());
 	stream << "Absorbed Solar Energy: " << my::double2string(this->_totalSolarAbsorbed);
-	messages.push_back(stream.str());
+	messages.push_back(stream.str());*/
 
-	stream.str(std::string());
+	/*stream.str(std::string());
 	stream << "Absorbed Infrared Energy: " << my::double2string(this->_totalInfraredAbsorbed);
-	messages.push_back(stream.str());
+	messages.push_back(stream.str());*/
 
-	stream.str(std::string());
+	/*stream.str(std::string());
 	stream << "Emitted Energy (KJ): " << my::double2string(this->_infraredEmitted);
-	messages.push_back(stream.str());
+	messages.push_back(stream.str());*/
 
 	stream.str(std::string());
 	stream << " ";

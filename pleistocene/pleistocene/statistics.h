@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include "tile-climate.h"
+#include "globals.h"
 
 namespace pleistocene {
 
@@ -30,6 +31,7 @@ public:
 	void newStatistic() noexcept;//Clear all data for totally new statistic
 	void contributeValue(double value) noexcept;//contribute a data value
 
+	
 
 	//compute current data set's mean and sigma; 
 	//add these to the tracked lists;
@@ -41,6 +43,8 @@ public:
 
 	//scales "getSigmasOffMean" into roughly [-1, 1] for heat mapping 
 	double getHeatMapValue(double value) const noexcept;
+
+	my::RGB getColor(double value) const noexcept;
 
 	std::vector<std::string> getMessages() const noexcept;
 };

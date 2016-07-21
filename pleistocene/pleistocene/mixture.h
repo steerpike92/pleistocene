@@ -26,10 +26,6 @@ protected:
 	double _solarAbsorptionIndex = 0;//proportion absorbed passing through this material
 	double _infraredAbsorptionIndex = 0;//proportion absorbed passing through this material
 
-	double _totalSolarAbsorbed = 0;
-	double _totalInfraredAbsorbed = 0;
-	double _infraredEmitted = 0;
-
 public:
 	Mixture() noexcept;
 	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
@@ -69,9 +65,8 @@ public:
 	//SIMULATION
 	//=======================================
 
-	void beginNewHour() noexcept;
 	double filterSolarRadiation(double incidentSolarEnergyKJ) noexcept;
-	double emitInfrared(double fraction) noexcept;
+	double emitInfrared() noexcept;
 	double filterInfrared(double infraredEnergyKJ) noexcept;
 	static void conduction(Mixture &mixture1, Mixture &mixture2, double area) noexcept;
 

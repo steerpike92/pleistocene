@@ -34,13 +34,14 @@ void MaterialLayer::clearSurfaces() noexcept
 //SIMULATION
 //==============================
 
-void MaterialLayer::beginNewHour() noexcept {
-	_mixture->beginNewHour();
-}
-
 void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 {
-	energyKJ = _mixture->filterSolarRadiation(energyKJ);
+	if (_up == nullptr) {//stratosphere
+		energyKJ= _mixture->filterSolarRadiation(3*energyKJ)/3;
+	}
+	else {
+		energyKJ = _mixture->filterSolarRadiation(energyKJ);
+	}
 
 	//don't send down less than a joule
 	if (energyKJ > 0.001) {
@@ -51,9 +52,9 @@ void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 	}
 }
 
-double MaterialLayer::emitInfraredRadiation(double fraction) noexcept
+double MaterialLayer::emitInfraredRadiation() noexcept
 {
-	double energyKJ = _mixture->emitInfrared(fraction);
+	double energyKJ = _mixture->emitInfrared();
 	return energyKJ;
 }
 

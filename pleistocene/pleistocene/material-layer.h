@@ -113,12 +113,10 @@ public:
 	//SIMULATION
 	//============================
 
-	void beginNewHour() noexcept;
-
 	//chains downward
 	void filterSolarRadiation(double energyKJ) noexcept;
 
-	double emitInfraredRadiation(double fraction) noexcept;
+	double emitInfraredRadiation() noexcept;
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
 	void simulateConduction() noexcept;

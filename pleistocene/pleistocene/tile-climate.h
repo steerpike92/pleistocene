@@ -42,7 +42,7 @@ const double kSolarIntensity = 1.360;//kilo-watts per m2
 const double kSolarEnergyPerHour = kSolarIntensity * kHour_s;// Kilo-Joules per hour per m2
 
 const double kStephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
-const double kEmmisionConstantPerHour = kStephanBoltzmanConstant * kHour_s;
+const double kEmissionConstantPerHour = kStephanBoltzmanConstant * kHour_s;
 
 const double kInitialTemperatureK = 295.0;
 

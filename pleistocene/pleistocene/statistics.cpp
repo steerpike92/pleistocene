@@ -92,9 +92,40 @@ double Statistics::getSigmasOffMean(double value) const noexcept
 double Statistics::getHeatMapValue(double value) const noexcept
 {
 	double heatValue = getSigmasOffMean(value);
-	heatValue = std::max(heatValue, -3.0);
-	heatValue = std::min(heatValue, 3.0);
+	heatValue = std::max(heatValue, -6.0);
+	heatValue = std::min(heatValue, 6.0);
 	return heatValue;
+}
+
+my::RGB Statistics::getColor(double value) const noexcept
+{
+	double sigmas = getHeatMapValue(value);
+
+	double centralHue = 110;
+
+	double degreesPerSigma = -45;
+
+	double saturation = 0.7;
+	double brightness = 0.7;
+
+	if (sigmas > 3) {
+		brightness += 0.3*((sigmas - 3) / 3);
+		saturation += 0.3*((sigmas - 3) / 3);
+		sigmas = 3;
+	}
+	if (sigmas < -3) {
+		brightness -= 0.3*((sigmas + 3) / 3);
+		saturation -= 0.3*((sigmas + 3) / 3);
+		sigmas = -3;
+	}
+
+	if (sigmas*degreesPerSigma + centralHue < 0) { sigmas += 360.0 / degreesPerSigma; }
+
+
+	my::HSV hsv{ centralHue + sigmas*degreesPerSigma, saturation, brightness };
+	my::RGB rgb = my::hsv2rgb(hsv);
+
+	return rgb;
 }
 
 std::vector<std::string> Statistics::getMessages() const noexcept {

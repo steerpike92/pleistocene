@@ -26,6 +26,9 @@ new (biased seeds)
 
 1187		many near connect continents
 
+7637 		bug seed
+
+
 const double shiftBias = -0.1;
 
 

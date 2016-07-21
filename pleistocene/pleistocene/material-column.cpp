@@ -44,7 +44,8 @@ double MaterialColumn::buildEarth() noexcept
 
 	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
-		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
+		_earth.emplace_back(bedrockElevation, 280, currentElevation, layerHeight);
+		//_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
 		currentElevation = _earth.back().getTopElevation();
 	}
 	return currentElevation;
@@ -77,7 +78,8 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 	//build sea layers
 	while (i >= 0) {
 		topElevation = seaLayerElevations[i] + seaSurfaceElevation;
-		_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
+		//_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
+		_sea.emplace_back(_landElevation, 288, baseElevation, topElevation);
 		baseElevation = topElevation;
 		i--;
 	}
@@ -97,7 +99,8 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 	AirLayer buildLayer;
 
 	//build boundary layer
-	buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	//buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 	_air.push_back(std::move(buildLayer));
 	layerBottomElevation = layerTopElevation;
 
@@ -106,7 +109,8 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 
 	for (; i < 6; i++) {
 		layerTopElevation = airElevations[i];
-		buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		//buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 		_air.push_back(std::move(buildLayer));
 		layerBottomElevation = layerTopElevation;
 	}
@@ -163,6 +167,7 @@ void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 			buildNeighborSurfaces(direction);
 		}
 	}
+	buildVerticalSurfaces();
 }
 
 void MaterialColumn::buildVerticalSurfaces() noexcept
@@ -267,9 +272,6 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 //SIMULATION
 //==================================
 void MaterialColumn::beginNewHour() noexcept {
-	for (auto layer : _column) {
-		layer->beginNewHour();
-	}
 	_backRadiation = 0;
 	_escapeRadiation = 0;
 }
@@ -299,12 +301,12 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 
 	double fraction = 1.0;
 	
-	upRadiation = surfaceLayer->emitInfraredRadiation(fraction);
+	upRadiation = surfaceLayer->emitInfraredRadiation();
 	downRadiation.clear();
 
 	//filter/emit upwards
 	for (AirLayer &air : _air) {
-		emittedEnergy = air.emitInfraredRadiation(fraction);
+		emittedEnergy = air.emitInfraredRadiation();
 		downRadiation.push_back(emittedEnergy / 2.0);
 		upRadiation = air.filterInfraredRadiation(upRadiation) + emittedEnergy / 2.0;
 	}
@@ -335,6 +337,9 @@ void MaterialColumn::simulateConduction() noexcept{
 void MaterialColumn::simulatePressure() noexcept
 {
 	//STUB
+
+
+
 }
 
 void MaterialColumn::simulateCondensation() noexcept
@@ -380,6 +385,10 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 		messages.push_back(stream.str());
 	}
 
+	if (statRequest._statType == ELEVATION) {
+		return _horizon.back().getMessages(statRequest);
+	}
+
 	chooseLayer(statRequest);
 	if (_chosenLayer != nullptr) {
 		subMessages = _chosenLayer->getMessages(statRequest);
@@ -405,7 +414,7 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 	switch (statRequest._section) {
 
 	case(SURFACE_) :
-
+		
 		if (statRequest._layer == 0) {
 			if (_submerged) {
 				auto layerReporting = &(_sea.back());
