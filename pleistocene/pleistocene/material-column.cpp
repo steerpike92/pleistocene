@@ -438,22 +438,23 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 
 	case(EARTH_) : {
 
-		//5 bedrock
-		//4 substratum 3
+
+		//6 horizon
+		//5 subsoil
+		//4 substratum 1
 		//3 substratum 2
-		//2 substratum 1
-		//1 subsoil
-		//0 horizon
+		//2 substratum 3
+		//1 substratum 4
+		//0 bedrock
 
-
-		if (statRequest._layer == 0) {
+		if (statRequest._layer == 6) {
 			auto layerReporting = &(_horizon.back());
 			_chosenLayer= const_cast<HorizonLayer*>(layerReporting);
 			return;
 		}
 
 		auto layerReporting = _earth.rbegin();
-		for (int i = 0; i < statRequest._layer-1; i++) {//advance downward to requested layer
+		for (int i = 5; i > statRequest._layer; i--) {//advance downward to requested layer
 			layerReporting++;
 			if (layerReporting == _earth.rend()) {//below bedrock bottom. not valid
 				return;
@@ -468,15 +469,14 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 
 		if (!_submerged) return;
 
-		//5 does not exist
-		//4 2000 - 20000 m
-		//3 200-2000 m
+		//0 2000 - 20000 m
+		//1 200-2000 m
 		//2 20-200 m
-		//1 2-20 m
-		//0 sea surface 0-2 meters deep
+		//3 2-20 m
+		//4 sea surface 0-2 meters deep
 
 		auto layerReporting = _sea.rbegin();//surface
-		for (int i = 0; i < statRequest._layer; i++) {//advance downward to requested layer
+		for (int i = 4; i > statRequest._layer; i--) {//advance downward to requested layer
 			layerReporting++;
 			if (layerReporting == _sea.rend()) {//hit sea bottom. not valid
 				return;

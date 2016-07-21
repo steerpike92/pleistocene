@@ -311,8 +311,8 @@ void World::processInput(const Input & input, const options::GameOptions &option
 	//draw section selector
 	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0;  newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 6;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 4;  newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0;  newStatistic = true;}
 
 	//layer selection
@@ -327,30 +327,46 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		newStatistic = true;
 	}
 
-	////ascend above surface to air
+	//air cap
+	if (_statRequest._section == AIR_ && _statRequest._layer == 6) {
+		_statRequest._layer = 5;
+	}
+	//sea cap
+	if (_statRequest._section == SEA_ && _statRequest._layer == 5) {
+		_statRequest._layer = 4;
+	}
+
+	//ascend to air from surface
 	if (_statRequest._section == SURFACE_ && _statRequest._layer == 1) {
 		_statRequest._section = AIR_; 
 		_statRequest._layer = 0;
 	}
-
+	//descend to surface from air
 	if (_statRequest._section == AIR_ && _statRequest._layer == -1) {
 		_statRequest._section = SURFACE_;
 		_statRequest._layer = 0;
 	}
-
-	if (_statRequest._section == AIR_ && _statRequest._layer == 6) {
-		_statRequest._layer = 5;
-	}
-
+	//descend to horizon from surface
 	if (_statRequest._section == SURFACE_ && _statRequest._layer == -1) {
 		_statRequest._section = HORIZON_;
 		_statRequest._layer = 0;
 	}
-
+	//ascend to surface from horizon
 	if (_statRequest._section == HORIZON_ && _statRequest._layer == 1) {
 		_statRequest._section = SURFACE_;
 		_statRequest._layer = 0;
 	}
+	//descend to earth from horizon
+	if (_statRequest._section == HORIZON_ && _statRequest._layer == -1) {
+		_statRequest._section = EARTH_;
+		_statRequest._layer = 6;
+	}
+	//ascend to horizon from earth
+	if (_statRequest._section == EARTH_ && _statRequest._layer == 7) {
+		_statRequest._section = HORIZON_;
+		_statRequest._layer = 0;
+	}
+
 
 
 	if (_statRequest._layer < 0)  _statRequest._layer = 0;
