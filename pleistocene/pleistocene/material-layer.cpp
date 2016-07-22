@@ -136,7 +136,19 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 		return messages;
 
-	case(FLOW) : return messages;
+	case(FLOW) :
+	{
+		int neighbors = 0;
+		for (SharedSurface surface : _sharedSurfaces) {
+			neighbors++;
+		}
+
+		stream.str(std::string());
+		stream << "Neighbors: " << neighbors;
+		messages.push_back(stream.str());
+
+		return messages;
+	}
 	case(MOISTURE) : return messages;
 	}
 	return messages;
