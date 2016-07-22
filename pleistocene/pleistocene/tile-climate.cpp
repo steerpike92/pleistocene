@@ -85,13 +85,12 @@ void TileClimate::simulateClimate() noexcept
 		break;
 	case(2) :
 		_materialColumn.simulateConduction();
-		_materialColumn.simulatePressure();
 		break;
 	case(3) :
-		_materialColumn.simulateAirFlow();
+		_materialColumn.simulatePressure();
 		break;
-
 	case(4) :
+		_materialColumn.simulateAirFlow();
 		_materialColumn.simulateCondensation();
 		_materialColumn.simulatePrecipitation();
 		break;

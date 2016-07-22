@@ -174,7 +174,7 @@ void MaterialColumn::buildVerticalSurfaces() noexcept
 	SharedSurface surface;
 	for (MaterialLayer *layer : _column) {
 		if (layer->_up != nullptr) {
-			surface = SharedSurface(layer->_up, layer->getTopElevation());
+			surface = SharedSurface(layer,layer->_up, layer->getTopElevation(), layer->getType());
 			layer->addSurface(surface);
 		}
 	}
@@ -219,7 +219,7 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 				LOG("B_bot: " << B_bot << " B_top: " << B_top);
 			}
 
-			surface = SharedSurface(sDirection, B, bot, top);
+			surface = SharedSurface(A, B, sDirection, bot, top, B->getType());
 			A->addSurface(surface);
 
 			if (B->_up != nullptr) {//if more B layers above this ... advance
@@ -341,11 +341,15 @@ void MaterialColumn::simulateConduction() noexcept{
 
 void MaterialColumn::simulatePressure() noexcept
 {
-	//STUB
-
+	//build pressure on surfaces:
+	for (AirLayer &air : _air) {
+		air.computeSurfacePressures();
+	}
 
 
 }
+
+void MaterialColumn::simulateAirFlow()  noexcept {}
 
 void MaterialColumn::simulateCondensation() noexcept
 {
@@ -357,7 +361,6 @@ void MaterialColumn::simulatePrecipitation() noexcept
 	//STUB
 }
 
-void MaterialColumn::simulateAirFlow()  noexcept {}
 void MaterialColumn::simulateWaterFlow() noexcept {}
 void MaterialColumn::simulatePlants()  noexcept {}
 

@@ -72,13 +72,19 @@ double MaterialLayer::filterInfraredRadiation(double energyKJ) noexcept
 void MaterialLayer::simulateConduction() noexcept
 {
 	for (SharedSurface &surface : _sharedSurfaces) {
-		elements::Mixture::conduction(*(surface._materialLayer->_mixture), *(this->_mixture), surface.getArea());
+		surface.performConduction();
 	}
 }
 
 void MaterialLayer::computeSurfacePressures() noexcept {
 	//TODO?
+	//Probably just need the air layer function
 }
+
+double MaterialLayer::getPressure(double elevation) const noexcept {
+	return 0.0; //I exist as STUB
+}
+
 
 
 
@@ -88,6 +94,8 @@ void MaterialLayer::computeSurfacePressures() noexcept {
 double MaterialLayer::getBottomElevation() const noexcept { return _bottomElevation; }
 double MaterialLayer::getTopElevation() const noexcept { return _topElevation; }
 double MaterialLayer::getTemperature() const noexcept { return _mixture->getTemperature(); }
+LayerType MaterialLayer::getType() const noexcept { return _layerType; }
+elements::Mixture *MaterialLayer::getMixture() const noexcept { return _mixture; }
 
 std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statRequest) const noexcept
 {
@@ -487,12 +495,19 @@ std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevat
 
 void AirLayer::computeSurfacePressures() noexcept {
 	for (SharedSurface &surface : _sharedSurfaces) {
+		if (surface._tenantType == AIR) {
+
+		}
+
 
 	}
 }
 
 void AirLayer::simulateFlow() noexcept {} //STUB
 
+double AirLayer::getPressure(double elevation) const noexcept {
+	return truePressureCalculator(elevation);
+}
 
 //UTILITY
 //=========================

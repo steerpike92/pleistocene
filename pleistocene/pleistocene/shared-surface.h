@@ -1,4 +1,5 @@
 #pragma once
+#include <Eigen/Dense>	//linear algebra
 
 namespace pleistocene {
 namespace simulation {
@@ -8,6 +9,7 @@ namespace layers {
 class MaterialLayer;
 class EarthLayer;
 class HorizonLayer;
+enum LayerType;
 
 enum SpatialDirection {
 	NORTH_EAST,
@@ -25,15 +27,27 @@ class SharedSurface {
 	double _area;
 	double _midpointElevation;
 	
+	double _ownerPressure;
+	double _tenantPressure;
+
+	double _pressureDifferential;
+
+	MaterialLayer *_tenantLayer;
+	MaterialLayer *_ownerLayer;
+
+	Eigen::Vector3d _normalVector;
+	void buildNormalVector() noexcept;
+
 public:
 	
 	SharedSurface() noexcept;
 
 	//top shared surface constructor
-	SharedSurface(MaterialLayer *materialLayer, double elevaton)  noexcept;
+	SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, double elevaton, LayerType tenantType) noexcept;
 
 	//side shared surface constructor
-	SharedSurface(SpatialDirection spatialDirection, MaterialLayer *materialLayer, double bottomElevation, double topElevation) noexcept;
+	SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, SpatialDirection spatialDirection,
+		double bottomElevation, double topElevation, LayerType tenantType) noexcept;
 
 	double getArea() const noexcept;
 
@@ -41,7 +55,12 @@ public:
 
 	SpatialDirection _spatialDirection;
 
-	MaterialLayer *_materialLayer;
+	LayerType _tenantType;
+
+	void performConduction() noexcept;
+
+	void buildPressureDifferential() noexcept;
+	
 };
 
 

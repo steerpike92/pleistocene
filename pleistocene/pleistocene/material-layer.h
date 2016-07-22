@@ -136,6 +136,10 @@ public:
 	double getTopElevation() const noexcept;
 	double getBottomElevation() const noexcept;
 	virtual double getTemperature() const noexcept;
+	LayerType getType() const noexcept;
+	elements::Mixture *getMixture() const noexcept;
+
+	virtual double getPressure(double elevation) const noexcept;
 
 	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
 	virtual double getStatistic(const struct StatRequest &statRequest) const noexcept;
@@ -297,6 +301,7 @@ private:
 
 public:
 
+	double getPressure(double elevation) const noexcept;
 
 	double getTemperature() const noexcept;
 
