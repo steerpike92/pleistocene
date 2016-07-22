@@ -5,6 +5,8 @@ surfaces:
 
 conduction accross surfaces ----(done. Needs tuning though)
 
+radiation banking -- see notebook
+
 cross surface pressure flow
 
 graphically representing cross surface pressure flow (vector arrows?)

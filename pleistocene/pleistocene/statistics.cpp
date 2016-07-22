@@ -60,7 +60,7 @@ void Statistics::calculateStatistics() noexcept
 	}
 	_mean /= valuesTracked;
 
-	//compute this data sets standard of deviation
+	//compute this data set's standard of deviation
 	double deviation;
 	double varianceSum = 0;
 
@@ -68,14 +68,12 @@ void Statistics::calculateStatistics() noexcept
 		deviation = value - _mean;
 		varianceSum += pow(deviation, 2);
 	}
-
 	double variance = varianceSum / N;
-
 	double currentSigma= pow(variance, 0.5);
 
 	_trackedSigmas.push_front(currentSigma);
 
-	 //Average tracked sigmas to get sigma
+	 //Average the tracked sigmas to get reported _sigma
 	_sigma = 0;
 	for (double sigma : _trackedSigmas) {
 		_sigma += sigma;
@@ -94,9 +92,40 @@ double Statistics::getSigmasOffMean(double value) const noexcept
 double Statistics::getHeatMapValue(double value) const noexcept
 {
 	double heatValue = getSigmasOffMean(value);
-	heatValue = std::max(heatValue, -3.5);
-	heatValue = std::min(heatValue, 3.5);
+	heatValue = std::max(heatValue, -6.0);
+	heatValue = std::min(heatValue, 6.0);
 	return heatValue;
+}
+
+my::RGB Statistics::getColor(double value) const noexcept
+{
+	double sigmas = getHeatMapValue(value);
+
+	double centralHue = 110;
+
+	double degreesPerSigma = -45;
+
+	double saturation = 0.7;
+	double brightness = 0.7;
+
+	if (sigmas > 3) {
+		brightness += 0.3*((sigmas - 3) / 3);
+		saturation += 0.3*((sigmas - 3) / 3);
+		sigmas = 3;
+	}
+	if (sigmas < -3) {
+		brightness -= 0.3*((sigmas + 3) / 3);
+		saturation += 0.7*((sigmas + 3) / 3);
+		sigmas = -3;
+	}
+
+	if (sigmas*degreesPerSigma + centralHue < 0) { sigmas += 360.0 / degreesPerSigma; }
+
+
+	my::HSV hsv{ centralHue + sigmas*degreesPerSigma, saturation, brightness };
+	my::RGB rgb = my::hsv2rgb(hsv);
+
+	return rgb;
 }
 
 std::vector<std::string> Statistics::getMessages() const noexcept {

@@ -62,19 +62,8 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 	
 
 	//determine draw color
-	_heatMapValue = statistics.getHeatMapValue(this->_statValue);
-	double amplitudeScale = 50;
-	double centralHue = 2*amplitudeScale;
-
-	if (_heatMapValue > 2) _heatMapValue -= 360.0/ amplitudeScale;
-
-	double saturation = 0.7;
-	double value = 0.8;
-
-	my::HSV hsv_color{ centralHue-_heatMapValue*amplitudeScale, saturation, value };
-	my::RGB rgb_color = my::hsv2rgb(hsv_color);
-
-	graphics.colorFilter(_colorTextures[0], rgb_color.r, rgb_color.g, rgb_color.b);
+	my::RGB rgb = statistics.getColor(this->_statValue);
+	graphics.colorFilter(_colorTextures[0], rgb.r, rgb.g, rgb.b);
 
 
 	//old heat map coloring

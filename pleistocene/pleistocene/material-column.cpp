@@ -15,19 +15,17 @@ MaterialColumn::MaterialColumn()  noexcept {}
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) noexcept :
 _landElevation(landElevation),
-_initialTemperature(initialTemperature)
+_initialTemperature(initialTemperature),
+_submerged(_landElevation < -2)
 {
-
 	double baseElevation = buildEarth();
 
 	baseElevation = buildHorizon(baseElevation);
 
-	if (_landElevation < -2) {//TODO. sand bars? reefs? marshes? lagoons?
+	if (_submerged) {//TODO. sand bars? reefs? marshes? lagoons?
 		baseElevation = buildSea(baseElevation, 0);
-		_submerged = true;
 	}
-	else { _submerged = false; }
-
+	
 	buildAir(baseElevation);
 
 	buildUniversalColumn();
@@ -44,7 +42,8 @@ double MaterialColumn::buildEarth() noexcept
 
 	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
-		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
+		//_earth.emplace_back(bedrockElevation, 280, currentElevation, layerHeight);
+		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight, false);
 		currentElevation = _earth.back().getTopElevation();
 	}
 	return currentElevation;
@@ -52,7 +51,7 @@ double MaterialColumn::buildEarth() noexcept
 
 double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
-	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation);
+	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation, !_submerged);
 	double currentElevation = _horizon.back().getTopElevation();
 	return currentElevation;
 }
@@ -76,8 +75,10 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 
 	//build sea layers
 	while (i >= 0) {
+		bool emittor = (i == 0);
 		topElevation = seaLayerElevations[i] + seaSurfaceElevation;
-		_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
+		_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation, emittor);
+		//_sea.emplace_back(_landElevation, 288, baseElevation, topElevation);
 		baseElevation = topElevation;
 		i--;
 	}
@@ -98,6 +99,7 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 
 	//build boundary layer
 	buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	//buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 	_air.push_back(std::move(buildLayer));
 	layerBottomElevation = layerTopElevation;
 
@@ -106,7 +108,8 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 
 	for (; i < 6; i++) {
 		layerTopElevation = airElevations[i];
-		buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		//buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+		buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 		_air.push_back(std::move(buildLayer));
 		layerBottomElevation = layerTopElevation;
 	}
@@ -163,6 +166,7 @@ void MaterialColumn::buildMaterialLayerSurfaces() noexcept
 			buildNeighborSurfaces(direction);
 		}
 	}
+	buildVerticalSurfaces();
 }
 
 void MaterialColumn::buildVerticalSurfaces() noexcept
@@ -267,11 +271,13 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 //SIMULATION
 //==================================
 void MaterialColumn::beginNewHour() noexcept {
-	for (auto layer : _column) {
-		layer->beginNewHour();
-	}
 	_backRadiation = 0;
 	_escapeRadiation = 0;
+	
+	for (MaterialLayer* layer : _column) {
+		layer->hourlyClear();
+	}
+
 }
 
 void MaterialColumn::filterSolarRadiation(double energyKJ) noexcept
@@ -299,14 +305,15 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 
 	double fraction = 1.0;
 	
-	upRadiation = surfaceLayer->emitInfraredRadiation(fraction);
+	upRadiation = surfaceLayer->emitInfraredRadiation();
 	downRadiation.clear();
 
 	//filter/emit upwards
 	for (AirLayer &air : _air) {
-		emittedEnergy = air.emitInfraredRadiation(fraction);
+		upRadiation = air.filterInfraredRadiation(upRadiation);
+		emittedEnergy = air.emitInfraredRadiation();
 		downRadiation.push_back(emittedEnergy / 2.0);
-		upRadiation = air.filterInfraredRadiation(upRadiation) + emittedEnergy / 2.0;
+		upRadiation+= emittedEnergy / 2.0;
 	}
 	_escapeRadiation = upRadiation;
 
@@ -335,6 +342,9 @@ void MaterialColumn::simulateConduction() noexcept{
 void MaterialColumn::simulatePressure() noexcept
 {
 	//STUB
+
+
+
 }
 
 void MaterialColumn::simulateCondensation() noexcept
@@ -380,6 +390,10 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 		messages.push_back(stream.str());
 	}
 
+	if (statRequest._statType == ELEVATION) {
+		return _horizon.back().getMessages(statRequest);
+	}
+
 	chooseLayer(statRequest);
 	if (_chosenLayer != nullptr) {
 		subMessages = _chosenLayer->getMessages(statRequest);
@@ -405,7 +419,7 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 	switch (statRequest._section) {
 
 	case(SURFACE_) :
-
+		
 		if (statRequest._layer == 0) {
 			if (_submerged) {
 				auto layerReporting = &(_sea.back());
@@ -438,22 +452,23 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 
 	case(EARTH_) : {
 
-		//5 bedrock
-		//4 substratum 3
+
+		//6 horizon
+		//5 subsoil
+		//4 substratum 1
 		//3 substratum 2
-		//2 substratum 1
-		//1 subsoil
-		//0 horizon
+		//2 substratum 3
+		//1 substratum 4
+		//0 bedrock
 
-
-		if (statRequest._layer == 0) {
+		if (statRequest._layer == 6) {
 			auto layerReporting = &(_horizon.back());
 			_chosenLayer= const_cast<HorizonLayer*>(layerReporting);
 			return;
 		}
 
 		auto layerReporting = _earth.rbegin();
-		for (int i = 0; i < statRequest._layer-1; i++) {//advance downward to requested layer
+		for (int i = 5; i > statRequest._layer; i--) {//advance downward to requested layer
 			layerReporting++;
 			if (layerReporting == _earth.rend()) {//below bedrock bottom. not valid
 				return;
@@ -468,15 +483,14 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 
 		if (!_submerged) return;
 
-		//5 does not exist
-		//4 2000 - 20000 m
-		//3 200-2000 m
+		//0 2000 - 20000 m
+		//1 200-2000 m
 		//2 20-200 m
-		//1 2-20 m
-		//0 sea surface 0-2 meters deep
+		//3 2-20 m
+		//4 sea surface 0-2 meters deep
 
 		auto layerReporting = _sea.rbegin();//surface
-		for (int i = 0; i < statRequest._layer; i++) {//advance downward to requested layer
+		for (int i = 4; i > statRequest._layer; i--) {//advance downward to requested layer
 			layerReporting++;
 			if (layerReporting == _sea.rend()) {//hit sea bottom. not valid
 				return;

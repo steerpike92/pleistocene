@@ -26,14 +26,33 @@ protected:
 	double _solarAbsorptionIndex = 0;//proportion absorbed passing through this material
 	double _infraredAbsorptionIndex = 0;//proportion absorbed passing through this material
 
-	double _totalSolarAbsorbed = 0;
-	double _totalInfraredAbsorbed = 0;
-	double _infraredEmitted = 0;
+	double _hourlySolarInput = 0;
+	//double _dailySolarInput = 0;
+
+	double _hourlyInfraredInput =0;
+	double _hourlyInfraredInputDisplay = 0;
+
+	double _hourlyOutputRadiation = 0;
+	//double _dailyOutputRadiation = 0;
+
+	double _netConductiveExchange = 0;
+
+	double _equilibriumTemperature;
+	
+
+
+	double handleInOutRadiation() noexcept;
+	double calculateEmissions(double temperature) const noexcept;
+	double calculateEquilibriumTemperature(double inputRadiation) const noexcept;
 
 public:
 	Mixture() noexcept;
 	Mixture(Element element, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
 	Mixture(std::vector<Element> compositionElements, double temperature, elements::State state, double fixedVolume = my::kFakeDouble) noexcept;
+
+	void hourlyClear();
+
+	bool _emittor = false;
 
 	//=======================================
 	//PARAMETER CALCULATIONS
@@ -69,9 +88,8 @@ public:
 	//SIMULATION
 	//=======================================
 
-	void beginNewHour() noexcept;
 	double filterSolarRadiation(double incidentSolarEnergyKJ) noexcept;
-	double emitInfrared(double fraction) noexcept;
+	double emitInfrared() noexcept;
 	double filterInfrared(double infraredEnergyKJ) noexcept;
 	static void conduction(Mixture &mixture1, Mixture &mixture2, double area) noexcept;
 

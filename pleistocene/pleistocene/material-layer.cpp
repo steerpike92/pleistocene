@@ -14,10 +14,11 @@ namespace layers {
 
 MaterialLayer::MaterialLayer() noexcept {}
 
-MaterialLayer::MaterialLayer(double baseElevation, double bottomElevation) noexcept :
+MaterialLayer::MaterialLayer(double baseElevation, double bottomElevation,bool emittor) noexcept :
 _baseElevation(baseElevation),
 _bottomElevation(bottomElevation),
-_bottomRelativeElevation(_bottomElevation - _baseElevation)
+_bottomRelativeElevation(_bottomElevation - _baseElevation),
+_emittor(emittor)
 {
 }
 
@@ -34,27 +35,33 @@ void MaterialLayer::clearSurfaces() noexcept
 //SIMULATION
 //==============================
 
-void MaterialLayer::beginNewHour() noexcept {
-	_mixture->beginNewHour();
+void MaterialLayer::hourlyClear() noexcept 
+{
+	_mixture->hourlyClear();
 }
+
 
 void MaterialLayer::filterSolarRadiation(double energyKJ) noexcept
 {
-	energyKJ = _mixture->filterSolarRadiation(energyKJ);
+	if (_up == nullptr) {//stratosphere
+		energyKJ= _mixture->filterSolarRadiation(3*energyKJ)/3;
+	}
+	else {
+		energyKJ = _mixture->filterSolarRadiation(energyKJ);
+	}
 
 	//don't send down less than a joule
 	if (energyKJ > 0.001) {
 		//if down is nullptr the sunlight has reached the abyss and you have bigger problems
-		if (_down == nullptr) { LOG("sun shines in hell"); exit(EXIT_FAILURE); }
+		if (_down == nullptr) { LOG("Sun to bedrock?"); exit(EXIT_FAILURE); }
 
 		_down->filterSolarRadiation(energyKJ);	//chain downward
 	}
 }
 
-double MaterialLayer::emitInfraredRadiation(double fraction) noexcept
+double MaterialLayer::emitInfraredRadiation() noexcept
 {
-	double energyKJ = _mixture->emitInfrared(fraction);
-	return energyKJ;
+	return _mixture->emitInfrared();
 }
 
 double MaterialLayer::filterInfraredRadiation(double energyKJ) noexcept 
@@ -68,6 +75,11 @@ void MaterialLayer::simulateConduction() noexcept
 		elements::Mixture::conduction(*(surface._materialLayer->_mixture), *(this->_mixture), surface.getArea());
 	}
 }
+
+void MaterialLayer::computeSurfacePressures() noexcept {
+	//TODO?
+}
+
 
 
 //GETTERS
@@ -149,8 +161,8 @@ double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcep
 
 EarthLayer::EarthLayer() noexcept {}
 
-EarthLayer::EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept :
-MaterialLayer(baseElevation, bottomElevation),
+EarthLayer::EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight, bool emittor) noexcept :
+MaterialLayer(baseElevation, bottomElevation, emittor),
 _solidPtr(new elements::SolidMixture())
 {//normal constructor
 	using namespace elements;
@@ -167,6 +179,7 @@ _solidPtr(new elements::SolidMixture())
 	_solidPtr = std::move(temp);
 	temp.~unique_ptr();
 	_mixture = _solidPtr.get();//raw (non-owning) base class pointer setup
+	_mixture->_emittor = emittor;
 
 	_height = layerHeight;
 	_topElevation = _bottomElevation + _height;
@@ -302,8 +315,8 @@ double EarthLayer::getStatistic(const StatRequest &statRequest) const noexcept
 
 HorizonLayer::HorizonLayer() noexcept {}
 
-HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept :
-EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight)
+HorizonLayer::HorizonLayer(double baseElevation, double temperature, double bottomElevation, bool emittor) noexcept :
+EarthLayer(baseElevation, temperature, bottomElevation, layers::earth::topSoilHeight, emittor)
 {
 	_layerType = HORIZON;//overwrite
 }
@@ -354,8 +367,8 @@ double HorizonLayer::getStatistic(const StatRequest &statRequest) const noexcept
 
 SeaLayer::SeaLayer() noexcept {}
 
-SeaLayer::SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) noexcept :
-MaterialLayer(baseElevation, bottomElevation),
+SeaLayer::SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation, bool emittor) noexcept :
+MaterialLayer(baseElevation, bottomElevation, emittor),
 _liquidPtr(new elements::LiquidMixture())
 {
 	using namespace elements;
@@ -375,6 +388,7 @@ _liquidPtr(new elements::LiquidMixture())
 	_liquidPtr = std::move(temp);
 	temp.~unique_ptr();
 	_mixture = _liquidPtr.get();//raw (non-owning) base class pointer setup
+	_mixture->_emittor = emittor;
 
 	_height = _topElevation - _bottomElevation;
 	_topElevation = _bottomElevation + _height;
@@ -423,7 +437,7 @@ double SeaLayer::getStatistic(const StatRequest &statRequest) const noexcept
 AirLayer::AirLayer() noexcept {}
 
 AirLayer::AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept :
-MaterialLayer(baseElevation, bottomElevation),
+MaterialLayer(baseElevation, bottomElevation, true),
 _gasPtr(new elements::GaseousMixture)
 {
 	using namespace elements;
@@ -438,6 +452,7 @@ _gasPtr(new elements::GaseousMixture)
 	_gasPtr = std::move(temp);
 	temp.~unique_ptr();
 	_mixture = _gasPtr.get();//raw (non-owning) base class pointer setup
+	_mixture->_emittor = true;
 
 	_height = _topElevation - _bottomElevation;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
@@ -457,6 +472,12 @@ std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevat
 
 //SIMULATION
 //=========================
+
+void AirLayer::computeSurfacePressures() noexcept {
+	for (SharedSurface &surface : _sharedSurfaces) {
+
+	}
+}
 
 void AirLayer::simulateFlow() noexcept {} //STUB
 

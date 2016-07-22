@@ -13,7 +13,7 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(9919),
+_seed(7637),
 _statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
@@ -60,7 +60,7 @@ std::vector<double> World::buildNoiseTable(int Rows, int Cols) noexcept {
 	noise::NoiseParameters noise_parameters;
 	noise_parameters.octaves = 8;			//number of noise octaves. (each octave has twice the frequency of the previous octave, and (persistance) the amplitude
 	noise_parameters.seed = _seed;			//seed for pseudorandom number generation
-	noise_parameters.zoom = 4000;			//determines wavelength of first octave
+	noise_parameters.zoom = 3000;			//determines wavelength of first octave
 	noise_parameters.persistance = 0.55;		//amplitude lost acending each octave
 
 							//create vector containing position pairs for each tile
@@ -152,12 +152,12 @@ void World::generateTileElevations() noexcept {
 	int TileCols = my::Address::GetCols();
 
 
-	const int hBlendDistance = TileCols / 6;	//horizontal blend distance for east west map edge blending
-	const int vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea
+	const int hBlendDistance = TileCols / 4;	//horizontal blend distance for east west map edge blending
+	const int vBlendDistance = std::max(1,int (double(TileRows) / 10.0));	//vertical blend distance for blending poles into sea
 	int Cols = TileCols + hBlendDistance;					//columns needed in noise table
 	int Rows = TileRows;							//rows needed in noise table
 
-
+	
 
 
 										//noise generator;
@@ -167,6 +167,9 @@ void World::generateTileElevations() noexcept {
 	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
 
+	//must be ~0. never outside of (-1, 1)
+	const double shiftBias = -0.1; //moves from neutrally land/sea to biasing one while retaining the same shapes
+	
 
 	//Elevation shape parameters
 	const double shelfPower = 1.5;
@@ -181,6 +184,20 @@ void World::generateTileElevations() noexcept {
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
+
+			//shift
+			noiseValue += shiftBias;
+			
+			//stretch back
+			if (noiseValue < 0) {
+				noiseValue /= (1 - shiftBias);
+			}
+			else {
+				noiseValue /= (1 + shiftBias);
+			}
+
+
+			//noise power adjust
 			if (noiseValue > 0) {
 				noiseValue = pow(noiseValue, landPower);
 			}
@@ -294,8 +311,8 @@ void World::processInput(const Input & input, const options::GameOptions &option
 	//draw section selector
 	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 0;  newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 0;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_8)) { _statRequest._section = EARTH_; _statRequest._layer = 6;  newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_9)) { _statRequest._section = SEA_; _statRequest._layer = 4;  newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_0)) { _statRequest._section = AIR_; _statRequest._layer = 0;  newStatistic = true;}
 
 	//layer selection
@@ -310,30 +327,46 @@ void World::processInput(const Input & input, const options::GameOptions &option
 		newStatistic = true;
 	}
 
-	////ascend above surface to air
+	//air cap
+	if (_statRequest._section == AIR_ && _statRequest._layer == 6) {
+		_statRequest._layer = 5;
+	}
+	//sea cap
+	if (_statRequest._section == SEA_ && _statRequest._layer == 5) {
+		_statRequest._layer = 4;
+	}
+
+	//ascend to air from surface
 	if (_statRequest._section == SURFACE_ && _statRequest._layer == 1) {
 		_statRequest._section = AIR_; 
 		_statRequest._layer = 0;
 	}
-
+	//descend to surface from air
 	if (_statRequest._section == AIR_ && _statRequest._layer == -1) {
 		_statRequest._section = SURFACE_;
 		_statRequest._layer = 0;
 	}
-
-	if (_statRequest._section == AIR_ && _statRequest._layer == 6) {
-		_statRequest._layer = 5;
-	}
-
+	//descend to horizon from surface
 	if (_statRequest._section == SURFACE_ && _statRequest._layer == -1) {
 		_statRequest._section = HORIZON_;
 		_statRequest._layer = 0;
 	}
-
+	//ascend to surface from horizon
 	if (_statRequest._section == HORIZON_ && _statRequest._layer == 1) {
 		_statRequest._section = SURFACE_;
 		_statRequest._layer = 0;
 	}
+	//descend to earth from horizon
+	if (_statRequest._section == HORIZON_ && _statRequest._layer == -1) {
+		_statRequest._section = EARTH_;
+		_statRequest._layer = 6;
+	}
+	//ascend to horizon from earth
+	if (_statRequest._section == EARTH_ && _statRequest._layer == 7) {
+		_statRequest._section = HORIZON_;
+		_statRequest._layer = 0;
+	}
+
 
 
 	if (_statRequest._layer < 0)  _statRequest._layer = 0;

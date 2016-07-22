@@ -1,0 +1,46 @@
+
+
+Solid Seeds
+
+old (biasless seeds)
+
+21 		original
+20098		3 narrowly split continents
+9919
+25544
+4303
+172
+5191 		oceans split by land
+59  		^^that but TWICE. AMAZING SEED
+8610 		3 continents
+5456		inner sea
+9948		corkscrew ocean
+7750		shape
+13561 (closed)
+13561.9 (open)	pleasing
+1972		
+32360		3 continents, 2 connected by ithsmus. third by straight
+
+
+new (biased seeds)
+
+1187		many near connect continents
+
+7637 		bug seed
+
+
+const double shiftBias = -0.1;
+
+
+shelfPower = 1.5;
+slopePower = 1;
+abyssPower = .5;
+landPower = 2;
+
+octaves = 8;	//number of noise octaves. (each octave has twice the frequency of the previous octave, and (persistance) the amplitude
+_seed;		//seed for pseudorandom number generation
+zoom = 4000;		//determines wavelength of first octave
+persistance = 0.55;	//amplitude lost acending each octave
+
+hBlendDistance = TileCols / ~6;	//horizontal blend distance for east west map edge blending
+vBlendDistance = std::min(10, TileRows / 10);	//vertical blend distance for blending poles into sea

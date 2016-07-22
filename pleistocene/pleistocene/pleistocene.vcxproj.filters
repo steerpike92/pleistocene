@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="world.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Simulation</Filter>
+    </ClCompile>
+    <ClCompile Include="element.cpp">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="mixture.cpp">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="state-mixture.cpp">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="material-column.cpp">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="material-layer.cpp">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="shared-surface.cpp">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="statistics.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="noise.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="game-options.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="bios.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="tile-climate.cpp">
+      <Filter>Simulation\Climate</Filter>
+    </ClCompile>
+    <ClCompile Include="solar-radiation.cpp">
+      <Filter>Simulation\Climate</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tile.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="element.h">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="mixture.h">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="state-mixture.h">
+      <Filter>Simulation\Climate\Layers\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="material-column.h">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="material-layer.h">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="shared-surface.h">
+      <Filter>Simulation\Climate\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="globals.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="statistics.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="noise.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="game-options.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="bios.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="tile-climate.h">
+      <Filter>Simulation\Climate</Filter>
+    </ClInclude>
+    <ClInclude Include="solar-radiation.h">
+      <Filter>Simulation\Climate</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="july-19-todo.txt">
+      <Filter>Resource</Filter>
+    </Text>
+    <Text Include="solid-seeds.txt">
+      <Filter>Resource</Filter>
+    </Text>
+    <Text Include="user-commands.txt">
+      <Filter>Resource</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{152a1af2-9d92-4eae-af8c-0f7593821ad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulation">
+      <UniqueIdentifier>{47c8ef60-acd6-44ca-bd80-b5e229776ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{a5fd2c24-482b-4654-ba86-854dda78b55f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{97d0abf1-cedb-4bf5-9ac0-9592ef01f550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulation\Climate">
+      <UniqueIdentifier>{03d6f2da-23df-4840-a62e-145e6fe2efce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulation\Climate\Layers">
+      <UniqueIdentifier>{a7e891cf-4647-4b59-a337-68059b549eb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulation\Climate\Layers\Elements">
+      <UniqueIdentifier>{08f00375-d928-4e42-9bb3-ae07e99ba039}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

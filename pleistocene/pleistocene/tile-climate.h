@@ -24,7 +24,7 @@ namespace climate {
 const double kTileArea = 100000000.0; //m^2
 
 const double kG = 9.81;		//acceleration of gravity (m/s/s)
-const int kMaxLatitude = 70;
+const int kMaxLatitude = 80;
 const int kSolarYear_d = 60;	//Length of a solar year in days
 const int kSolarDay_h = 24;	//length of a solar day in hours
 const int kHour_s = 3600;
@@ -32,17 +32,17 @@ const int kHour_s = 3600;
 //longer hour allows for faster simulation of large time, but introduces problems where many assumptions are no longer true
 //for instance, tiles baking in the sun only get to release radiation afterwards (although this might get changed)
 //this leads to super hot tiles which (due to the T^4 scaling of radiation) then overestimates the emitted radiaion
-//const int hour_s = 14400;	
+//const int hour_s = 14400;
 
 const double kSiderealDay_h = double(kSolarDay_h*kSolarYear_d) / double(kSolarYear_d + 1);//hours it takes earth to rotate through 2 pi radians
 const double kTiltRad = 0.4101524;//radians of axial tilt
-//const double tilt_rad = (M_PI / 2)*.6;
+//const double kTiltRad = (M_PI / 2)*.6;
 
 const double kSolarIntensity = 1.360;//kilo-watts per m2
 const double kSolarEnergyPerHour = kSolarIntensity * kHour_s;// Kilo-Joules per hour per m2
 
 const double kStephanBoltzmanConstant = 5.67*pow(10, -11);//kw per m2 per K4
-const double kEmmisionConstantPerHour = kStephanBoltzmanConstant * kHour_s;
+const double kEmissionConstantPerHour = kStephanBoltzmanConstant * kHour_s;
 
 const double kInitialTemperatureK = 295.0;
 

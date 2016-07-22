@@ -11,8 +11,8 @@ namespace climate {
 
 TileClimate::TileClimate() noexcept {}
 
-TileClimate::TileClimate(my::Address A, double noiseValue) noexcept {
-
+TileClimate::TileClimate(my::Address A, double noiseValue) noexcept 
+{
 	double landElevation=noiseValue * kElevationAmplitude;
 
 	_address = A;
@@ -27,15 +27,15 @@ TileClimate::TileClimate(my::Address A, double noiseValue) noexcept {
 	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
 }
 
-
-
-double TileClimate::calculateLocalInitialtemperature() noexcept {
+double TileClimate::calculateLocalInitialtemperature() noexcept 
+{
 	double localInitialTemperature = kInitialTemperatureK;
-	localInitialTemperature -= pow((_latitude_deg / 90.0), 2) * 40;
+	localInitialTemperature -= pow((_latitude_deg / 70), 2) * (kInitialTemperatureK-273);
 	return localInitialTemperature;
 }
 
-void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept {
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept 
+{
 	_adjacientTileClimates = adjacientTileClimates;
 
 	std::map<my::Direction, layers::MaterialColumn*> adjacientColumns;
@@ -52,26 +52,27 @@ void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacien
 }
 
 
-
 //======================================
 //SIMULATION
 //======================================
 
 int TileClimate::_simulationStep;
 
-void TileClimate::beginNewHour() noexcept {
+void TileClimate::beginNewHour() noexcept 
+{
 	_simulationStep = 0;
 	SolarRadiation::setupSolarRadiation();
 	//i.e. create earth rotation matrix for current time and set sun ray vector
 }
 
-bool TileClimate::beginNextStep() noexcept {
+bool TileClimate::beginNextStep() noexcept 
+{
 	_simulationStep++;
 	return (_simulationStep <= kTotalSteps);//check if simulation hour complete
 }
 
-void TileClimate::simulateClimate() noexcept {
-
+void TileClimate::simulateClimate() noexcept 
+{
 	double solarEnergyPerHour;
 
 	switch (_simulationStep) {
@@ -104,21 +105,19 @@ void TileClimate::simulateClimate() noexcept {
 	}
 }
 
-double TileClimate::simulateSolarRadiation() noexcept {
+double TileClimate::simulateSolarRadiation() noexcept 
+{
 	double solarFraction = _solarRadiation.applySolarRadiation();
 	double incidentSolarEnergyPerHour = solarFraction*kSolarEnergyPerHour;
 	return incidentSolarEnergyPerHour;
 }
 
-
-
 //======================================
 //GRAPHICS
 //======================================
 
-
-
-bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept {
+bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept 
+{
 
 	double elevation = _materialColumn.getLandElevation();
 
@@ -138,9 +137,8 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	return graphics.blitTexture(_elevationTextures[elevationDrawType], nullptr, onscreenPositions);
 }
 
-
-void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept {
-
+void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept 
+{
 	if (elevation < kLandCutoff) {
 		computedElevationType = SUBMERGED;
 		computedElevationShader = abs(double(elevation + 6 * kElevationGaps)) / double(6 * kElevationGaps);
@@ -162,12 +160,11 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 	return;
 }
 
-
 std::map<std::string, std::string> TileClimate::_climateTextures;
 std::map<elevationType, std::string> TileClimate::_elevationTextures;
 
-void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
-
+void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept 
+{
 	_elevationTextures[SUBMERGED] = "../../content/simpleTerrain/midOcean.png";
 	_elevationTextures[LOW_LAND] = "../../content/simpleTerrain/lowLand.png";
 	_elevationTextures[MID_LAND] = "../../content/simpleTerrain/midLand.png";
@@ -177,7 +174,6 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept {
 		graphics.loadImage(P.second);
 	}
 }
-
 
 //===========================================
 //GETTERS
@@ -207,5 +203,3 @@ std::vector<std::string> TileClimate::getMessages(const StatRequest &statRequest
 }//namespace climate
 }//namespace simulation
 }//namespace pleistocene
-
-
