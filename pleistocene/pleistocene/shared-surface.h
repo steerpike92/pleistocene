@@ -38,6 +38,8 @@ class SharedSurface {
 	Eigen::Vector3d _normalVector;
 	void buildNormalVector() noexcept;
 
+	bool _pressureBuilt = false;
+
 public:
 	
 	SharedSurface() noexcept;
@@ -61,6 +63,8 @@ public:
 
 	void buildPressureDifferential() noexcept;
 	
+	void pressureFlow() noexcept;
+
 };
 
 

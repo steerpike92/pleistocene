@@ -85,8 +85,32 @@ void SharedSurface::buildPressureDifferential() noexcept
 	_tenantPressure = _tenantLayer->getPressure(_midpointElevation);
 
 	_pressureDifferential = _ownerPressure - _tenantPressure;
+	_pressureBuilt = true;
 
 }
+
+void SharedSurface::pressureFlow() noexcept 
+{
+	if (!_pressureBuilt) return;
+
+	double flowConstant=1*pow(10,-13);
+
+	double flowRate = _area * _pressureDifferential * flowConstant;
+
+	bool backflow = signbit(flowRate);
+	flowRate = abs(flowRate);
+	flowRate = std::min(flowRate, 0.01);
+
+	if (backflow) {
+		elements::Mixture::transferMixture(*_ownerLayer->getMixture(), *_tenantLayer->getMixture(), flowRate);
+	}
+	else {
+		elements::Mixture::transferMixture(*_tenantLayer->getMixture(), *_ownerLayer->getMixture(), flowRate);
+	}
+
+	_pressureBuilt = false;
+}
+
 
 
 

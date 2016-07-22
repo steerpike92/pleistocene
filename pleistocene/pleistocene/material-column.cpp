@@ -349,7 +349,14 @@ void MaterialColumn::simulatePressure() noexcept
 
 }
 
-void MaterialColumn::simulateAirFlow()  noexcept {}
+void MaterialColumn::simulateAirFlow()  noexcept 
+{
+	//FLOW
+	for (AirLayer &air : _air) {
+		air.simulateFlow();
+	}
+
+}
 
 void MaterialColumn::simulateCondensation() noexcept
 {

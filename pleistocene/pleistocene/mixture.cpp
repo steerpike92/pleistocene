@@ -67,7 +67,6 @@ void Mixture::calculateMass() noexcept
 	for (const ElementPair &elementPair : _elements) {
 		_totalMass += elementPair.second.getMass();
 	}
-	//AUX
 }
 
 void Mixture::calculateVolume() noexcept 
@@ -83,14 +82,13 @@ void Mixture::calculateVolume() noexcept
 			_totalVolume += elementPair.second.getVolume();
 		}
 	}
-	//AUX
 }
 
 void Mixture::calculateMols() noexcept
 {
 	using namespace elements;
 
-	if (_state != GAS) { _totalMols = my::kFakeDouble; return; }//Throw? //TODO
+	if (_state != GAS) { _totalMols = my::kFakeDouble; return; }
 
 	_totalMols = 0;
 	for (const ElementPair &elementPair : _elements) {
@@ -191,6 +189,7 @@ void Mixture::resizeBy(double proportion) noexcept
 	for (elements::ElementPair &elementPair : _elements) {
 		elementPair.second.resizeBy(proportion);
 	}
+	calculateParameters();
 }
 
 void Mixture::push(Mixture &addedMixture) noexcept 

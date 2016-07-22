@@ -122,7 +122,7 @@ DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipita
 
 void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
-	//Mixture::calculateParameters();
+	Mixture::calculateParameters();
 
 	/*calculateSpecificHeatCapacity();
 	calculateSaturationDensity();

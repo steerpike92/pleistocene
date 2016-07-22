@@ -496,14 +496,18 @@ std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevat
 void AirLayer::computeSurfacePressures() noexcept {
 	for (SharedSurface &surface : _sharedSurfaces) {
 		if (surface._tenantType == AIR) {
-
+			surface.buildPressureDifferential();
 		}
-
-
 	}
 }
 
-void AirLayer::simulateFlow() noexcept {} //STUB
+void AirLayer::simulateFlow() noexcept {
+	for (SharedSurface &surface : _sharedSurfaces) {
+		if (surface._tenantType == AIR) {
+			surface.pressureFlow();
+		}
+	}
+}
 
 double AirLayer::getPressure(double elevation) const noexcept {
 	return truePressureCalculator(elevation);
@@ -627,18 +631,21 @@ double AirLayer::getTemperature() const noexcept { return _gasPtr->getTemperatur
 
 std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) const noexcept
 {
-	std::vector<std::string> messages= MaterialLayer::getMessages(statRequest);
-	//std::stringstream stream;
+	std::vector<std::string> messages;
+	std::stringstream stream;
 
-	/*switch (statRequest._statType) {
+	switch (statRequest._statType) {
 	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(statRequest);
-	case(FLOW) : return MaterialLayer::getMessages(statRequest);
+	case(FLOW) : {
+		stream << "Pressure: " << my::double2string(getPressure(_bottomElevation));
+		messages.push_back(stream.str());
+		return messages;
+	}
 	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return messages;
-	}*/
-	return messages;
+	}
 }
 
 double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
@@ -646,8 +653,8 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return this->getTemperature();
-	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
-	case(FLOW) : return 0;
+	case(MATERIAL_PROPERTIES) : return -_gasPtr->getMols()+expectedMolsCalculator(_bottomElevation,_topElevation);
+	case(FLOW) : return (getPressure(_bottomElevation)-expectedHydrostaticPressureCalculator(_bottomElevation));
 	case(MOISTURE) : return 0;
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return 1;
 	}
