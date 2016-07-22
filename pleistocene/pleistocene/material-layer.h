@@ -137,7 +137,7 @@ public:
 	double getBottomElevation() const noexcept;
 	virtual double getTemperature() const noexcept;
 	LayerType getType() const noexcept;
-	elements::Mixture *getMixture() const noexcept;
+	virtual elements::Mixture *getMixture() const noexcept;
 
 	virtual double getPressure(double elevation) const noexcept;
 
@@ -295,12 +295,14 @@ private:
 	static double expectedHydrostaticPressureCalculator(double elevation) noexcept;
 	static double expectedMolsCalculator(double bottomElevation, double topElevation) noexcept;
 	static double expectedTemperatureCalculator(double elevation) noexcept;
+	
 
 	double lapsedTemperatureCalculator(double elevation) const noexcept;
 	double truePressureCalculator(double elevation) const noexcept;
 
-public:
+	
 
+public:
 	double getPressure(double elevation) const noexcept;
 
 	double getTemperature() const noexcept;

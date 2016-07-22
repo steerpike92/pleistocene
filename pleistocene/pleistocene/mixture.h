@@ -72,14 +72,15 @@ public:
 	//=======================================
 	//MIXING MIXTURES
 	//=======================================
-	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept;
+	virtual void transferMixture(Mixture *receivingMixture, double proportion) noexcept;
 	void resizeBy(double proportion) noexcept;
 
 protected:
 	void push(Mixture &addedMixture) noexcept;
 	//Mixture pull(Mixture &subtractedMixture) noexcept;
 
-	Mixture copyProportion(double proportion) const noexcept;
+
+	virtual Mixture *copyProportion(double proportion) const noexcept;
 	void pushSpecific(Element addedSpecificElement, double temperature = 0.0, bool tempSpecified = false) noexcept;
 	double pullSpecific(Element subtractedSpecificElement) noexcept;
 

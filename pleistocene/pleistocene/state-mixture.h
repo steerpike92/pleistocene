@@ -96,6 +96,10 @@ class GaseousMixture : public Mixture {
 
 	double _saturationDensity = 0;
 
+	GaseousMixture *copyProportion(double proportion) const noexcept;
+
+	void adiabaticLapse(double deltaElevation) noexcept;
+
 public:
 	GaseousMixture() noexcept;
 	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation)  noexcept;
@@ -105,6 +109,8 @@ public:
 	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation) noexcept;
 
 	void calculateParameters() noexcept;
+
+	void transferMixture(GaseousMixture *receivingMixture, double proportion) noexcept;
 
 private:
 	void calculateSpecificHeatCapacity() noexcept;
