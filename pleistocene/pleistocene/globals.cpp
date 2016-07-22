@@ -473,14 +473,14 @@ std::string double2string(double number) noexcept
 	}
 	//display sign
 	if (number < 0) stream << "-";
-
+	else stream << " ";
 	//abs is easier to work with
 	number = abs(number);
 
 	//enormous number, scientific notation
-	if (number > pow(10, 4)) {
+	if (number > pow(10, 6)) {
 		//determine order of magnitude
-		int order = 4;
+		int order = 6;
 		while (pow(10, order)<number) {
 			order++;
 		}
@@ -499,8 +499,8 @@ std::string double2string(double number) noexcept
 	//reasonably sized number
 	else if (number >= 0.001) {
 		stream << int(number);
-		if (number < 100) stream << "." << int(int(number * 10) % 10);
-		if (number < 10) stream << int(int(number * 100) % 10);
+		if (number < 100) { stream << "." << int(int(number * 10) % 10); }
+		if (number < 10) { stream << int(int(number * 100) % 10); }
 		if (number< 1) stream << int(int(number * 1000) % 10);
 		if (number< 0.1) stream << int(int(number * 10000) % 10);
 		

@@ -44,8 +44,8 @@ double MaterialColumn::buildEarth() noexcept
 
 	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
-		_earth.emplace_back(bedrockElevation, 280, currentElevation, layerHeight);
-		//_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
+		//_earth.emplace_back(bedrockElevation, 280, currentElevation, layerHeight);
+		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
 		currentElevation = _earth.back().getTopElevation();
 	}
 	return currentElevation;
@@ -77,9 +77,10 @@ double MaterialColumn::buildSea(double baseElevation, double seaSurfaceElevation
 
 	//build sea layers
 	while (i >= 0) {
+		bool emittor = (i == 0);
 		topElevation = seaLayerElevations[i] + seaSurfaceElevation;
-		//_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation);
-		_sea.emplace_back(_landElevation, 288, baseElevation, topElevation);
+		_sea.emplace_back(_landElevation, _initialTemperature, baseElevation, topElevation, emittor);
+		//_sea.emplace_back(_landElevation, 288, baseElevation, topElevation);
 		baseElevation = topElevation;
 		i--;
 	}
@@ -99,8 +100,8 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 	AirLayer buildLayer;
 
 	//build boundary layer
-	//buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
-	buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
+	buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
+	//buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 	_air.push_back(std::move(buildLayer));
 	layerBottomElevation = layerTopElevation;
 
@@ -306,9 +307,10 @@ void MaterialColumn::simulateInfraredRadiation() noexcept
 
 	//filter/emit upwards
 	for (AirLayer &air : _air) {
+		upRadiation = air.filterInfraredRadiation(upRadiation);
 		emittedEnergy = air.emitInfraredRadiation();
 		downRadiation.push_back(emittedEnergy / 2.0);
-		upRadiation = air.filterInfraredRadiation(upRadiation) + emittedEnergy / 2.0;
+		upRadiation+= emittedEnergy / 2.0;
 	}
 	_escapeRadiation = upRadiation;
 

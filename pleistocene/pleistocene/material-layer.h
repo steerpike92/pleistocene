@@ -93,6 +93,8 @@ protected:
 	double _bottomRelativeElevation;//Elevation relative to earth's surface (negative if below) (of bottom of layer)
 	double _topRelativeElevation;//Elevation relative to earth's surface (negative if below) (of top of layer)
 
+
+
 	layers::LayerType _layerType;
 
 
@@ -120,6 +122,8 @@ public:
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
 	void simulateConduction() noexcept;
+
+	virtual void computeSurfacePressures() noexcept;
 
 	virtual void simulateFlow() = 0;
 
@@ -244,7 +248,7 @@ class SeaLayer : public MaterialLayer {
 
 public:
 	SeaLayer() noexcept;
-	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation) noexcept;
+	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation, bool surface) noexcept;
 
 	void simulateFlow() noexcept;
 
@@ -272,6 +276,8 @@ public:
 	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept;
 
 	void simulateFlow() noexcept;
+
+	void computeSurfacePressures() noexcept;
 
 private:
 	//unique air member functions

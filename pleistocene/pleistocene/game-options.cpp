@@ -26,10 +26,14 @@ void GameOptions::setWorldSize(int sizeOption) noexcept {
 		_cols = 3;
 		break;
 	case(2) :
+		_rows = 71;
+		_cols = 60;
+		break;
+	case(3) :
 		_rows = 121;
 		_cols = 90;
 		break;
-	case(3) :
+	case(4) :
 		_rows = 181;
 		_cols = 180;
 		break;

@@ -60,7 +60,7 @@ std::vector<double> World::buildNoiseTable(int Rows, int Cols) noexcept {
 	noise::NoiseParameters noise_parameters;
 	noise_parameters.octaves = 8;			//number of noise octaves. (each octave has twice the frequency of the previous octave, and (persistance) the amplitude
 	noise_parameters.seed = _seed;			//seed for pseudorandom number generation
-	noise_parameters.zoom = 4000;			//determines wavelength of first octave
+	noise_parameters.zoom = 3000;			//determines wavelength of first octave
 	noise_parameters.persistance = 0.55;		//amplitude lost acending each octave
 
 							//create vector containing position pairs for each tile
