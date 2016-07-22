@@ -15,19 +15,17 @@ MaterialColumn::MaterialColumn()  noexcept {}
 
 MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) noexcept :
 _landElevation(landElevation),
-_initialTemperature(initialTemperature)
+_initialTemperature(initialTemperature),
+_submerged(_landElevation < -2)
 {
-
 	double baseElevation = buildEarth();
 
 	baseElevation = buildHorizon(baseElevation);
 
-	if (_landElevation < -2) {//TODO. sand bars? reefs? marshes? lagoons?
+	if (_submerged) {//TODO. sand bars? reefs? marshes? lagoons?
 		baseElevation = buildSea(baseElevation, 0);
-		_submerged = true;
 	}
-	else { _submerged = false; }
-
+	
 	buildAir(baseElevation);
 
 	buildUniversalColumn();
@@ -45,7 +43,7 @@ double MaterialColumn::buildEarth() noexcept
 	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
 		//_earth.emplace_back(bedrockElevation, 280, currentElevation, layerHeight);
-		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight);
+		_earth.emplace_back(bedrockElevation, _initialTemperature, currentElevation, layerHeight, false);
 		currentElevation = _earth.back().getTopElevation();
 	}
 	return currentElevation;
@@ -53,7 +51,7 @@ double MaterialColumn::buildEarth() noexcept
 
 double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
-	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation);
+	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation, !_submerged);
 	double currentElevation = _horizon.back().getTopElevation();
 	return currentElevation;
 }
@@ -275,6 +273,11 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 void MaterialColumn::beginNewHour() noexcept {
 	_backRadiation = 0;
 	_escapeRadiation = 0;
+	
+	for (MaterialLayer* layer : _column) {
+		layer->hourlyClear();
+	}
+
 }
 
 void MaterialColumn::filterSolarRadiation(double energyKJ) noexcept

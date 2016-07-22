@@ -104,16 +104,20 @@ public:
 	//INITIALIZATION
 	//============================
 	MaterialLayer() noexcept;
-	MaterialLayer(double baseElevation, double bottomElevation) noexcept;
+	MaterialLayer(double baseElevation, double bottomElevation, bool emittor) noexcept;
 
 	MaterialLayer *_up = nullptr;
 	MaterialLayer *_down = nullptr;
+
+	bool _emittor;
 
 	void addSurface(SharedSurface &surface) noexcept;
 	void clearSurfaces() noexcept;
 
 	//SIMULATION
 	//============================
+
+	void hourlyClear() noexcept;
 
 	//chains downward
 	void filterSolarRadiation(double energyKJ) noexcept;
@@ -152,7 +156,7 @@ protected:
 
 public:
 	EarthLayer() noexcept;
-	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight) noexcept;
+	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight, bool emittor) noexcept;
 
 	void simulateFlow() noexcept;
 
@@ -198,7 +202,7 @@ class HorizonLayer : public EarthLayer {
 public:
 	HorizonLayer() noexcept;
 	//~HorizonLayer() noexcept;
-	HorizonLayer(double baseElevation, double temperature, double bottomElevation) noexcept;
+	HorizonLayer(double baseElevation, double temperature, double bottomElevation, bool emittor) noexcept;
 
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
@@ -248,7 +252,7 @@ class SeaLayer : public MaterialLayer {
 
 public:
 	SeaLayer() noexcept;
-	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation, bool surface) noexcept;
+	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation, bool emittor) noexcept;
 
 	void simulateFlow() noexcept;
 

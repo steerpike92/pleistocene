@@ -115,7 +115,7 @@ my::RGB Statistics::getColor(double value) const noexcept
 	}
 	if (sigmas < -3) {
 		brightness -= 0.3*((sigmas + 3) / 3);
-		saturation -= 0.3*((sigmas + 3) / 3);
+		saturation += 0.7*((sigmas + 3) / 3);
 		sigmas = -3;
 	}
 

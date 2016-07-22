@@ -38,6 +38,13 @@ Mixture::Mixture(std::vector<Element> compositionElements, double temperature, e
 }
 
 
+void Mixture::hourlyClear() {
+	_hourlySolarInput = 0;
+	_hourlyInfraredInputDisplay = 0;
+	_hourlyOutputRadiation = 0;
+	_netConductiveExchange = 0;
+}
+
 //=====================================================================================================================
 //CALCULATIONS
 //=====================================================================================================================
@@ -251,8 +258,7 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept
 {
 	if (solarEnergyKJ <= 0) { return 0; }
 
-	int mixtureCount = _elements.size();
-	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ; }
+	if (_elements.size() == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 	if (_albedo < 0 || _albedo>1) { LOG("WEIRD ALBEDO"); exit(EXIT_FAILURE); return solarEnergyKJ; }
 
@@ -264,16 +270,18 @@ double Mixture::filterSolarRadiation(double solarEnergyKJ) noexcept
 
 	double outputEnergyKJ = solarEnergyKJ- solarAbsorbed;
 
-	if (_emittor) { _inputRadiation += solarAbsorbed; }
-	else { _temperature += solarAbsorbed / _totalHeatCapacity; }
+	_hourlySolarInput = solarAbsorbed;
+
+	if (!_emittor) { 
+		_temperature += solarAbsorbed / _totalHeatCapacity;
+	}
 	
 	return outputEnergyKJ;
 }
 
 double Mixture::filterInfrared(double infraredEnergy) noexcept
 {
-	int mixtureCount = _elements.size();
-	if (mixtureCount == 0) { LOG("NO COMPONENTS");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
+	if (_elements.size() == 0) { LOG("NO COMPONENTS");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
 	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  exit(EXIT_FAILURE); return infraredEnergy; }//dummy return
 
 	double infraredAbsorbed = _infraredAbsorptionIndex*infraredEnergy;
@@ -281,32 +289,33 @@ double Mixture::filterInfrared(double infraredEnergy) noexcept
 	infraredEnergy -= infraredAbsorbed;
 
 	
-	if (_emittor){ _inputRadiation += infraredAbsorbed; }
-	else { _temperature += infraredAbsorbed / _totalHeatCapacity; }
+	_hourlyInfraredInput += infraredAbsorbed;
+	_hourlyInfraredInputDisplay += infraredAbsorbed;
+
+	if (!_emittor){ 
+		_temperature += infraredAbsorbed / _totalHeatCapacity;
+	}
 
 	return infraredEnergy;
 }
 
 double Mixture::emitInfrared() noexcept 
 {
-	int mixtureCount = _elements.size();
-	if (mixtureCount == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return 0; }
+	if (_elements.size() == 0) { LOG("NO COMPONENTS"); exit(EXIT_FAILURE); return 0; }
 	if (_totalHeatCapacity <= 0) { LOG("ZERO HEAT CAPACITY");  exit(EXIT_FAILURE); return 0; }
 	if (_temperature <= 0) { LOG("BELOW ABSOLUTE ZERO"); exit(EXIT_FAILURE); return 0; }
 
-	_emittor = true;
-
-	return  handleInOutRadiation();
+	return handleInOutRadiation();
 }
 
-
-double Mixture::handleInOutRadiation() {
+double Mixture::handleInOutRadiation() noexcept
+{
 	//calculate equilibrium temperature for this level of radiation.
 	
-	_equilibriumTemperature = calculateEquilibriumTemperature(_inputRadiation);
+	_equilibriumTemperature = calculateEquilibriumTemperature(_hourlyInfraredInput+_hourlySolarInput);
 
-	double postInputTemperature= _temperature + (_inputRadiation / _totalHeatCapacity);
-	_inputRadiation = 0;
+	double postInputTemperature= _temperature + ((_hourlyInfraredInput+ _hourlySolarInput) / _totalHeatCapacity);
+	_hourlyInfraredInput = 0;
 
 	double preEmissions = calculateEmissions(_temperature);
 
@@ -324,7 +333,6 @@ double Mixture::handleInOutRadiation() {
 			_temperature = postInputOutputTemperature;
 		//}
 	}
-
 	else {//warming
 		if (postInputOutputTemperature > _equilibriumTemperature) {//over warming
 			correctEmissions = preEmissions + (postInputOutputTemperature - _equilibriumTemperature) * _totalHeatCapacity;
@@ -334,13 +342,15 @@ double Mixture::handleInOutRadiation() {
 			correctEmissions = preEmissions;
 			_temperature = postInputOutputTemperature;
 		}
-
 	}
-	_outputRadiation = correctEmissions;
+
+	_hourlyOutputRadiation = correctEmissions;
+	//_dailyOutputRadiation += correctEmissions;
+
 	return correctEmissions;
 }
 
-double Mixture::calculateEquilibriumTemperature(double inputRadiation) const 
+double Mixture::calculateEquilibriumTemperature(double inputRadiation) const noexcept
 {
 	double equilibriumTemperature;
 
@@ -354,12 +364,12 @@ double Mixture::calculateEquilibriumTemperature(double inputRadiation) const
 	return equilibriumTemperature;
 }
 
-double Mixture::calculateEmissions(double temperature) const 
+double Mixture::calculateEmissions(double temperature) const noexcept
 {
 	//calculate emission energy for this temperature
 	double emissionEnergy;
 
-	if (_state == elements::GAS) {
+	if (_state == GAS) {
 		emissionEnergy = kEmissionConstantPerHour *_totalMass * 4 * pow(10, -4) * pow(temperature, 4);
 	}
 	else {
@@ -379,13 +389,18 @@ void Mixture::conduction(Mixture &mixture1, Mixture &mixture2, double area) noex
 
 	double conductivity = pow(10, -7)*(kHour_s / 3600);
 
-	//Air conduction sucks
-	if (mixture1._state == GAS || mixture2._state == GAS) {
-		conductivity *= 0.0001;
+	//Air-surface conduction sucks
+	if ((mixture1._state == GAS && mixture2._state != GAS) || (mixture1._state != GAS && mixture2._state == GAS)) {
+		conductivity *= 0.01;
 	}
-	//Water conduction is good if air isn't involved
-	else if (mixture1._state == WATER || mixture2._state == WATER) {
-		conductivity *= 10;
+
+	/*if (mixture1._state == GAS && mixture2._state == GAS){
+		conductivity *= 0.1;
+	}*/
+
+	//Water conduction is good
+	else if (mixture1._state == WATER && mixture2._state == WATER) {
+		conductivity *= 100;
 	}
 
 
@@ -407,6 +422,9 @@ void Mixture::conduction(Mixture &mixture1, Mixture &mixture2, double area) noex
 
 	mixture1._temperature += heatExchanged / mixture1._totalHeatCapacity;
 	mixture2._temperature -= heatExchanged / mixture2._totalHeatCapacity;
+
+	mixture1._netConductiveExchange += heatExchanged;
+	mixture2._netConductiveExchange -= heatExchanged;
 
 	if(mixture1._temperature<=0 || mixture2._temperature <= 0){ LOG("BELOW ABSOLUTE ZERO"); exit(EXIT_FAILURE); }
 }
@@ -433,36 +451,30 @@ std::vector<std::string> Mixture::getThermalMessages() const noexcept
 		messages.push_back(stream.str());
 
 		stream.str(std::string());
-		stream << "Input Radiation: " << my::double2string(_inputRadiation);
+		stream << "Hourly Infrared Input: " << my::double2string(_hourlyInfraredInputDisplay);
 		messages.push_back(stream.str());
 
 		stream.str(std::string());
-		stream << "Output Radiation: " << my::double2string(_outputRadiation);
+		stream << "Total Input Radiation: " << my::double2string(_hourlyInfraredInputDisplay + _hourlySolarInput);
 		messages.push_back(stream.str());
 
+		stream.str(std::string());
+		stream << "Hourly Output Radiation: " << my::double2string(_hourlyOutputRadiation);
+		messages.push_back(stream.str());
 	}
 	
 
+	stream.str(std::string());
+	stream << "Hourly Solar Input: " << my::double2string(_hourlySolarInput);
+	messages.push_back(stream.str());
 
 	stream.str(std::string());
 	stream << "Heat Capacity: " << my::double2string(_totalHeatCapacity);
 	messages.push_back(stream.str());
 
-	
-
-	/*stream.str(std::string());
-	stream << "Absorbed Solar Energy: " << my::double2string(this->_totalSolarAbsorbed);
-	messages.push_back(stream.str());*/
-
-	/*stream.str(std::string());
-	stream << "Absorbed Infrared Energy: " << my::double2string(this->_totalInfraredAbsorbed);
-	messages.push_back(stream.str());*/
-
-	/*stream.str(std::string());
-	stream << "Emitted Energy (KJ): " << my::double2string(this->_infraredEmitted);
-	messages.push_back(stream.str());*/
-
-
+	stream.str(std::string());
+	stream << "Net Conductive Exchange: " << my::double2string(_netConductiveExchange);
+	messages.push_back(stream.str());
 
 	stream.str(std::string());
 	stream << " ";
