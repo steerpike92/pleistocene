@@ -120,8 +120,7 @@ DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipita
 	return upperPrecipitation;
 }
 
-void GaseousMixture::calculateParameters() noexcept 
-{
+void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
@@ -131,19 +130,16 @@ void GaseousMixture::calculateParameters() noexcept
 }
 
 
-void GaseousMixture::calculateSpecificHeatCapacity() noexcept 
-{
+void GaseousMixture::calculateSpecificHeatCapacity() noexcept {
 	_specificHeatCapacity = _totalHeatCapacity / _totalMass;
 }
 
-void GaseousMixture::calculateLapseRate() noexcept 
-{
+void GaseousMixture::calculateLapseRate() noexcept {
 	//stub. different from moist air
 	_adiabaticLapseRate = 9.8 / _specificHeatCapacity;
 }
 
-void GaseousMixture::calculateSaturationDensity() noexcept 
-{
+void GaseousMixture::calculateSaturationDensity() noexcept {
 	double Tc = _temperature - 273.15;
 	double saturationDensity;//g/m3
 	saturationDensity = 5.018 + 0.32321*Tc - 8.1841*pow(10, -3)*pow(Tc, 2) + 3.1243*pow(10, -4)*pow(Tc, 3);
@@ -152,35 +148,12 @@ void GaseousMixture::calculateSaturationDensity() noexcept
 }
 
 
-double GaseousMixture::getSaturationDensity() const noexcept 
-{
+double GaseousMixture::getSaturationDensity() const noexcept {
 	return _saturationDensity;
 }
 
-double GaseousMixture::getLapseRate() const noexcept 
-{
+double GaseousMixture::getLapseRate() const noexcept {
 	return _adiabaticLapseRate;
-}
-
-GaseousMixture *GaseousMixture::copyProportion(double proportion) const noexcept
-{
-	GaseousMixture copiedMixture = *this;
-	copiedMixture.resizeBy(proportion);
-	return &copiedMixture;
-}
-
-void GaseousMixture::transferMixture(GaseousMixture *receivingMixture, double proportion) noexcept
-{
-	GaseousMixture *pushMix = copyProportion(proportion);
-	resizeBy(1 - proportion);
-	double deltaElevation = _bottomElevation - receivingMixture->_bottomElevation;
-	pushMix->adiabaticLapse(deltaElevation);
-	receivingMixture->push(*pushMix);
-}
-
-void GaseousMixture::adiabaticLapse(double deltaElevation) noexcept
-{
-	_temperature = _temperature*_adiabaticLapseRate*deltaElevation;
 }
 
 }//namespace elements

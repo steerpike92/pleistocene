@@ -93,7 +93,7 @@ void SharedSurface::pressureFlow() noexcept
 {
 	if (!_pressureBuilt) return;
 
-	double flowConstant=6.2*pow(10,-14);
+	double flowConstant=6*pow(10,-14);
 
 	double flowRate = _area * _pressureDifferential * flowConstant;
 
@@ -101,13 +101,11 @@ void SharedSurface::pressureFlow() noexcept
 	flowRate = abs(flowRate);
 	flowRate = std::min(flowRate, 0.1);
 
-	double givingTemperature;
-
 	if (backflow) {
-		_tenantLayer->getMixture()->transferMixture(_ownerLayer->getMixture(), flowRate);
+		elements::Mixture::transferMixture(*_ownerLayer->getMixture(), *_tenantLayer->getMixture(), flowRate);
 	}
 	else {
-		_ownerLayer->getMixture()->transferMixture(_tenantLayer->getMixture(), flowRate);
+		elements::Mixture::transferMixture(*_tenantLayer->getMixture(), *_ownerLayer->getMixture(), flowRate);
 	}
 
 	_pressureBuilt = false;

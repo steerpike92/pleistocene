@@ -170,18 +170,18 @@ void Mixture::calculateInfraredAbsorptionIndex() noexcept
 //MIXING MIXTURES
 //=====================================================================================================================
 
-void Mixture::transferMixture(Mixture *receivingMixture, double proportion) noexcept 
+void Mixture::transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept 
 {
-	Mixture *pushMix = copyProportion(proportion);
-	resizeBy(1 - proportion);
-	receivingMixture->push(*pushMix);
+	Mixture pushMix = givingMixture.copyProportion(proportion);
+	givingMixture.resizeBy(1 - proportion);
+	receivingMixture.push(pushMix);
 }
 
-Mixture *Mixture::copyProportion(double proportion) const noexcept 
+Mixture Mixture::copyProportion(double proportion) const noexcept 
 {
 	Mixture copiedMixture = *this;
 	copiedMixture.resizeBy(proportion);
-	return &copiedMixture;
+	return copiedMixture;
 }
 
 void Mixture::resizeBy(double proportion) noexcept 
