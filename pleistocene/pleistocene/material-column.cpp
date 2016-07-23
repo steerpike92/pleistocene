@@ -481,7 +481,7 @@ std::vector<std::string> MaterialColumn::getMessages(const StatRequest &statRequ
 		messages.push_back(stream.str());
 	}
 
-	if (statRequest._statType == ELEVATION) {
+	if ((statRequest._statType == ELEVATION) & (statRequest._section == SURFACE_)) {
 		return _horizon.back().getMessages(statRequest);
 	}
 
@@ -511,24 +511,16 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 
 	case(SURFACE_) :
 		
-		if (statRequest._layer == 0) {
-			if (_submerged) {
-				auto layerReporting = &(_sea.back());
-				_chosenLayer = const_cast<SeaLayer*>(layerReporting);
-				return;
-			}
-			else {
-				auto layerReporting = &(_horizon.back());
-				_chosenLayer = const_cast<HorizonLayer*>(layerReporting);
-				return;
-			}
-		}
-
-		else {
-			_chosenLayer = const_cast<AirLayer*>(&_air.front());
+		if (_submerged) {
+			auto layerReporting = &(_sea.back());
+			_chosenLayer = const_cast<SeaLayer*>(layerReporting);
 			return;
 		}
-		
+		else {
+			auto layerReporting = &(_horizon.back());
+			_chosenLayer = const_cast<HorizonLayer*>(layerReporting);
+			return;
+		}
 
 	case(HORIZON_) : {
 

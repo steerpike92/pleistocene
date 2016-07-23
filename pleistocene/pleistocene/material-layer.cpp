@@ -109,6 +109,11 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 		stream.str(std::string());
 		stream << "Elevation: " << my::double2string(_bottomElevation);
 		messages.push_back(stream.str());
+
+		stream.str(std::string());
+		stream << "Height: " << my::double2string(_height);
+		messages.push_back(stream.str());
+
 		return messages;
 
 	case(TEMPERATURE) :
