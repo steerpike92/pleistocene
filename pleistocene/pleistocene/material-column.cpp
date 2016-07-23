@@ -165,10 +165,10 @@ void MaterialColumn::buildNeighborSurfaces() noexcept
 	for (my::Direction ownedDirection : ownedDirections) {
 		if (this->_adjacientColumns.count(ownedDirection)) {
 			buildGeneralNeighborSurfaces(ownedDirection);
+			buildAirSurfaces(ownedDirection);
 			buildEarthSurfaces(ownedDirection);
 			buildHorizonSurfaces(ownedDirection);
 			buildSeaSurfaces(ownedDirection);
-			buildAirSurfaces(ownedDirection);
 		}
 	}
 }
@@ -220,39 +220,41 @@ void MaterialColumn::buildGeneralNeighborSurfaces(my::Direction ownedDirection) 
 		B_bot = B->getBottomElevation();
 		B_top = B->getTopElevation();
 
-		while (A_top > B_bot) {
-			while (B_top < A_bot) {
-				if (B->_up != nullptr) {//if more B layers above this ... advance
-					B = B->_up;
-					B_bot = B->getBottomElevation();
-					B_top = B->getTopElevation();
-				}
-				else break;
+		if (A_top > B_top) {//A above
+			if (B_top > A_bot) {//in contact
+
+				top = B_top;
+				bot = std::max(A_bot, B_bot);
+
+				//failure check
+				if (bot > top) { LOG("A_bot: " << A_bot << " A_top: " << A_top); LOG("B_bot: " << B_bot << " B_top: " << B_top); exit(EXIT_FAILURE); }
+
+				surface = SharedSurface(A, B, sDirection, bot, top, B->getType());
+				A->addSurface(surface);
+
 			}
-			//if (B_bot > B_top) { LOG("Already Fucked"); }
-			//if (A_bot > A_top) { LOG("Already Fucked"); }
+			if (B->_up == nullptr) return;
+			B = B->_up; //increment B
+		}
+		else { //B above
+			if (A_top > B_bot) {//in contact
 
-			bot = std::max(A_bot, B_bot);
-			top = std::min(A_top, B_top);
+				top = A_top;
+				bot = std::max(A_bot, B_bot);
 
-			if (bot > top) {
-				LOG("A_bot: " << A_bot << " A_top: " << A_top);
-				LOG("B_bot: " << B_bot << " B_top: " << B_top);
+				//failure check
+				if (bot > top) { LOG("A_bot: " << A_bot << " A_top: " << A_top); LOG("B_bot: " << B_bot << " B_top: " << B_top); exit(EXIT_FAILURE); }
+
+
+				surface = SharedSurface(A, B, sDirection, bot, top, B->getType());
+				A->addSurface(surface);
+
 			}
-
-			surface = SharedSurface(A, B, sDirection, bot, top, B->getType());
-			A->addSurface(surface);
-
-			if (B->_up != nullptr) {//if more B layers above this ... advance
-				B = B->_up;
-				B_bot = B->getBottomElevation();
-				B_top = B->getTopElevation();
-			}
-			else break;//break instead of return as the next A layer might want a piece of B
+			if (A->_up == nullptr) return;
+			A = A->_up; //increment A
 		}
 
-		A = A->_up;
-	} while (A != nullptr);
+	} while (true);
 }
 
 void MaterialColumn::buildEarthSurfaces(my::Direction ownedDirection) noexcept
@@ -292,37 +294,44 @@ void MaterialColumn::buildAirSurfaces(my::Direction ownedDirection) noexcept
 		B_bot = B->getBottomElevation();
 		B_top = B->getTopElevation();
 
-		while (A_top > B_bot) {
+		if (A_top > B_top) {//A above
+			if (B_top > A_bot) {//in contact
 
-			while (B_top < A_bot) {
-				++B;
-				if (B == _adjacientColumns[ownedDirection]->_air.end()) { return; }
-				B_bot = B->getBottomElevation();
-				B_top = B->getTopElevation();
+				top = B_top;
+				bot = std::max(A_bot, B_bot);
+
+				//failure check
+				if (bot > top) { LOG("A_bot: " << A_bot << " A_top: " << A_top); LOG("B_bot: " << B_bot << " B_top: " << B_top); exit(EXIT_FAILURE); }
+
+
+				buildSurface = SharedSurface(&(*A), &(*B), sDirection, bot, top, AIR);
+				airSurface = SharedAirSurface(&(*A), &(*B), buildSurface);
+				A->addAirSurface(airSurface);
+
 			}
-
-			bot = std::max(A_bot, B_bot);
-			top = std::min(A_top, B_top);
-
-			if (bot > top) {//Something has gone wrong
-				LOG("A_bot: " << A_bot << " A_top: " << A_top);
-				LOG("B_bot: " << B_bot << " B_top: " << B_top);
-				exit(EXIT_FAILURE);
-			}
-
-			buildSurface = SharedSurface(&(*A), &(*B), sDirection, bot, top, B->getType());
-			airSurface = SharedAirSurface(&(*A), &(*B), buildSurface);
-			
-			
-			++B;
+			B++;
 			if (B == _adjacientColumns[ownedDirection]->_air.end()) { return; }
-			B_bot = B->getBottomElevation();
-			B_top = B->getTopElevation();
-			
+		}
+		else { //B above
+			if (A_top > B_bot) {//in contact
+
+				top = A_top;
+				bot = std::max(A_bot, B_bot);
+
+				//failure check
+				if (bot > top) { LOG("A_bot: " << A_bot << " A_top: " << A_top); LOG("B_bot: " << B_bot << " B_top: " << B_top); exit(EXIT_FAILURE); }
+
+
+				buildSurface = SharedSurface(&(*A), &(*B), sDirection, bot, top, AIR);
+				airSurface = SharedAirSurface(&(*A), &(*B), buildSurface);
+				A->addAirSurface(airSurface);
+
+			}
+			A++;
+			if (A == _air.end()) return;
 		}
 
-		++A;
-	} while (A != _air.end());
+	} while (true);
 }
 
 void MaterialColumn::elevationChangeProcedure() noexcept

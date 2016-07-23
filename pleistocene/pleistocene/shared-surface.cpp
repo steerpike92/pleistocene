@@ -156,7 +156,7 @@ void SharedAirSurface::flow() noexcept
 	using namespace elements;
 	if (!_pressureBuilt) { LOG("NO PRESSURE BUILT"); exit(EXIT_FAILURE); return; }
 
-	double flowConstant = 1 * pow(10, -13);
+	double flowConstant = 1 * pow(10, -14);
 
 	double flowRate = _area * _pressureDifferential * flowConstant;
 

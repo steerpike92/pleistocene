@@ -659,6 +659,15 @@ std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) c
 	case(FLOW) : {
 		stream << "Pressure: " << my::double2string(getPressure(_bottomElevation));
 		messages.push_back(stream.str());
+		
+
+		int neighbors = 0;
+		for (SharedAirSurface surface : _sharedAirSurfaces) {
+			neighbors++;
+		}
+		stream.str(std::string());
+		stream << "Owned Air Neighbors: " << neighbors;
+		messages.push_back(stream.str());
 		return messages;
 	}
 	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
