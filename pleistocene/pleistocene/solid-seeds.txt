@@ -25,12 +25,10 @@ old (biasless seeds)
 new (biased seeds)
 
 1187		many near connect continents
-
 7637 		bug seed
-
+1491		shallow sea
 
 const double shiftBias = -0.1;
-
 
 shelfPower = 1.5;
 slopePower = 1;
