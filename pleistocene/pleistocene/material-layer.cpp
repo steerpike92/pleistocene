@@ -207,6 +207,7 @@ _solidPtr(new elements::SolidMixture())
 }
 
 
+
 std::vector<elements::Element> EarthLayer::generateSoil(double depth, double height) noexcept
 {
 	using namespace elements;
@@ -277,6 +278,8 @@ elements::ElementType EarthLayer::determineSoilType(double depthIndex) noexcept
 	else if (soilRV > 0.33) { return SILT; }
 	else return SAND;
 }
+
+elements::SolidMixture *EarthLayer::getSolidPtr() noexcept { return _solidPtr.get(); }
 
 //SIMULATION
 //===========================
@@ -416,6 +419,13 @@ _liquidPtr(new elements::LiquidMixture())
 
 }
 
+void SeaLayer::addSurface(SharedSurface &surface) noexcept
+{
+
+}
+
+elements::LiquidMixture *SeaLayer::getLiquidPtr() noexcept { return _liquidPtr.get(); }
+
 //SIMULATION
 //===========================
 
@@ -490,22 +500,30 @@ std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevat
 	return elementVector;
 }
 
+void AirLayer::addSurface(SharedSurface &surface) noexcept 
+{
+	_sharedSurfaces.push_back(surface);
+}
+
+void AirLayer::addAirSurface(SharedAirSurface &airSurface) noexcept
+{
+	_sharedAirSurfaces.push_back(airSurface);
+}
+
+elements::GaseousMixture *AirLayer::getGasPtr() noexcept { return _gasPtr.get(); }
+
 //SIMULATION
 //=========================
 
 void AirLayer::computeSurfacePressures() noexcept {
-	for (SharedSurface &surface : _sharedSurfaces) {
-		if (surface._tenantType == AIR) {
-			surface.buildPressureDifferential();
-		}
+	for (SharedAirSurface &airSurface : _sharedAirSurfaces) {
+		airSurface.buildPressureDifferential();
 	}
 }
 
 void AirLayer::simulateFlow() noexcept {
-	for (SharedSurface &surface : _sharedSurfaces) {
-		if (surface._tenantType == AIR) {
-			surface.pressureFlow();
-		}
+	for (SharedAirSurface &airSurface : _sharedAirSurfaces) {
+		airSurface.flow();
 	}
 }
 

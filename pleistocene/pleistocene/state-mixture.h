@@ -101,6 +101,18 @@ public:
 	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation)  noexcept;
 	GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation)  noexcept;
 
+	//=======================================
+	//MIXING GAS
+	//=======================================
+	static void transferMixture(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept;
+private:
+	void push(GaseousMixture &addedGas) noexcept;
+	//Mixture pull(Mixture &subtractedMixture) noexcept;
+
+	GaseousMixture copyProportion(double proportion) const noexcept;
+
+	void lapseTemperature(double deltaElevation) noexcept;
+
 	void simulateCondensation() noexcept;
 	DropletMixture filterPrecipitation(DropletMixture upperPrecipitation) noexcept;
 
@@ -113,8 +125,8 @@ private:
 public:
 	//GETTERS
 	//===========================
-	double getLapseRate() const noexcept;
-	double getSaturationDensity() const noexcept;
+	/*double getLapseRate() const noexcept;
+	double getSaturationDensity() const noexcept;*/
 };
 
 }//namespace elements

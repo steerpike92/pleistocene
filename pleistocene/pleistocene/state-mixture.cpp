@@ -6,9 +6,11 @@ namespace simulation {
 namespace climate {
 namespace layers {
 namespace elements {
-//===============================================================
-//SOLID
-//===============================================================
+
+
+////////////===============================================================
+////////////SOLID
+////////////===============================================================
 
 SolidMixture::SolidMixture() noexcept {}
 
@@ -52,9 +54,9 @@ double SolidMixture::getPermeability() const noexcept { return _permeability; }
 double SolidMixture::getPorosity() const noexcept { return _voidSpace; }
 
 
-//===============================================================
-//PARTICULATE
-//===============================================================
+//////////////===============================================================
+//////////////PARTICULATE
+//////////////===============================================================
 
 ParticulateMixture::ParticulateMixture() noexcept {}
 
@@ -70,9 +72,9 @@ Mixture ParticulateMixture::settle(double fluidViscosity, double fluidVelocity) 
 }
 
 
-//===============================================================
-//LIQUID
-//===============================================================
+//////////////===============================================================
+//////////////LIQUID
+//////////////===============================================================
 
 
 LiquidMixture::LiquidMixture() noexcept {}
@@ -83,18 +85,22 @@ LiquidMixture(std::vector<Element> {element}, temperature) {}
 LiquidMixture::LiquidMixture(std::vector<Element> theElements, double temperature) noexcept :
 	Mixture(theElements, temperature, elements::LIQUID) {}
 
-//===============================================================
-//DROPLET
-//===============================================================
+//////////////===============================================================
+//////////////DROPLET
+//////////////===============================================================
 
 DropletMixture::DropletMixture() noexcept {}
 
 DropletMixture::DropletMixture(Element element, double temperature) noexcept :
 Mixture(element, temperature, elements::DROPLET) {}
 
-//==============================================================
-//GAS
-//==============================================================
+
+
+
+
+//////////////==============================================================
+//////////////GAS
+//////////////==============================================================
 
 GaseousMixture::GaseousMixture() noexcept {}
 
@@ -111,8 +117,60 @@ _topElevation(topElevation)
 	//calculateParameters();
 }
 
+
+//===================================
+//MIXING GASSES
+//===================================
+
+void GaseousMixture::transferMixture(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept
+{
+	GaseousMixture pushMix = givingGas.copyProportion(proportion);
+	givingGas.resizeBy(1 - proportion);
+	receivingGas.push(pushMix);
+}
+
+GaseousMixture GaseousMixture::copyProportion(double proportion) const noexcept
+{
+	GaseousMixture copiedMixture = *this;
+	copiedMixture.resizeBy(proportion);
+	return copiedMixture;
+}
+
+void GaseousMixture::push(GaseousMixture &addedGas) noexcept
+{
+	using namespace elements;
+
+	double deltaElevation =  _bottomElevation - addedGas._bottomElevation;
+
+	addedGas.lapseTemperature(deltaElevation);
+
+	double totalHeat =	this->_totalHeatCapacity*_temperature +
+				addedGas._totalHeatCapacity*addedGas._temperature;
+
+	double newTotalHeatCapacity = this->_totalHeatCapacity + addedGas._totalHeatCapacity;
+
+	_temperature = totalHeat / newTotalHeatCapacity;
+
+	for (ElementPair &elementPair : addedGas._elements) {
+		pushSpecific(elementPair.second);
+	}
+
+	calculateParameters();
+}
+
+void GaseousMixture::lapseTemperature(double deltaElevation) noexcept
+{
+	_temperature = -deltaElevation * _adiabaticLapseRate;
+}
+
+
+//=================================
+//SIMULATION
+//=================================
+
 void GaseousMixture::simulateCondensation() noexcept
 {
+
 }
 
 DropletMixture GaseousMixture::filterPrecipitation(DropletMixture upperPrecipitation) noexcept
@@ -124,9 +182,9 @@ void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
-	/*calculateSpecificHeatCapacity();
+	calculateSpecificHeatCapacity();
 	calculateSaturationDensity();
-	calculateLapseRate();*/
+	calculateLapseRate();
 }
 
 
@@ -136,7 +194,7 @@ void GaseousMixture::calculateSpecificHeatCapacity() noexcept {
 
 void GaseousMixture::calculateLapseRate() noexcept {
 	//stub. different from moist air
-	_adiabaticLapseRate = 9.8 / _specificHeatCapacity;
+	_adiabaticLapseRate = 0.001*9.8;
 }
 
 void GaseousMixture::calculateSaturationDensity() noexcept {
@@ -147,14 +205,13 @@ void GaseousMixture::calculateSaturationDensity() noexcept {
 	_saturationDensity = std::max(_saturationDensity, 0.0);
 }
 
-
-double GaseousMixture::getSaturationDensity() const noexcept {
-	return _saturationDensity;
-}
-
-double GaseousMixture::getLapseRate() const noexcept {
-	return _adiabaticLapseRate;
-}
+//double GaseousMixture::getSaturationDensity() const noexcept {
+//	return _saturationDensity;
+//}
+//
+//double GaseousMixture::getLapseRate() const noexcept {
+//	return _adiabaticLapseRate;
+//}
 
 }//namespace elements
 }//namespace layers

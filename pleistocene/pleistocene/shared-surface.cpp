@@ -7,15 +7,19 @@ namespace simulation {
 namespace climate {
 namespace layers {
 
+//////////////===============================
+//////////////MIXED SURFACE
+//////////////===============================
+
 
 SharedSurface::SharedSurface() noexcept{}
 
 //top surface constructor
-SharedSurface::SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, double elevaton, LayerType layerType)  noexcept :
+SharedSurface::SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, double elevation, LayerType layerType)  noexcept :
 _ownerLayer(ownerLayer),
 _tenantLayer(tenantLayer),
 _spatialDirection(UP),
-_midpointElevation(elevaton),
+_midpointElevation(elevation),
 _area(100 * 1000 * 1000),
 _tenantType(layerType)
 {
@@ -89,29 +93,125 @@ void SharedSurface::buildPressureDifferential() noexcept
 
 }
 
-void SharedSurface::pressureFlow() noexcept 
+void SharedSurface::flow() noexcept 
 {
-	if (!_pressureBuilt) return;
+	
+}
 
-	double flowConstant=6*pow(10,-14);
+MaterialLayer* SharedSurface::getTenant() noexcept { return _tenantLayer; }
+
+
+//////////////===============================
+//////////////AIR SURFACE
+//////////////===============================
+
+
+AirLayer *ownerLayer;
+AirLayer *tenantLayer;
+
+
+SharedAirSurface::SharedAirSurface() noexcept {}
+
+SharedAirSurface::SharedAirSurface(AirLayer *ownerLayer, AirLayer *tenantLayer, SharedSurface &surface) noexcept:
+SharedSurface(surface),
+_ownerAirLayer(ownerLayer),
+_tenantAirLayer(tenantLayer)
+{
+
+}
+
+void SharedAirSurface::buildPressureDifferential() noexcept
+{
+
+	_ownerPressure = _ownerAirLayer->getPressure(_midpointElevation);
+	_tenantPressure = _tenantAirLayer->getPressure(_midpointElevation);
+
+	_pressureDifferential = _ownerPressure - _tenantPressure;
+	_pressureBuilt = true;
+
+}
+
+double SharedAirSurface::calculateEquilibriumExchange() const noexcept
+{
+	double ownerMols = _ownerAirLayer->getGasPtr()->getMols();
+	double tenantMols = _tenantAirLayer->getGasPtr()->getMols();
+
+	double ownerVolume  = _ownerAirLayer->getGasPtr()->getVolume();
+	double tenantVolume = _tenantAirLayer->getGasPtr()->getVolume();
+
+	double totalMols = ownerMols + tenantMols;
+	double totalVolume = ownerVolume + tenantVolume;
+
+	double totalDensity = totalMols / totalVolume;
+
+	double finalOwnerMols = totalDensity*ownerVolume;
+
+	double molExchange =  ownerMols-finalOwnerMols;
+
+	return molExchange;
+}
+
+void SharedAirSurface::flow() noexcept 
+{
+	using namespace elements;
+	if (!_pressureBuilt) { LOG("NO PRESSURE BUILT"); exit(EXIT_FAILURE); return; }
+
+	double flowConstant = 1 * pow(10, -13);
 
 	double flowRate = _area * _pressureDifferential * flowConstant;
 
 	bool backflow = signbit(flowRate);
 	flowRate = abs(flowRate);
-	flowRate = std::min(flowRate, 0.1);
+
+	double equilibriumExchange = calculateEquilibriumExchange();
+
+	if (!backflow && equilibriumExchange>0) {
+		flowRate = std::min(flowRate, equilibriumExchange / (_ownerAirLayer->getGasPtr()->getMols()) );
+	}
+
+	else if (backflow && equilibriumExchange < 0) {
+		flowRate = std::min(flowRate, -equilibriumExchange / (_tenantAirLayer->getGasPtr()->getMols()) );
+	}
+
+	else { flowRate = std::min(flowRate, 0.05); }
 
 	if (backflow) {
-		elements::Mixture::transferMixture(*_ownerLayer->getMixture(), *_tenantLayer->getMixture(), flowRate);
+		GaseousMixture::transferMixture(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);
 	}
 	else {
-		elements::Mixture::transferMixture(*_tenantLayer->getMixture(), *_ownerLayer->getMixture(), flowRate);
+		GaseousMixture::transferMixture(*_tenantAirLayer->getGasPtr(), *_ownerAirLayer->getGasPtr(), flowRate);
 	}
 
 	_pressureBuilt = false;
 }
 
 
+//////////////===============================
+//////////////EARTH SURFACE
+//////////////===============================
+
+void SharedEarthSurface::flow() noexcept
+{
+
+}
+
+//////////////===============================
+//////////////HORIZON SURFACE
+//////////////===============================
+
+void SharedHorizonSurface::flow() noexcept
+{
+
+}
+
+//////////////===============================
+//////////////SEA SURFACE
+//////////////===============================
+
+void SharedSeaSurface::flow() noexcept
+{
+
+}
 
 
 }//namespace layers

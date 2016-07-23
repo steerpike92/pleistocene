@@ -74,7 +74,7 @@ public:
 	//=======================================
 	static void transferMixture(Mixture &receivingMixture, Mixture &givingMixture, double proportion) noexcept;
 	void resizeBy(double proportion) noexcept;
-
+	
 protected:
 	void push(Mixture &addedMixture) noexcept;
 	//Mixture pull(Mixture &subtractedMixture) noexcept;

@@ -25,7 +25,7 @@ _submerged(_landElevation < -2)
 	if (_submerged) {//TODO. sand bars? reefs? marshes? lagoons?
 		baseElevation = buildSea(baseElevation, 0);
 	}
-	
+
 	buildAir(baseElevation);
 
 	buildUniversalColumn();
@@ -38,7 +38,7 @@ double MaterialColumn::buildEarth() noexcept
 	using namespace layers::earth;
 
 	double bedrockElevation = _landElevation - bedrockDepth;
-	double currentElevation=bedrockElevation;
+	double currentElevation = bedrockElevation;
 
 	for (int i = 0; i < earthLayers; i++) {
 		double layerHeight = earthLayerHeights[i];
@@ -51,7 +51,7 @@ double MaterialColumn::buildEarth() noexcept
 
 double MaterialColumn::buildHorizon(double baseElevation) noexcept
 {
-	_horizon.emplace_back(_landElevation-earth::bedrockDepth, _initialTemperature, baseElevation, !_submerged);
+	_horizon.emplace_back(_landElevation - earth::bedrockDepth, _initialTemperature, baseElevation, !_submerged);
 	double currentElevation = _horizon.back().getTopElevation();
 	return currentElevation;
 }
@@ -151,46 +151,67 @@ void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &ad
 {
 	_adjacientColumns = adjacientColumns;
 
-	buildMaterialLayerSurfaces();
-	buildEarthLayerSurfaces();
-	buildHorizonNeighborhood();
+	buildNeighborSurfaces();
+
+	buildTopSurfaces();
+
 }
 
 //Surface Builders
 //=================
 
-void MaterialColumn::buildMaterialLayerSurfaces() noexcept
+void MaterialColumn::buildNeighborSurfaces() noexcept
 {
-	for (my::Direction direction : ownedDirections) {
-		if (this->_adjacientColumns.count(direction)) {
-			buildNeighborSurfaces(direction);
+	for (my::Direction ownedDirection : ownedDirections) {
+		if (this->_adjacientColumns.count(ownedDirection)) {
+			buildGeneralNeighborSurfaces(ownedDirection);
+			buildEarthSurfaces(ownedDirection);
+			buildHorizonSurfaces(ownedDirection);
+			buildSeaSurfaces(ownedDirection);
+			buildAirSurfaces(ownedDirection);
 		}
 	}
-	buildVerticalSurfaces();
 }
 
-void MaterialColumn::buildVerticalSurfaces() noexcept
+void MaterialColumn::buildTopSurfaces() noexcept
 {
 	SharedSurface surface;
+	//GENERAL TOP SURFACES
+	//iterate through general column
 	for (MaterialLayer *layer : _column) {
 		if (layer->_up != nullptr) {
-			surface = SharedSurface(layer,layer->_up, layer->getTopElevation(), layer->getType());
+			surface = SharedSurface(layer, layer->_up, layer->getTopElevation(), layer->getType());
 			layer->addSurface(surface);
 		}
 	}
+
+
+
+	SharedAirSurface airSurface;
+
+	//iterate through air column without hitting top layer (stratosphere)
+	for (auto A = _air.begin(); A != _air.end() - 1; A++) {
+		surface = SharedSurface(&(*A), &(*(A+1)), A->getTopElevation(), AIR);
+		airSurface = SharedAirSurface(&(*A), &(*(A+1)), surface);
+		A->addAirSurface(airSurface);
+	}
+	
+	//TODO
+	//Sea internal
+	//Earth internal
+	//(horizon internal?)
 }
 
-void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
+void MaterialColumn::buildGeneralNeighborSurfaces(my::Direction ownedDirection) noexcept
 {
-
 	SharedSurface surface;
 
 	MaterialLayer *A = _column.front();//this column's layer
-	MaterialLayer *B = _adjacientColumns[direction]->_column.front();//neighbor column's layer
+	MaterialLayer *B = _adjacientColumns[ownedDirection]->_column.front();//neighbor column's layer
 
 	double A_bot, A_top, B_bot, B_top;
 	double top, bot;
-	const SpatialDirection sDirection = static_cast<SpatialDirection>(direction);
+	const SpatialDirection sDirection = static_cast<SpatialDirection>(ownedDirection);
 
 	do {
 		A_bot = A->getBottomElevation();
@@ -200,7 +221,7 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 		B_top = B->getTopElevation();
 
 		while (A_top > B_bot) {
-			while(B_top < A_bot) {
+			while (B_top < A_bot) {
 				if (B->_up != nullptr) {//if more B layers above this ... advance
 					B = B->_up;
 					B_bot = B->getBottomElevation();
@@ -214,8 +235,8 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 			bot = std::max(A_bot, B_bot);
 			top = std::min(A_top, B_top);
 
-			if (bot > top) { 
-				LOG("A_bot: "<<A_bot<<" A_top: " <<A_top);  
+			if (bot > top) {
+				LOG("A_bot: " << A_bot << " A_top: " << A_top);
 				LOG("B_bot: " << B_bot << " B_top: " << B_top);
 			}
 
@@ -234,22 +255,75 @@ void MaterialColumn::buildNeighborSurfaces(my::Direction direction) noexcept
 	} while (A != nullptr);
 }
 
-
-void MaterialColumn::buildEarthLayerSurfaces() noexcept
+void MaterialColumn::buildEarthSurfaces(my::Direction ownedDirection) noexcept
 {
 	//the jumps between elevations of adjacient tiles does not represent water flow through the crust very well.
 	//equilize the bedrock layer elevations and build earth pair surfaces so corresponding earth layers flow into each other
 	//cliffs and springs will happen through the horizon layer as an exception
-
-
+	//STUB
 }
-
-void MaterialColumn::buildHorizonNeighborhood() noexcept
+void MaterialColumn::buildHorizonSurfaces(my::Direction ownedDirection) noexcept
 {
 	//rivers, plants, animals are restricted to the horizon layer,
 	//need neighboring horizons
+	//STUB
+}
+void MaterialColumn::buildSeaSurfaces(my::Direction ownedDirection) noexcept
+{
+	//STUB
 }
 
+void MaterialColumn::buildAirSurfaces(my::Direction ownedDirection) noexcept
+{
+	SharedAirSurface airSurface;
+	SharedSurface buildSurface;
+
+	auto A = _air.begin();//this column's layer
+	auto B = _adjacientColumns[ownedDirection]->_air.begin();//neighbor column's layer
+
+	double A_bot, A_top, B_bot, B_top;
+	double top, bot;
+	const SpatialDirection sDirection = static_cast<SpatialDirection>(ownedDirection);
+
+	do {
+		A_bot = A->getBottomElevation();
+		A_top = A->getTopElevation();
+
+		B_bot = B->getBottomElevation();
+		B_top = B->getTopElevation();
+
+		while (A_top > B_bot) {
+
+			while (B_top < A_bot) {
+				++B;
+				if (B == _adjacientColumns[ownedDirection]->_air.end()) { return; }
+				B_bot = B->getBottomElevation();
+				B_top = B->getTopElevation();
+			}
+
+			bot = std::max(A_bot, B_bot);
+			top = std::min(A_top, B_top);
+
+			if (bot > top) {//Something has gone wrong
+				LOG("A_bot: " << A_bot << " A_top: " << A_top);
+				LOG("B_bot: " << B_bot << " B_top: " << B_top);
+				exit(EXIT_FAILURE);
+			}
+
+			buildSurface = SharedSurface(&(*A), &(*B), sDirection, bot, top, B->getType());
+			airSurface = SharedAirSurface(&(*A), &(*B), buildSurface);
+			
+			
+			++B;
+			if (B == _adjacientColumns[ownedDirection]->_air.end()) { return; }
+			B_bot = B->getBottomElevation();
+			B_top = B->getTopElevation();
+			
+		}
+
+		++A;
+	} while (A != _air.end());
+}
 
 void MaterialColumn::elevationChangeProcedure() noexcept
 {
@@ -263,8 +337,6 @@ void MaterialColumn::elevationChangeProcedure() noexcept
 	//another complication is the silliness of ~0 to ~2 meter deep seas we'll get in highly flat regions.
 
 	//the best solution I think is to declare such a region a marsh and handle it as a special case in horizon layer;
-
-
 }
 
 //==================================

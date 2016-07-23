@@ -69,7 +69,7 @@ const double g = 9.80665;
 const double StandardElevation[2] = { 0,11000 };
 const double StandardPressure[2] = { 101325, 22632 };
 const double StandardTemperature[2] = { 288.15, 216.65 };
-const double StandardLapseRate[2] = { -0.0065, 0 };
+const double StandardLapseRate[2] = { -0.0098, 0 };
 }
 
 
@@ -111,7 +111,7 @@ public:
 
 	bool _emittor;
 
-	void addSurface(SharedSurface &surface) noexcept;
+	virtual void addSurface(SharedSurface &surface) noexcept;
 	void clearSurfaces() noexcept;
 
 	//SIMULATION
@@ -162,7 +162,11 @@ public:
 	EarthLayer() noexcept;
 	EarthLayer(double baseElevation, double temperature, double bottomElevation, double layerHeight, bool emittor) noexcept;
 
+	//void addEarthSurface(SharedEarthSurface &earthSurface) noexcept;
+
 	void simulateFlow() noexcept;
+
+	elements::SolidMixture *getSolidPtr() noexcept;
 
 	//Message getter
 	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
@@ -189,7 +193,7 @@ private:
 class HorizonLayer : public EarthLayer {
 	//unique horizon member variables
 
-	std::map<my::Direction, layers::NeighborHorizon> neighbors;
+	std::vector<layers::SharedHorizonSurface> _sharedHorizonSurfaces;
 
 	//TO DO
 
@@ -211,6 +215,8 @@ public:
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
 	double getStatistic(const struct StatRequest &statRequest) const noexcept;
+
+	//void addHorizonSurface(SharedHorizonSurface &horizonSurface) noexcept;
 
 private:
 	//unique horizon member functions
@@ -252,13 +258,21 @@ class SeaLayer : public MaterialLayer {
 	//unique sea member variables
 	Eigen::Vector3d inertialCurrentVector;
 
+	std::vector<layers::SharedSeaSurface> _sharedSeaSurfaces;
+
 	std::unique_ptr<elements::LiquidMixture> _liquidPtr;
+
 
 public:
 	SeaLayer() noexcept;
 	SeaLayer(double baseElevation, double temperature, double bottomElevation, double topElevation, bool emittor) noexcept;
 
 	void simulateFlow() noexcept;
+
+	void addSurface(SharedSurface &surface) noexcept;
+	//void addSeaSurface(SharedSeaSurface &seaSurface) noexcept;
+
+	elements::LiquidMixture *getLiquidPtr() noexcept;
 
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
@@ -274,6 +288,8 @@ class AirLayer : public MaterialLayer {
 	//unique air member variables
 	Eigen::Vector3d inertialWindVector;
 
+	std::vector<layers::SharedAirSurface> _sharedAirSurfaces;
+
 	std::unique_ptr<elements::GaseousMixture> _gasPtr;
 
 	double incidentUpRadiation;
@@ -285,7 +301,12 @@ public:
 
 	void simulateFlow() noexcept;
 
+	void addSurface(SharedSurface &surface) noexcept;
+	void addAirSurface(SharedAirSurface &airSurface) noexcept;
+
 	void computeSurfacePressures() noexcept;
+
+	elements::GaseousMixture *getGasPtr() noexcept;
 
 private:
 	//unique air member functions

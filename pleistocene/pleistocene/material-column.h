@@ -55,18 +55,21 @@ private:
 	//Relation Builders
 	//=================
 public: 
-	void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept;
+	void buildAdjacency(std::map<my::Direction, MaterialColumn*> &adjacientColumns) noexcept; 
 private:
 	void buildUniversalColumn() noexcept;
 
 	//Surface Builders
 	//=================
-	void buildMaterialLayerSurfaces() noexcept;
-	void buildVerticalSurfaces() noexcept;
-	void buildNeighborSurfaces(my::Direction) noexcept;
+	void buildNeighborSurfaces() noexcept;
 
-	void buildEarthLayerSurfaces() noexcept;
-	void buildHorizonNeighborhood() noexcept;
+	void buildTopSurfaces() noexcept;
+	void buildGeneralNeighborSurfaces(my::Direction ownedDirection) noexcept;
+
+	void buildEarthSurfaces(my::Direction ownedDirection) noexcept;
+	void buildHorizonSurfaces(my::Direction ownedDirection) noexcept;
+	void buildSeaSurfaces(my::Direction ownedDirection) noexcept;
+	void buildAirSurfaces(my::Direction ownedDirection) noexcept;
 
 	void elevationChangeProcedure() noexcept;
 

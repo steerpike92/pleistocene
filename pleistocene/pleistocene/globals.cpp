@@ -466,14 +466,15 @@ RGB hsv2rgb(HSV hsv) noexcept
 std::string double2string(double number) noexcept 
 {
 	std::stringstream stream;
+	std::stringstream signStream;
 
 	if (number == 0) {
-		stream << "0";
+		stream << "    0.";
 		return stream.str();
 	}
 	//display sign
-	if (number < 0) stream << "-";
-	else stream << " ";
+	if (number < 0) signStream << "-";
+	else signStream << " ";
 	//abs is easier to work with
 	number = abs(number);
 
@@ -488,7 +489,7 @@ std::string double2string(double number) noexcept
 
 		//shift number (shrink)
 		number = number*pow(10, -order);
-
+		stream << signStream.str();
 		//stream number
 		stream << int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10);
 
@@ -498,8 +499,13 @@ std::string double2string(double number) noexcept
 
 	//reasonably sized number
 	else if (number >= 0.001) {
+		if (number < 1000) { stream << " "; }
+		if (number < 100) { stream << " "; }
+		if (number < 10) { stream << " "; }
+		stream << signStream.str();
 		stream << int(number);
-		if (number < 100) { stream << "." << int(int(number * 10) % 10); }
+		stream << ".";
+		if (number < 100) {  stream << int(int(number * 10) % 10); }
 		if (number < 10) { stream << int(int(number * 100) % 10); }
 		if (number< 1) stream << int(int(number * 1000) % 10);
 		if (number< 0.1) stream << int(int(number * 10000) % 10);
@@ -516,6 +522,7 @@ std::string double2string(double number) noexcept
 		//shift number
 		number = number*pow(10, -order);
 
+		stream << signStream.str();
 		//stream number
 		stream <<int(number) << "." << int(int(number * 10) % 10) << int(int(number * 100) % 10);
 

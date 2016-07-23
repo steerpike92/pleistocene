@@ -6,7 +6,10 @@ namespace simulation {
 namespace climate {
 namespace layers {
 
+
 class MaterialLayer;
+class AirLayer;
+class SeaLayer;
 class EarthLayer;
 class HorizonLayer;
 enum LayerType;
@@ -24,6 +27,10 @@ enum SpatialDirection {
 
 
 class SharedSurface {
+private:
+	MaterialLayer *_tenantLayer;
+	MaterialLayer *_ownerLayer;
+protected:
 	double _area;
 	double _midpointElevation;
 	
@@ -32,20 +39,16 @@ class SharedSurface {
 
 	double _pressureDifferential;
 
-	MaterialLayer *_tenantLayer;
-	MaterialLayer *_ownerLayer;
-
 	Eigen::Vector3d _normalVector;
 	void buildNormalVector() noexcept;
 
 	bool _pressureBuilt = false;
 
 public:
-	
 	SharedSurface() noexcept;
 
 	//top shared surface constructor
-	SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, double elevaton, LayerType tenantType) noexcept;
+	SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, double elevation, LayerType tenantType) noexcept;
 
 	//side shared surface constructor
 	SharedSurface(MaterialLayer *ownerLayer, MaterialLayer *tenantLayer, SpatialDirection spatialDirection,
@@ -61,23 +64,50 @@ public:
 
 	void performConduction() noexcept;
 
-	void buildPressureDifferential() noexcept;
-	
-	void pressureFlow() noexcept;
+	MaterialLayer* getTenant() noexcept;
 
+	virtual void buildPressureDifferential() noexcept;
+	
+	virtual void flow() noexcept;
+};
+
+class SharedAirSurface : public SharedSurface {
+
+	AirLayer* _ownerAirLayer;
+	AirLayer* _tenantAirLayer;
+
+	double calculateEquilibriumExchange() const noexcept;
+
+public:
+	SharedAirSurface() noexcept;
+	SharedAirSurface(AirLayer *ownerLayer, AirLayer *tenantLayer, SharedSurface &surface) noexcept;
+
+	void buildPressureDifferential() noexcept;
+
+	void flow() noexcept;
 };
 
 
-struct SharedEarthSurface {
+
+class SharedEarthSurface : public SharedSurface {
+public:
 	SpatialDirection _spatialDirection;
 	EarthLayer *_earthLayer;
-	double _area;
 	double _heightGradient;
+	void flow() noexcept;
 };
 
-struct NeighborHorizon {
-	HorizonLayer *neighbor;
+class SharedHorizonSurface : public SharedSurface {
+	HorizonLayer *_ownerHorizonLayer;
+	HorizonLayer *_tenantHorizonLayer;
+public:
 	double heightGradient;
+	void flow() noexcept;
+};
+
+class SharedSeaSurface : public SharedSurface {
+public:
+	void flow() noexcept;
 };
 
 
