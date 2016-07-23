@@ -124,9 +124,15 @@ _topElevation(topElevation)
 
 void GaseousMixture::transferMixture(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept
 {
+	double flow = proportion*givingGas._totalMols;
+
 	GaseousMixture pushMix = givingGas.copyProportion(proportion);
 	givingGas.resizeBy(1 - proportion);
 	receivingGas.push(pushMix);
+	givingGas._netFlow -= proportion*givingGas._totalMols;
+
+	givingGas._netFlow -= flow;
+	receivingGas._netFlow += flow;
 }
 
 GaseousMixture GaseousMixture::copyProportion(double proportion) const noexcept
@@ -160,7 +166,7 @@ void GaseousMixture::push(GaseousMixture &addedGas) noexcept
 
 void GaseousMixture::lapseTemperature(double deltaElevation) noexcept
 {
-	_temperature = -deltaElevation * _adiabaticLapseRate;
+	_temperature -= deltaElevation * _adiabaticLapseRate;
 }
 
 
@@ -182,8 +188,8 @@ void GaseousMixture::calculateParameters() noexcept {
 	//_clouds.calculateParameters();
 	Mixture::calculateParameters();
 
-	calculateSpecificHeatCapacity();
-	calculateSaturationDensity();
+	//calculateSpecificHeatCapacity();
+	//calculateSaturationDensity();
 	calculateLapseRate();
 }
 
@@ -194,7 +200,7 @@ void GaseousMixture::calculateSpecificHeatCapacity() noexcept {
 
 void GaseousMixture::calculateLapseRate() noexcept {
 	//stub. different from moist air
-	_adiabaticLapseRate = 0.001*9.8;
+	_adiabaticLapseRate = -0.0065;
 }
 
 void GaseousMixture::calculateSaturationDensity() noexcept {

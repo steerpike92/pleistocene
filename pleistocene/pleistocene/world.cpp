@@ -306,8 +306,8 @@ void World::processInput(const Input & input, const options::GameOptions &option
 	if (input.wasKeyPressed(SDL_SCANCODE_1)) { _statRequest._statType = ELEVATION; newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_2)) { _statRequest._statType = TEMPERATURE; newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_3)) { _statRequest._statType = MATERIAL_PROPERTIES; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = FLOW; newStatistic = true;}
-	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = MOISTURE; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_4)) { _statRequest._statType = PRESSURE; newStatistic = true;}
+	if (input.wasKeyPressed(SDL_SCANCODE_5)) { _statRequest._statType = FLOW; newStatistic = true;}
 	//draw section selector
 	if (input.wasKeyPressed(SDL_SCANCODE_6)) { _statRequest._section = SURFACE_; _statRequest._layer = 0; newStatistic = true;}
 	if (input.wasKeyPressed(SDL_SCANCODE_7)) { _statRequest._section = HORIZON_; _statRequest._layer = 0;  newStatistic = true;}
@@ -464,8 +464,8 @@ std::vector<std::string> World::getReadout() const noexcept
 	case(ELEVATION) : stream<< "elevation. "; break;
 	case(TEMPERATURE) : stream<< "temperature. "; break;
 	case(MATERIAL_PROPERTIES) : stream<< "material properties. "; break;
+	case(PRESSURE) : stream<< "pressure. "; break;
 	case(FLOW) : stream<< "flow. "; break;
-	case(MOISTURE) : stream<< "moisture. "; break;
 	}
 
 	readout.push_back(stream.str());

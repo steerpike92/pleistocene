@@ -54,7 +54,7 @@ const double tropopauseElevation = 11000;
 
 const double troposphereLayerHeight = tropopauseElevation / (kMaxAirLayers-2); //-boundary layer, -stratosphere gives -2
 
-const double stratopauseElevation = 32000;
+const double stratopauseElevation = 18000;
 
 //Rather ineligant, but I don't anticipate many changes to the number of max layers
 const double airElevations[kMaxAirLayers] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
@@ -69,7 +69,7 @@ const double g = 9.80665;
 const double StandardElevation[2] = { 0,11000 };
 const double StandardPressure[2] = { 101325, 22632 };
 const double StandardTemperature[2] = { 288.15, 216.65 };
-const double StandardLapseRate[2] = { -0.0098, 0 };
+const double StandardLapseRate[2] = { -0.0065, 0 };
 }
 
 
@@ -269,7 +269,6 @@ public:
 
 	void simulateFlow() noexcept;
 
-	void addSurface(SharedSurface &surface) noexcept;
 	//void addSeaSurface(SharedSeaSurface &seaSurface) noexcept;
 
 	elements::LiquidMixture *getLiquidPtr() noexcept;

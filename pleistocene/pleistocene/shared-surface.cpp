@@ -131,25 +131,25 @@ void SharedAirSurface::buildPressureDifferential() noexcept
 
 }
 
-double SharedAirSurface::calculateEquilibriumExchange() const noexcept
-{
-	double ownerMols = _ownerAirLayer->getGasPtr()->getMols();
-	double tenantMols = _tenantAirLayer->getGasPtr()->getMols();
-
-	double ownerVolume  = _ownerAirLayer->getGasPtr()->getVolume();
-	double tenantVolume = _tenantAirLayer->getGasPtr()->getVolume();
-
-	double totalMols = ownerMols + tenantMols;
-	double totalVolume = ownerVolume + tenantVolume;
-
-	double totalDensity = totalMols / totalVolume;
-
-	double finalOwnerMols = totalDensity*ownerVolume;
-
-	double molExchange =  ownerMols-finalOwnerMols;
-
-	return molExchange;
-}
+//double SharedAirSurface::calculateEquilibriumExchange() const noexcept
+//{
+//	double ownerMols = _ownerAirLayer->getGasPtr()->getMols();
+//	double tenantMols = _tenantAirLayer->getGasPtr()->getMols();
+//
+//	double ownerVolume  = _ownerAirLayer->getGasPtr()->getVolume();
+//	double tenantVolume = _tenantAirLayer->getGasPtr()->getVolume();
+//
+//	double totalMols = ownerMols + tenantMols;
+//	double totalVolume = ownerVolume + tenantVolume;
+//
+//	double totalDensity = totalMols / totalVolume;
+//
+//	double finalOwnerMols = totalDensity*ownerVolume;
+//
+//	double molExchange =  ownerMols-finalOwnerMols;
+//
+//	return molExchange;
+//}
 
 void SharedAirSurface::flow() noexcept 
 {
@@ -163,7 +163,7 @@ void SharedAirSurface::flow() noexcept
 	bool backflow = signbit(flowRate);
 	flowRate = abs(flowRate);
 
-	double equilibriumExchange = calculateEquilibriumExchange();
+	/*double equilibriumExchange = calculateEquilibriumExchange();
 
 	if (!backflow && equilibriumExchange>0) {
 		flowRate = std::min(flowRate, equilibriumExchange / (_ownerAirLayer->getGasPtr()->getMols()) );
@@ -171,9 +171,9 @@ void SharedAirSurface::flow() noexcept
 
 	else if (backflow && equilibriumExchange < 0) {
 		flowRate = std::min(flowRate, -equilibriumExchange / (_tenantAirLayer->getGasPtr()->getMols()) );
-	}
+	}*/
 
-	else { flowRate = std::min(flowRate, 0.05); }
+	flowRate = std::min(flowRate, 0.05);
 
 	if (backflow) {
 		GaseousMixture::transferMixture(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);

@@ -76,7 +76,7 @@ class SharedAirSurface : public SharedSurface {
 	AirLayer* _ownerAirLayer;
 	AirLayer* _tenantAirLayer;
 
-	double calculateEquilibriumExchange() const noexcept;
+	//double calculateEquilibriumExchange() const noexcept;
 
 public:
 	SharedAirSurface() noexcept;

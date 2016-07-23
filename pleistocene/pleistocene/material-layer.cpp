@@ -149,20 +149,28 @@ std::vector<std::string> MaterialLayer::getMessages(const StatRequest &statReque
 
 		return messages;
 
-	case(FLOW) :
+	case(PRESSURE) :
 	{
 		int neighbors = 0;
 		for (SharedSurface surface : _sharedSurfaces) {
 			neighbors++;
 		}
 
+
+
 		stream.str(std::string());
 		stream << "Neighbors: " << neighbors;
 		messages.push_back(stream.str());
 
+		if (_up == nullptr) {
+			stream.str(std::string());
+			stream << "No UP";
+			messages.push_back(stream.str());
+		}
+
 		return messages;
 	}
-	case(MOISTURE) : return messages;
+	case(FLOW) : return messages;
 	}
 	return messages;
 }
@@ -173,8 +181,8 @@ double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcep
 	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return _mixture->getTemperature();
 	case(MATERIAL_PROPERTIES) : return _mixture->getAlbedo();
+	case(PRESSURE) : return 0; //stub
 	case(FLOW) : return 0; //stub
-	case(MOISTURE) : return 0; //stub
 	default: LOG("Not a stat type"); exit(EXIT_FAILURE); return 1;
 	}
 
@@ -317,8 +325,8 @@ std::vector<std::string> EarthLayer::getMessages(const StatRequest &statRequest)
 		return messages;
 
 	}
+	case(PRESSURE) : return MaterialLayer::getMessages(statRequest);
 	case(FLOW) : return MaterialLayer::getMessages(statRequest);
-	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
 
@@ -330,8 +338,8 @@ double EarthLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	case(ELEVATION) : return _topElevation;
 	case(TEMPERATURE) : return _solidPtr->getTemperature();
 	case(MATERIAL_PROPERTIES) : return _solidPtr->getPermeability();
+	case(PRESSURE) : return 0;
 	case(FLOW) : return 0;
-	case(MOISTURE) : return 0;
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
@@ -371,8 +379,8 @@ std::vector<std::string> HorizonLayer::getMessages(const StatRequest &statReques
 
 		return messages;
 	}
+	case(PRESSURE) : return MaterialLayer::getMessages(statRequest);
 	case(FLOW) : return MaterialLayer::getMessages(statRequest);
-	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	}
 	return messages;
 }
@@ -383,8 +391,8 @@ double HorizonLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	case(ELEVATION) : return _topElevation;
 	case(TEMPERATURE) : return _solidPtr->getTemperature();
 	case(MATERIAL_PROPERTIES) : return  _solidPtr->getAlbedo();
+	case(PRESSURE) : return 0;
 	case(FLOW) : return 0;
-	case(MOISTURE) : return 0;
 	default: return 0;
 	}
 }
@@ -424,10 +432,6 @@ _liquidPtr(new elements::LiquidMixture())
 
 }
 
-void SeaLayer::addSurface(SharedSurface &surface) noexcept
-{
-
-}
 
 elements::LiquidMixture *SeaLayer::getLiquidPtr() noexcept { return _liquidPtr.get(); }
 
@@ -445,8 +449,8 @@ std::vector<std::string> SeaLayer::getMessages(const StatRequest &statRequest) c
 	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(statRequest);
+	case(PRESSURE) : return MaterialLayer::getMessages(statRequest);
 	case(FLOW) : return MaterialLayer::getMessages(statRequest);
-	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return messages;
 	}*/
 	return messages;
@@ -458,8 +462,8 @@ double SeaLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return _mixture->getTemperature();
 	case(MATERIAL_PROPERTIES) : return  _mixture->getAlbedo();
+	case(PRESSURE) : return 1;
 	case(FLOW) : return 1;
-	case(MOISTURE) : return 1;
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return 1;
 	}
 }
@@ -520,13 +524,16 @@ elements::GaseousMixture *AirLayer::getGasPtr() noexcept { return _gasPtr.get();
 //SIMULATION
 //=========================
 
-void AirLayer::computeSurfacePressures() noexcept {
+void AirLayer::computeSurfacePressures() noexcept 
+{
 	for (SharedAirSurface &airSurface : _sharedAirSurfaces) {
 		airSurface.buildPressureDifferential();
 	}
 }
 
-void AirLayer::simulateFlow() noexcept {
+void AirLayer::simulateFlow() noexcept 
+{
+	_gasPtr->_netFlow = 0;
 	for (SharedAirSurface &airSurface : _sharedAirSurfaces) {
 		airSurface.flow();
 	}
@@ -661,7 +668,7 @@ std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) c
 	case(ELEVATION) : return MaterialLayer::getMessages(statRequest);
 	case(TEMPERATURE) : return MaterialLayer::getMessages(statRequest);
 	case(MATERIAL_PROPERTIES) : return MaterialLayer::getMessages(statRequest);
-	case(FLOW) : {
+	case(PRESSURE) : {
 		stream << "Pressure: " << my::double2string(getPressure(_bottomElevation));
 		messages.push_back(stream.str());
 		
@@ -675,7 +682,12 @@ std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) c
 		messages.push_back(stream.str());
 		return messages;
 	}
-	case(MOISTURE) : return MaterialLayer::getMessages(statRequest);
+	case(FLOW) : {
+		stream.str(std::string());
+		stream << "Net flow: " << _gasPtr->_netFlow;
+		messages.push_back(stream.str());
+		return messages;
+	}
 	default: LOG("Not a draw option"); exit(EXIT_FAILURE); return messages;
 	}
 }
@@ -685,9 +697,9 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	switch (statRequest._statType) {
 	case(ELEVATION) : return _bottomElevation;
 	case(TEMPERATURE) : return this->getTemperature();
-	case(MATERIAL_PROPERTIES) : return -_gasPtr->getMols()+expectedMolsCalculator(_bottomElevation,_topElevation);
-	case(FLOW) : return (getPressure(_bottomElevation)-expectedHydrostaticPressureCalculator(_bottomElevation));
-	case(MOISTURE) : return 0;
+	case(MATERIAL_PROPERTIES) : return _gasPtr->getMols()-expectedMolsCalculator(_bottomElevation,_topElevation);
+	case(PRESSURE) : return (getPressure(_bottomElevation)-expectedHydrostaticPressureCalculator(_bottomElevation));
+	case(FLOW) : return _gasPtr->_netFlow;
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return 1;
 	}
 }

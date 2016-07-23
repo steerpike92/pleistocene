@@ -17,9 +17,9 @@ namespace simulation {
 enum StatType {
 	ELEVATION,		//1
 	TEMPERATURE,		//2
-	MATERIAL_PROPERTIES,	//3. Component names, Albedo, Heat Capacity, Porousness, Permeability, Salinity, Pressure
-	FLOW,			//4. Surface water flow, groundwater flow, currents, airflow
-	MOISTURE		//5. soil moisture, groundwater, ---, humidity.
+	MATERIAL_PROPERTIES,	//3. Component names, Albedo, Heat Capacity, Porousness, Permeability, Salinity,
+	PRESSURE,			//4. Surface water PRESSURE, groundwater PRESSURE, currents, airPRESSURE
+	FLOW			//5. 
 };
 
 

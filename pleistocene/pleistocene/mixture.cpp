@@ -390,15 +390,15 @@ void Mixture::conduction(Mixture &mixture1, Mixture &mixture2, double area) noex
 
 	//Air-surface conduction sucks
 	if ((mixture1._state == GAS && mixture2._state != GAS) || (mixture1._state != GAS && mixture2._state == GAS)) {
-		conductivity *= 0.01;
+		conductivity *= 0.001;
 	}
 
-	/*if (mixture1._state == GAS && mixture2._state == GAS){
-		conductivity *= 0.1;
-	}*/
+	if (mixture1._state == GAS && mixture2._state == GAS){
+		conductivity *= 0.001;
+	}
 
 	//Water conduction is good
-	else if (mixture1._state == WATER && mixture2._state == WATER) {
+	else if (mixture1._state == WATER || mixture2._state == WATER) {
 		conductivity *= 100;
 	}
 

@@ -101,6 +101,8 @@ public:
 	GaseousMixture(Element element, double temperature, double bottomElevation, double topElevation)  noexcept;
 	GaseousMixture(std::vector<Element> elementVector, double temperature, double bottomElevation, double topElevation)  noexcept;
 
+	double _netFlow = 0;
+
 	//=======================================
 	//MIXING GAS
 	//=======================================
@@ -118,7 +120,9 @@ private:
 
 	void calculateParameters() noexcept;
 
-private:
+	
+
+
 	void calculateSpecificHeatCapacity() noexcept;
 	void calculateLapseRate() noexcept;
 	void calculateSaturationDensity() noexcept;
