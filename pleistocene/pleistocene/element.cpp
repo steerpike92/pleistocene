@@ -30,13 +30,13 @@ Element::Element(ConstructorType constructorType, ElementType elementType, doubl
 	switch (constructorType) {
 	case(VOLUME) :
 		_volume = value;
-		if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); exit(EXIT_FAILURE); } //NOEXCEPT
+		if (_densityMap.count(_elementType) == 0) { LOG("Not a Volume substance"); exit(EXIT_FAILURE); }
 		if (_state == PARTICULATE) { _mass = _volume*_particleDensityMap.at(_elementType); }
 		else { _mass = _volume*_densityMap.at(_elementType); }
 		break;
 	case(MOLAR) :
 		_mols = value;
-		if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); exit(EXIT_FAILURE); } //NOEXCEPT
+		if (_molarMassMap.count(_elementType) == 0) { LOG("Not a Mol substance"); exit(EXIT_FAILURE); }
 		_mass = _mols*_molarMassMap.at(_elementType);
 		break;
 	case(MASS) :
@@ -75,7 +75,7 @@ void Element::combineLike(Element like) noexcept {
 	}
 
 	if (_molarMassMap.count(_elementType)) {//if molar mass defined
-		_mols = _mass / _molarMassMap.at(_elementType);
+		_mols += like._mols;
 	}
 }
 void Element::addMass(double mass) noexcept {
@@ -126,7 +126,7 @@ void Element::resizeBy(double proportion) noexcept {
 	}
 
 	if (_molarMassMap.count(_elementType)) {//if molar mass defined
-		_mols = _mass / _molarMassMap.at(_elementType);
+		_mols *= proportion;
 	}
 }
 

@@ -76,10 +76,6 @@ void MaterialLayer::simulateConduction() noexcept
 	}
 }
 
-void MaterialLayer::computeSurfacePressures() noexcept {
-	//TODO?
-	//Probably just need the air layer function
-}
 
 double MaterialLayer::getPressure(double elevation) const noexcept {
 	return 0.0; //I exist as STUB
@@ -524,8 +520,9 @@ elements::GaseousMixture *AirLayer::getGasPtr() noexcept { return _gasPtr.get();
 //SIMULATION
 //=========================
 
-void AirLayer::computeSurfacePressures() noexcept 
+void AirLayer::computeSurfacePressures(double basePressure) noexcept 
 {
+	_basePressure = basePressure;
 	for (SharedAirSurface &airSurface : _sharedAirSurfaces) {
 		airSurface.buildPressureDifferential();
 	}
@@ -546,17 +543,23 @@ double AirLayer::getPressure(double elevation) const noexcept {
 //UTILITY
 //=========================
 
-double AirLayer::expectedHydrostaticPressureCalculator(double elevation) noexcept
+double AirLayer::expectedHydrostaticPressureCalculator(double elevation) const noexcept
 {
 	using namespace layers::air;
 
 	//choose set of standard values based on elevation
+	double Po = _basePressure;
+
 	int i;
-	if (elevation > StandardElevation[1]) { i = 1; }
-	else { i = 0; }
+	if (elevation >= StandardElevation[1]) { 
+		i = 1;
+		Po = expectedHydrostaticPressureCalculator(StandardElevation[1]-1);
+	}
+	else { 
+		i = 0; 
+	}
 
 	//set of parameters
-	double Po = StandardPressure[i];
 	double To = StandardTemperature[i];
 	double L = StandardLapseRate[i];
 	double h = elevation;
@@ -582,7 +585,7 @@ double AirLayer::expectedHydrostaticPressureCalculator(double elevation) noexcep
 	return Pressure;
 }
 
-double AirLayer::expectedMolsCalculator(double bottomElevation, double topElevation) noexcept
+double AirLayer::expectedMolsCalculator(double bottomElevation, double topElevation) const noexcept
 {
 	using namespace layers::air;
 	double BottomPressure = expectedHydrostaticPressureCalculator(bottomElevation);
@@ -594,13 +597,13 @@ double AirLayer::expectedMolsCalculator(double bottomElevation, double topElevat
 	return ExpectedMols;
 }
 
-double AirLayer::expectedTemperatureCalculator(double elevation) noexcept
+double AirLayer::expectedTemperatureCalculator(double elevation) const noexcept
 {
 	using namespace layers::air;
 
 	//choose set of standard values based on elevation
 	int i;
-	if (elevation > StandardElevation[1]) { i = 1; }
+	if (elevation >= StandardElevation[1]) { i = 1; }
 	else { i = 0; }
 
 	//parameters

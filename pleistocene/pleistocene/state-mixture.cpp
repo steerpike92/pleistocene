@@ -129,7 +129,6 @@ void GaseousMixture::transferMixture(GaseousMixture &receivingGas, GaseousMixtur
 	GaseousMixture pushMix = givingGas.copyProportion(proportion);
 	givingGas.resizeBy(1 - proportion);
 	receivingGas.push(pushMix);
-	givingGas._netFlow -= proportion*givingGas._totalMols;
 
 	givingGas._netFlow -= flow;
 	receivingGas._netFlow += flow;

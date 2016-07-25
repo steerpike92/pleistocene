@@ -156,7 +156,7 @@ void SharedAirSurface::flow() noexcept
 	using namespace elements;
 	if (!_pressureBuilt) { LOG("NO PRESSURE BUILT"); exit(EXIT_FAILURE); return; }
 
-	double flowConstant = 1 * pow(10, -14);
+	double flowConstant = 5 * pow(10, -14);
 
 	double flowRate = _area * _pressureDifferential * flowConstant;
 
@@ -173,7 +173,7 @@ void SharedAirSurface::flow() noexcept
 		flowRate = std::min(flowRate, -equilibriumExchange / (_tenantAirLayer->getGasPtr()->getMols()) );
 	}*/
 
-	flowRate = std::min(flowRate, 0.05);
+	//flowRate = std::min(flowRate, 0.1);
 
 	if (backflow) {
 		GaseousMixture::transferMixture(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);

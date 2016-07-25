@@ -13,7 +13,7 @@ World::World() noexcept {}
 World::World(graphics::Graphics &graphics, const options::GameOptions &options) noexcept :
 _statRequest(StatRequest()),
 _selectedTile(nullptr),
-_seed(7637),
+_seed(10718),
 _statisticsUpToDate(false)
 {
 	srand((unsigned int)time(NULL));//seed random number generation
@@ -161,14 +161,14 @@ void World::generateTileElevations() noexcept {
 
 
 										//noise generator;
-	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols);
+	//std::vector<double> noiseTable = buildNoiseTable(Rows, Cols);
 
 	//noise edge blender
-	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
+	//noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
 
 	//must be ~0. never outside of (-1, 1)
-	const double shiftBias = -0.1; //moves from neutrally land/sea to biasing one while retaining the same shapes
+	const double shiftBias = 0.0; //moves from neutrally land/sea to biasing one while retaining the same shapes
 	
 
 	//Elevation shape parameters
@@ -178,15 +178,15 @@ void World::generateTileElevations() noexcept {
 	const double landPower = 2;
 
 	my::Address A;
-	double noiseValue;
+	double noiseValue=-0.001;
 
 	//SET ELEVATION
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
-			noiseValue = noiseTable[row*Cols + col];
-
+			//noiseValue = noiseTable[row*Cols + col];
+			noiseValue = -0.0055;
 			//shift
-			noiseValue += shiftBias;
+			//noiseValue += shiftBias;
 			
 			//stretch back
 			if (noiseValue < 0) {

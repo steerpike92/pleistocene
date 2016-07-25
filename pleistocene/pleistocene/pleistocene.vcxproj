@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="july-19-todo.txt" />
+    <Text Include="NOAAwisdom.txt" />
     <Text Include="solid-seeds.txt" />
     <Text Include="user-commands.txt" />
   </ItemGroup>

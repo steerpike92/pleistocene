@@ -99,7 +99,6 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 
 	//build boundary layer
 	buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
-	//buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
 	_air.push_back(std::move(buildLayer));
 	layerBottomElevation = layerTopElevation;
 
@@ -108,8 +107,7 @@ void MaterialColumn::buildAir(double baseElevation) noexcept
 
 	for (; i < 6; i++) {
 		layerTopElevation = airElevations[i];
-		//buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
-		buildLayer = AirLayer(baseElevation, 288, layerBottomElevation, layerTopElevation);
+		buildLayer = AirLayer(baseElevation, _initialTemperature, layerBottomElevation, layerTopElevation);
 		_air.push_back(std::move(buildLayer));
 		layerBottomElevation = layerTopElevation;
 	}
@@ -420,13 +418,27 @@ void MaterialColumn::simulateConduction() noexcept{
 	}
 }
 
-void MaterialColumn::simulatePressure() noexcept
+void MaterialColumn::buildBasePressure() noexcept
 {
-	//build pressure on surfaces:
+	_basePressure = 0;
+
 	for (AirLayer &air : _air) {
-		air.computeSurfacePressures();
+		_basePressure+=air.getGasPtr()->getMols()*kG*air::Md;
 	}
 
+	_basePressure += 20000;
+
+}
+
+void MaterialColumn::simulatePressure() noexcept
+{
+
+	buildBasePressure();
+
+	//build pressure on surfaces:
+	for (AirLayer &air : _air) {
+		air.computeSurfacePressures(_basePressure);
+	}
 
 }
 

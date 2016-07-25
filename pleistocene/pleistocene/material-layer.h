@@ -54,7 +54,7 @@ const double tropopauseElevation = 11000;
 
 const double troposphereLayerHeight = tropopauseElevation / (kMaxAirLayers-2); //-boundary layer, -stratosphere gives -2
 
-const double stratopauseElevation = 18000;
+const double stratopauseElevation =13000;
 
 //Rather ineligant, but I don't anticipate many changes to the number of max layers
 const double airElevations[kMaxAirLayers] = { 0, troposphereLayerHeight, 2 * troposphereLayerHeight,
@@ -126,8 +126,6 @@ public:
 	double filterInfraredRadiation(double energyKJ) noexcept;
 
 	void simulateConduction() noexcept;
-
-	virtual void computeSurfacePressures() noexcept;
 
 	virtual void simulateFlow() = 0;
 
@@ -294,6 +292,8 @@ class AirLayer : public MaterialLayer {
 	double incidentUpRadiation;
 	double incidentDownRadiation;
 
+	double _basePressure=101325;
+
 public:
 	AirLayer() noexcept;
 	AirLayer(double baseElevation, double temperature, double bottomElevation, double fixedTopElevation) noexcept;
@@ -303,18 +303,18 @@ public:
 	void addSurface(SharedSurface &surface) noexcept;
 	void addAirSurface(SharedAirSurface &airSurface) noexcept;
 
-	void computeSurfacePressures() noexcept;
+	void computeSurfacePressures(double basePressure) noexcept;
 
 	elements::GaseousMixture *getGasPtr() noexcept;
 
 private:
 	//unique air member functions
 
-	static std::vector<elements::Element> generateAirElements(double bottomElevation, double topElevation) noexcept;
+	std::vector<elements::Element> generateAirElements(double bottomElevation, double topElevation) noexcept;
 
-	static double expectedHydrostaticPressureCalculator(double elevation) noexcept;
-	static double expectedMolsCalculator(double bottomElevation, double topElevation) noexcept;
-	static double expectedTemperatureCalculator(double elevation) noexcept;
+	double expectedHydrostaticPressureCalculator(double elevation) const noexcept;
+	double expectedMolsCalculator(double bottomElevation, double topElevation) const noexcept;
+	double expectedTemperatureCalculator(double elevation) const noexcept;
 
 	double lapsedTemperatureCalculator(double elevation) const noexcept;
 	double truePressureCalculator(double elevation) const noexcept;

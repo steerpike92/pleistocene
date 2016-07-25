@@ -52,6 +52,7 @@ private:
 	double buildSea(double baseElevation, double seaSurfaceElevation) noexcept;
 	void buildAir(double baseElevation) noexcept;
 
+
 	//Relation Builders
 	//=================
 public: 
@@ -90,7 +91,12 @@ public:
 	void simulateWaterFlow() noexcept;
 	void simulatePlants() noexcept;
 
-
+	//Simultion Helpers
+	//======================
+private:
+	void buildBasePressure() noexcept;
+	double _basePressure= 101325;
+public:
 	//====================================================
 	//GETTERS
 	//====================================================
