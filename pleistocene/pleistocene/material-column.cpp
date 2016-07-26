@@ -620,6 +620,16 @@ void MaterialColumn::chooseLayer(const StatRequest &statRequest) const noexcept 
 }
 
 
+
+Eigen::Vector2d MaterialColumn::getAdvection(const StatRequest &statRequest) const noexcept
+{
+	chooseLayer(statRequest);//maybe redundant, but don't want to depend on previous call to set _chosenLayer
+
+	return _chosenLayer->getAdvection();
+}
+
+
+
 }//namespace layers
 }//namespace climate
 }//namespace simulation

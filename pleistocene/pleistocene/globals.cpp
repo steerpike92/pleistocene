@@ -25,6 +25,17 @@ Rectangle::Rectangle(SDL_Rect rect) noexcept :
 	x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
 
+SDL_Rect Rectangle::getSDL_Rect() const noexcept
+{
+	SDL_Rect rect;
+	rect.x = x;
+	rect.y = y;
+	rect.h = h;
+	rect.w = w;
+
+	return rect;
+}
+
 const SDL_Rect Rectangle::cameraTransform(const double SCALE, const Vector2 C) const noexcept {
 
 	SDL_Rect GameRect;

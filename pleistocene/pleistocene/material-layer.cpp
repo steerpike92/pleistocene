@@ -188,6 +188,11 @@ double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcep
 
 }
 
+Eigen::Vector2d MaterialLayer::getAdvection() const noexcept 
+{
+	return Eigen::Vector2d{ 0, 0 };
+}
+
 //////////==================================
 //////////EARTH
 //////////==================================
@@ -434,6 +439,8 @@ _liquidPtr(new elements::LiquidMixture())
 
 
 elements::LiquidMixture *SeaLayer::getLiquidPtr() noexcept { return _liquidPtr.get(); }
+
+
 
 //SIMULATION
 //===========================
@@ -704,6 +711,14 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	}
 }
 
+Eigen::Vector2d AirLayer::getAdvection() const noexcept
+{
+	Eigen::Vector2d advection{ 0.0, 0.0 };
+	
+
+	
+	return advection;
+}
 
 }//namespace layers
 }//namespace climate

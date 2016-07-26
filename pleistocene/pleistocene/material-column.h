@@ -103,6 +103,9 @@ public:
 
 	double getStatistic(const StatRequest &statRequest) const noexcept;
 
+	Eigen::Vector2d getAdvection(const StatRequest &statRequest) const noexcept;
+
+	//Getter helpers
 private:
 	void chooseLayer(const StatRequest &statRequest) const noexcept;
 	mutable MaterialLayer *_chosenLayer;

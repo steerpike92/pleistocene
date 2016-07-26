@@ -100,10 +100,14 @@ public:
 
 
 	bool elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept;
+
+	void advectionDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, const StatRequest &statRequest) noexcept;
+
 private:
 
-	static std::map<std::string, std::string> _climateTextures;
 	static std::map<elevationType, std::string> _elevationTextures;
+	static std::string _windBarbTexture;
+	static std::vector<SDL_Rect> _windBarbRects;
 
 	//Standard Draw Subroutine
 	void setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept;

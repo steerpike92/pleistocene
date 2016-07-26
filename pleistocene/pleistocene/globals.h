@@ -220,6 +220,8 @@ public:
 	Rectangle(int x, int y, int w, int h) noexcept;
 	Rectangle(SDL_Rect rect) noexcept;
 
+	SDL_Rect getSDL_Rect() const noexcept;
+
 	const SDL_Rect cameraTransform(const double SCALE, const Vector2 _c) const noexcept;
 
 	const Vector2 getCenter() const noexcept;

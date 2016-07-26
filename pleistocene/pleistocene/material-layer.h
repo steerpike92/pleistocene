@@ -140,6 +140,7 @@ public:
 	elements::Mixture *getMixture() const noexcept;
 
 	virtual double getPressure(double elevation) const noexcept;
+	virtual Eigen::Vector2d getAdvection() const noexcept;
 
 	virtual std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
 	virtual double getStatistic(const struct StatRequest &statRequest) const noexcept;
@@ -328,6 +329,9 @@ public:
 	//Message getter
 	std::vector<std::string> getMessages(const struct StatRequest &statRequest) const noexcept;
 	double getStatistic(const struct StatRequest &statRequest) const noexcept;
+
+	Eigen::Vector2d getAdvection() const noexcept;
+
 };
 
 

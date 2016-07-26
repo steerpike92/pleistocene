@@ -11,9 +11,9 @@ namespace climate {
 
 TileClimate::TileClimate() noexcept {}
 
-TileClimate::TileClimate(my::Address A, double noiseValue) noexcept 
+TileClimate::TileClimate(my::Address A, double noiseValue) noexcept
 {
-	double landElevation=noiseValue * kElevationAmplitude;
+	double landElevation = noiseValue * kElevationAmplitude;
 
 	_address = A;
 
@@ -27,14 +27,14 @@ TileClimate::TileClimate(my::Address A, double noiseValue) noexcept
 	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
 }
 
-double TileClimate::calculateLocalInitialtemperature() noexcept 
+double TileClimate::calculateLocalInitialtemperature() noexcept
 {
 	double localInitialTemperature = kInitialTemperatureK;
-	localInitialTemperature -= pow((_latitude_deg / 70), 2) * (kInitialTemperatureK-273);
+	localInitialTemperature -= pow((_latitude_deg / 70), 2) * (kInitialTemperatureK - 273);
 	return localInitialTemperature;
 }
 
-void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept 
+void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacientTileClimates) noexcept
 {
 	_adjacientTileClimates = adjacientTileClimates;
 
@@ -58,20 +58,20 @@ void TileClimate::buildAdjacency(std::map<my::Direction, TileClimate*> &adjacien
 
 int TileClimate::_simulationStep;
 
-void TileClimate::beginNewHour() noexcept 
+void TileClimate::beginNewHour() noexcept
 {
 	_simulationStep = 0;
 	SolarRadiation::setupSolarRadiation();
 	//i.e. create earth rotation matrix for current time and set sun ray vector
 }
 
-bool TileClimate::beginNextStep() noexcept 
+bool TileClimate::beginNextStep() noexcept
 {
 	_simulationStep++;
 	return (_simulationStep <= kTotalSteps);//check if simulation hour complete
 }
 
-void TileClimate::simulateClimate() noexcept 
+void TileClimate::simulateClimate() noexcept
 {
 	double solarEnergyPerHour;
 
@@ -100,11 +100,11 @@ void TileClimate::simulateClimate() noexcept
 		_materialColumn.simulatePlants();
 		break;
 	default:
-		LOG("Error: Simulation step out of bounds");exit(EXIT_FAILURE);
+		LOG("Error: Simulation step out of bounds"); exit(EXIT_FAILURE);
 	}
 }
 
-double TileClimate::simulateSolarRadiation() noexcept 
+double TileClimate::simulateSolarRadiation() noexcept
 {
 	double solarFraction = _solarRadiation.applySolarRadiation();
 	double incidentSolarEnergyPerHour = solarFraction*kSolarEnergyPerHour;
@@ -115,7 +115,7 @@ double TileClimate::simulateSolarRadiation() noexcept
 //GRAPHICS
 //======================================
 
-bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept 
+bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, bool sunlit) noexcept
 {
 
 	double elevation = _materialColumn.getLandElevation();
@@ -136,7 +136,7 @@ bool TileClimate::elevationDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 	return graphics.blitTexture(_elevationTextures[elevationDrawType], nullptr, onscreenPositions);
 }
 
-void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept 
+void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevationShader, elevationType &computedElevationType) noexcept
 {
 	if (elevation < kLandCutoff) {
 		computedElevationType = SUBMERGED;
@@ -159,8 +159,39 @@ void TileClimate::setElevationDrawSpecs(double elevation, double &computedElevat
 	return;
 }
 
-std::map<std::string, std::string> TileClimate::_climateTextures;
+void TileClimate::advectionDraw(graphics::Graphics &graphics, std::vector<SDL_Rect> onscreenPositions, const StatRequest &statRequest) noexcept
+{
+	Eigen::Vector2d advectionVector = _materialColumn.getAdvection(statRequest);
+
+	double norm = advectionVector.norm();
+
+	//select barb
+	size_t barbSelected = 0;//calm
+	if (norm < 5 && norm > 2) {//slight wind
+		barbSelected = 1; 
+	} 
+	else if (norm>=5) {//steady wind
+		barbSelected = size_t(norm / 5)+1;
+		barbSelected = std::min(barbSelected, 17u);
+	}
+
+	 //determine angle
+	advectionVector.normalize();
+	double angle=atan2(advectionVector[1], advectionVector[0]);
+
+
+	//shift onscreen positions
+	//TODO
+
+
+
+	graphics.blitTexture(_windBarbTexture, &_windBarbRects[barbSelected], onscreenPositions, angle);
+}
+
+
 std::map<elevationType, std::string> TileClimate::_elevationTextures;
+std::string TileClimate::_windBarbTexture;
+std::vector<SDL_Rect> TileClimate::_windBarbRects;
 
 void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept 
 {
@@ -171,6 +202,27 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept
 
 	for (std::pair< elevationType, std::string> P : _elevationTextures) {
 		graphics.loadImage(P.second);
+	}
+
+	_windBarbTexture = "../../content/sprites/barbs.png";
+	graphics.loadImage(_windBarbTexture);
+
+	SDL_Rect rectangle;
+	rectangle.x = 20;
+	rectangle.y = 0;
+	rectangle.w = 22;
+	rectangle.h = 22;
+	_windBarbRects.push_back(rectangle);
+
+
+	rectangle.x = 0;
+	rectangle.y = 37;
+	rectangle.w = 59;
+	rectangle.h = 17;
+	int offset = 25;
+	for (int i = 0; i < 17; i++) {
+		rectangle.y = 37+i*(offset + rectangle.h);
+		_windBarbRects.push_back(rectangle);
 	}
 }
 

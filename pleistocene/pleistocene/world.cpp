@@ -410,7 +410,7 @@ void World::draw(graphics::Graphics &graphics, bool cameraMovementFlag, const op
 
 	else {
 		for (Tile &tile : _tiles) {
-			if (tile.statDraw(graphics, cameraMovementFlag, _statistics)) {
+			if (tile.statDraw(graphics, cameraMovementFlag, _statistics, _statRequest)) {
 				_selectedTile = &tile;
 			}
 		}

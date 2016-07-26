@@ -33,7 +33,7 @@ public:
 
 	//GRAPHICS
 	//====================
-	bool statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics) noexcept;
+	bool statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics, const StatRequest &statRequest) noexcept;
 	bool elevationDraw(graphics::Graphics &graphics, bool cameraMovementFlag, bool sunlit) noexcept;
 
 	static std::map<int, std::string> _colorTextures;

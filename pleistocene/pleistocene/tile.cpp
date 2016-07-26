@@ -48,7 +48,7 @@ void Tile::simulate() noexcept {
 //=======================
 
 
-bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics) noexcept
+bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const Statistics &statistics, const StatRequest &statRequest) noexcept
 {
 	//onscreen guard against wasting time. Also updates onscreen position.
 	if (!onscreenPositionUpdate(graphics, cameraMovementFlag)) {
@@ -75,8 +75,17 @@ bool Tile::statDraw(graphics::Graphics &graphics, bool cameraMovementFlag, const
 	//	graphics.colorFilter(_colorTextures[0], 1.0, filter, filter);
 	//}
 
+	bool returnValue = false;
 
-	return graphics.blitTexture(_colorTextures[0], NULL, _onscreenPositions);
+	returnValue= graphics.blitTexture(_colorTextures[0], NULL, _onscreenPositions);
+
+
+	if (statRequest._statType == FLOW) {
+		_tileClimate.advectionDraw(graphics, _onscreenPositions, statRequest);
+	}
+
+
+	return returnValue;
 }
 
 
