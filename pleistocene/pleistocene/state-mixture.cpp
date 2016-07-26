@@ -122,17 +122,19 @@ _topElevation(topElevation)
 //MIXING GASSES
 //===================================
 
-void GaseousMixture::transferMixture(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept
+void GaseousMixture::airFlow(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion, Eigen::Vector3d flowVector) noexcept
 {
-	double flow = proportion*givingGas._totalMols;
+	//double flow = proportion*givingGas._totalMols;
 
 	GaseousMixture pushMix = givingGas.copyProportion(proportion);
 	givingGas.resizeBy(1 - proportion);
-	receivingGas.push(pushMix);
-	givingGas._netFlow -= proportion*givingGas._totalMols;
 
-	givingGas._netFlow -= flow;
-	receivingGas._netFlow += flow;
+	//pushMix._inertia += flowVector*proportion;
+
+	receivingGas.push(pushMix);
+
+	//givingGas._netFlow -= flow;
+	//receivingGas._netFlow += flow;
 }
 
 GaseousMixture GaseousMixture::copyProportion(double proportion) const noexcept
@@ -156,6 +158,8 @@ void GaseousMixture::push(GaseousMixture &addedGas) noexcept
 	double newTotalHeatCapacity = this->_totalHeatCapacity + addedGas._totalHeatCapacity;
 
 	_temperature = totalHeat / newTotalHeatCapacity;
+
+	_inertia += addedGas._inertia;
 
 	for (ElementPair &elementPair : addedGas._elements) {
 		pushSpecific(elementPair.second);

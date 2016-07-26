@@ -29,7 +29,7 @@ protected:
 	double _hourlySolarInput = 0;
 	//double _dailySolarInput = 0;
 
-	double _hourlyInfraredInput =0;
+	double _hourlyInfraredInput = 0;
 	double _hourlyInfraredInputDisplay = 0;
 
 	double _hourlyOutputRadiation = 0;
@@ -37,9 +37,9 @@ protected:
 
 	double _netConductiveExchange = 0;
 
-	double _equilibriumTemperature;
+	double _equilibriumTemperature = 0;
 	
-
+	Eigen::Vector3d _inertia { 0,0,0 };
 
 	double handleInOutRadiation() noexcept;
 	double calculateEmissions(double temperature) const noexcept;
@@ -106,6 +106,10 @@ public:
 	double getVolume() const noexcept;
 	double getMass() const noexcept;
 	double getMols() const noexcept;
+
+	void setInertia(Eigen::Vector3d inertia) noexcept;//ugh
+	virtual Eigen::Vector3d getInertia() const noexcept;
+
 };
 
 }//namespace elements

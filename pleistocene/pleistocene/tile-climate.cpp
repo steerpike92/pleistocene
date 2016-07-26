@@ -163,25 +163,43 @@ void TileClimate::advectionDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 {
 	Eigen::Vector2d advectionVector = _materialColumn.getAdvection(statRequest);
 
-	double norm = advectionVector.norm();
+	double norm = advectionVector.norm()*1e11;
+
+	bool null_barb = true;
 
 	//select barb
 	size_t barbSelected = 0;//calm
 	if (norm < 5 && norm > 2) {//slight wind
 		barbSelected = 1; 
+		null_barb = false;
 	} 
 	else if (norm>=5) {//steady wind
 		barbSelected = size_t(norm / 5)+1;
 		barbSelected = std::min(barbSelected, 17u);
+		null_barb = false;
 	}
 
-	 //determine angle
-	advectionVector.normalize();
-	double angle=atan2(advectionVector[1], advectionVector[0]);
+	//determine angle
+	double angle = 0;
+	if (!null_barb) {
+		advectionVector.normalize();
+		angle = atan2(advectionVector[1], advectionVector[0]) * (180/M_PI);
+	}
 
+	//shift and shrink onscreen positions
+	
+	for (SDL_Rect &rect : onscreenPositions) {
 
-	//shift onscreen positions
-	//TODO
+		if (null_barb) {
+			rect.y += rect.h / 3;
+		}
+		else {
+			rect.y += rect.h / 2;
+		}
+
+		rect.h = int(double(rect.h*(_windBarbRects[barbSelected].h))/60.0);
+		rect.w =  int(double(rect.w*(_windBarbRects[barbSelected].w))/60.0);
+	} 
 
 
 
@@ -208,9 +226,9 @@ void TileClimate::setupTextures(graphics::Graphics &graphics)  noexcept
 	graphics.loadImage(_windBarbTexture);
 
 	SDL_Rect rectangle;
-	rectangle.x = 20;
+	rectangle.x = 0;
 	rectangle.y = 0;
-	rectangle.w = 22;
+	rectangle.w = 59;
 	rectangle.h = 22;
 	_windBarbRects.push_back(rectangle);
 

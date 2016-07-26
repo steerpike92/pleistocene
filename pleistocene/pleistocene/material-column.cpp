@@ -437,6 +437,37 @@ void MaterialColumn::simulateAirFlow()  noexcept
 		air.simulateFlow();
 	}
 
+	//bottom boundary condition
+	Eigen::Vector3d horizonInertia= _air.begin()->getGasPtr()->getInertia();
+	horizonInertia[2] = std::min(horizonInertia[2], 0.0);
+	_air.front().getGasPtr()->setInertia(horizonInertia);
+
+	//top boundary condition
+	Eigen::Vector3d stratInertia = _air.rbegin()->getGasPtr()->getInertia();
+	stratInertia[2] = std::max(stratInertia[2], 0.0);
+	_air.rbegin()->getGasPtr()->setInertia(stratInertia);
+
+	//polar filter?
+	if (_adjacientColumns.count(my::NORTH_EAST) == 0) {
+		for (auto &air : _air) {
+			Eigen::Vector3d inertia = air.getGasPtr()->getInertia();
+			if (inertia[1] < 0) {
+				inertia[1] = 0;
+				air.getGasPtr()->setInertia(inertia);
+			}
+		}
+	}
+
+	//antipolar filter
+	if (_adjacientColumns.count(my::SOUTH_EAST) == 0) {
+		for (auto &air : _air) {
+			Eigen::Vector3d inertia = air.getGasPtr()->getInertia();
+			if (inertia[1] > 0) {
+				inertia[1] = 0;
+				air.getGasPtr()->setInertia(inertia);
+			}
+		}
+	}
 }
 
 void MaterialColumn::simulateCondensation() noexcept

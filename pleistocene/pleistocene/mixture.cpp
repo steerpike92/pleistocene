@@ -189,16 +189,19 @@ void Mixture::resizeBy(double proportion) noexcept
 	for (elements::ElementPair &elementPair : _elements) {
 		elementPair.second.resizeBy(proportion);
 	}
+	_inertia *= proportion;
 	calculateParameters();
 }
 
 void Mixture::push(Mixture &addedMixture) noexcept 
 {
 	using namespace elements;
-	double totalHeat = this->_totalHeatCapacity*_temperature +
-		addedMixture._totalHeatCapacity*addedMixture._temperature;
+	double totalHeat =	this->_totalHeatCapacity*_temperature
+				+ addedMixture._totalHeatCapacity*addedMixture._temperature;
 	double newTotalHeatCapacity = this->_totalHeatCapacity + addedMixture._totalHeatCapacity;
 	_temperature = totalHeat / newTotalHeatCapacity;
+
+	//_inertia += addedMixture._inertia;
 
 	for (ElementPair &elementPair : addedMixture._elements) {
 		pushSpecific(elementPair.second);
@@ -503,6 +506,15 @@ std::vector<std::string> Mixture::getElementMessages() const noexcept
 	return messages;
 }
 
+Eigen::Vector3d Mixture::getInertia() const noexcept
+{
+	return _inertia;
+}
+
+void Mixture::setInertia(Eigen::Vector3d inertia) noexcept 
+{
+	_inertia = inertia;
+}
 
 }//namespace elements
 }//namespace layers

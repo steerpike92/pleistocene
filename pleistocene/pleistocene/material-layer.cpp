@@ -182,7 +182,7 @@ double MaterialLayer::getStatistic(const StatRequest &statRequest) const noexcep
 	case(TEMPERATURE) : return _mixture->getTemperature();
 	case(MATERIAL_PROPERTIES) : return _mixture->getAlbedo();
 	case(PRESSURE) : return 0; //stub
-	case(FLOW) : return 0; //stub
+	case(FLOW) : return -10; //stub
 	default: LOG("Not a stat type"); exit(EXIT_FAILURE); return 1;
 	}
 
@@ -706,16 +706,21 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	case(TEMPERATURE) : return this->getTemperature();
 	case(MATERIAL_PROPERTIES) : return _gasPtr->getMols()-expectedMolsCalculator(_bottomElevation,_topElevation);
 	case(PRESSURE) : return (getPressure(_bottomElevation)-expectedHydrostaticPressureCalculator(_bottomElevation));
-	case(FLOW) : return _gasPtr->_netFlow;
+	//case(FLOW) : return _gasPtr->_netFlow;
+	case(FLOW) : {
+		//double flow = _gasPtr->getInertia().norm();
+		//return flow;
+		double convection = _gasPtr->getInertia().z();
+		return convection;
+	}
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return 1;
 	}
 }
 
 Eigen::Vector2d AirLayer::getAdvection() const noexcept
-{
-	Eigen::Vector2d advection{ 0.0, 0.0 };
-	
-
+{	
+	Eigen::Vector3d inertia=_gasPtr->getInertia();
+	Eigen::Vector2d advection{ inertia[0],inertia[1] };
 	
 	return advection;
 }
