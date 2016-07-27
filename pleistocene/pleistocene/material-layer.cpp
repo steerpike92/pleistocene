@@ -532,6 +532,9 @@ void AirLayer::addAirSurface(SharedAirSurface &airSurface) noexcept
 
 elements::GaseousMixture *AirLayer::getGasPtr() noexcept { return _gasPtr.get(); }
 
+elements::GaseousMixture *AirLayer::getTempPtr() noexcept { return &_tempGas; }
+
+
 //SIMULATION
 //=========================
 
@@ -559,10 +562,6 @@ void AirLayer::hourlyClear() noexcept
 {
 	_mixture->hourlyClear();
 
-	/*using namespace elements;
-	std::unique_ptr<GaseousMixture> temp(new GaseousMixture(_tempGas));
-	_gasPtr = std::move(temp);
-	temp.~unique_ptr();*/
 }
 
 void AirLayer::applyCoriolisForce(double latitude_rad) noexcept
@@ -574,14 +573,17 @@ void AirLayer::applyCoriolisForce(double latitude_rad) noexcept
 	Eigen::Vector3d coriolisForce;
 	Eigen::Vector3d velocity=_gasPtr->getVelocity();
 	coriolisForce[0] = -velocity[1] * sinVal - velocity[2] * cosVal;
+	//coriolisForce[0] = -velocity[1] * sinVal;
 	coriolisForce[1] = velocity[0] * sinVal;
 	coriolisForce[2] = velocity[0] * cosVal;
+	//coriolisForce[2] = 0;
+
 
 	double anglularVelocity = (2 * M_PI / (kSiderealDay_h*kHour_s));
 
 	double mass = _gasPtr->getMass()*kTileArea;
 
-	double fudge = 0.05;
+	double fudge = 0.1;
 
 	coriolisForce = coriolisForce * 2 * anglularVelocity * mass * fudge;
 

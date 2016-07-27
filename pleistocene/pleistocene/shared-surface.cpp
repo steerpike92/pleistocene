@@ -131,10 +131,10 @@ void SharedAirSurface::buildPressureDifferential() noexcept
 
 	_pressureDifferential = _ownerPressure - _tenantPressure;
 
-	double pressureConstant = 1e-8;
+	double pressureConstant = 1e-15;
 
-	_ownerAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant);
-	_tenantAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant);
+	_ownerAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant*_area);
+	_tenantAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant*_area);
 
 	_pressureBuilt = true;
 
@@ -167,23 +167,24 @@ void SharedAirSurface::flow() noexcept
 
 	double ownerFlux = _area * (_ownerAirLayer->getGasPtr()->getVelocity().dot(this->_normalVector));
 	double tenantFlux = _area * (_tenantAirLayer->getGasPtr()->getVelocity().dot(this->_normalVector));
-
-	_netFlux = (ownerFlux + tenantFlux) / 2;
 	
-	double flowRate = _netFlux;
-	
-	bool backflow = signbit(flowRate);
-	flowRate = abs(flowRate);
+	_netFlux = 0;
+	double flowRate;
 
-	//flowRate = std::min(flowRate, 0.05);
-
-	if (backflow) {
-		GaseousMixture::airFlow(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);
-	}
-	else {
+	if (ownerFlux > 0) {
+		flowRate = abs(ownerFlux);
+		flowRate = std::min(flowRate, 0.2);
 		GaseousMixture::airFlow(*_tenantAirLayer->getGasPtr(), *_ownerAirLayer->getGasPtr(), flowRate);
+		_netFlux += flowRate*_ownerAirLayer->getGasPtr()->getMols();
 	}
 
+	if (tenantFlux < 0) {
+		flowRate = abs(tenantFlux);
+		flowRate = std::min(flowRate, 0.2);
+		GaseousMixture::airFlow(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);
+		_netFlux -= flowRate*_tenantAirLayer->getGasPtr()->getMols();
+	}
+	
 	_pressureBuilt = false;
 }
 

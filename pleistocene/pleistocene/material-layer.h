@@ -49,7 +49,7 @@ namespace air {
 
 const int kMaxAirLayers = 6;//IF CHANGED, UPDATE airElevations!!!!!
 
-const double boundaryLayerHeight = 200;
+const double boundaryLayerHeight = 1000;
 const double tropopauseElevation = 11000;
 
 const double troposphereLayerHeight = tropopauseElevation / (kMaxAirLayers-2); //-boundary layer, -stratosphere gives -2
@@ -313,6 +313,7 @@ public:
 	void applyCoriolisForce(double latitude_rad) noexcept;
 
 	elements::GaseousMixture *getGasPtr() noexcept;
+	elements::GaseousMixture *getTempPtr() noexcept;
 
 private:
 	//unique air member functions
