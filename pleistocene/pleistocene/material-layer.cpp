@@ -690,8 +690,11 @@ std::vector<std::string> AirLayer::getMessages(const StatRequest &statRequest) c
 		return messages;
 	}
 	case(FLOW) : {
+		double UpFlux;
+		if (_up != nullptr) { UpFlux=_sharedAirSurfaces.front().getNetFlux(); }
+		else UpFlux=0;
 		stream.str(std::string());
-		stream << "Net flow: " << _gasPtr->_netFlow;
+		stream << "Up flux: " <<UpFlux;
 		messages.push_back(stream.str());
 		return messages;
 	}
@@ -706,12 +709,9 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 	case(TEMPERATURE) : return this->getTemperature();
 	case(MATERIAL_PROPERTIES) : return _gasPtr->getMols()-expectedMolsCalculator(_bottomElevation,_topElevation);
 	case(PRESSURE) : return (getPressure(_bottomElevation)-expectedHydrostaticPressureCalculator(_bottomElevation));
-	//case(FLOW) : return _gasPtr->_netFlow;
 	case(FLOW) : {
-		//double flow = _gasPtr->getInertia().norm();
-		//return flow;
-		double convection = _gasPtr->getInertia().z();
-		return convection;
+		if(_up!=nullptr){return _sharedAirSurfaces.front().getNetFlux();}
+		else return 0;
 	}
 	default: LOG("Not a stat option"); exit(EXIT_FAILURE); return 1;
 	}

@@ -151,9 +151,9 @@ void MaterialColumn::buildAdjacency(std::map<my::Direction, MaterialColumn*> &ad
 {
 	_adjacientColumns = adjacientColumns;
 
-	buildNeighborSurfaces();
-
 	buildTopSurfaces();
+
+	buildNeighborSurfaces();
 
 }
 

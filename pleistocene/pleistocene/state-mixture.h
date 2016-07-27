@@ -107,7 +107,7 @@ public:
 	//MIXING GAS
 	//=======================================
 
-	static void airFlow(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion, Eigen::Vector3d flowVector) noexcept;
+	static void airFlow(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept;
 
 private:
 	void push(GaseousMixture &addedGas) noexcept;

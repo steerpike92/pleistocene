@@ -1,37 +1,31 @@
+
+done
+=================================
+
 surfaces:
 	earth surface building
 	horizon relations
 
-
-conduction accross surfaces ----(done. Needs tuning though)
-
-radiation banking -- (done. implemented though equilibriums)
-
-cross surface pressure flow -- (mostly done)
-
+conduction accross surfaces
+radiation banking (implemented though equilibriums)
+cross surface pressure flow 
 inertia 
-
-graphically representing cross surface pressure flow (vector arrows?)
-
+graphically representing cross surface pressure flow (vector arrows?) ===done
 lets graphically represent advection (horizontal motion) and convection (vertical motion) seperately
-
-convection can easily fit under the model of what flow currently looks like
-
-advection requires arrows
+convection can easily fit under the model of what flow currently looks like 
+advection requires arrows 
 
 
 
+not done
+==================================
 
-A major flaw in the way I've handled climate is that I've set things up to be easy(ish) to program.
-Instead I should have probably set things up to mesh well with known mathematical climate models.
-That way I could have deferred figuring out how weather works to the people who know how weather works.
+Distinction between momentum and velocity
 
-However not all is beyond hope. If encapsulated well it is easy to change the mathematical underpinning
-of a model without requiring undue refactoring.
+True areas -- True masses -- True mols
 
 
-Also, the model fits very cleanly with finite volume methods.
-
+Coriolis deflection
 
 
 Auxiliary mixtures
@@ -53,3 +47,14 @@ adjusting soil composition maps to depend on elevation and moisture levels
 
 Graphical user interface
 
+
+
+A major flaw in the way I've handled climate is that I've set things up to be easy(ish) to program.
+Instead I should have probably set things up to mesh well with known mathematical climate models.
+That way I could have deferred figuring out how weather works to the people who know how weather works.
+
+However not all is beyond hope. If encapsulated well it is easy to change the mathematical underpinning
+of a model without requiring undue refactoring.
+
+
+Also, the model fits very cleanly with finite volume methods.

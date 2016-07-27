@@ -101,6 +101,9 @@ void SharedSurface::flow() noexcept
 MaterialLayer* SharedSurface::getTenant() noexcept { return _tenantLayer; }
 
 
+double SharedSurface::getNetFlux() const noexcept { return _netFlux; }
+
+
 //////////////===============================
 //////////////AIR SURFACE
 //////////////===============================
@@ -172,31 +175,27 @@ void SharedAirSurface::flow() noexcept
 
 	Eigen::Vector3d flowVector = flowConstant*average_inertia + _normalVector*_pressureDifferential*pressureConstant;
 
-	double flux = _area * (flowVector.dot(this->_normalVector));
-
-	double flowRate = flux;
+	_netFlux = _area * (flowVector.dot(this->_normalVector));
+	
+	double flowRate = _netFlux;
 	
 	bool backflow = signbit(flowRate);
 	flowRate = abs(flowRate);
 
-	
 	/*double equilibriumExchange = calculateEquilibriumExchange();
-
 	if (!backflow && equilibriumExchange>0) {
 		flowRate = std::min(flowRate, equilibriumExchange / (_ownerAirLayer->getGasPtr()->getMols()) );
 	}
-
 	else if (backflow && equilibriumExchange < 0) {
 		flowRate = std::min(flowRate, -equilibriumExchange / (_tenantAirLayer->getGasPtr()->getMols()) );
 	}*/
-
-	flowRate = std::min(flowRate, 0.05);
+	//flowRate = std::min(flowRate, 0.05);
 
 	if (backflow) {
-		GaseousMixture::airFlow(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate, flowVector);
+		GaseousMixture::airFlow(*_ownerAirLayer->getGasPtr(), *_tenantAirLayer->getGasPtr(), flowRate);
 	}
 	else {
-		GaseousMixture::airFlow(*_tenantAirLayer->getGasPtr(), *_ownerAirLayer->getGasPtr(), flowRate, flowVector);
+		GaseousMixture::airFlow(*_tenantAirLayer->getGasPtr(), *_ownerAirLayer->getGasPtr(), flowRate);
 	}
 
 	_pressureBuilt = false;

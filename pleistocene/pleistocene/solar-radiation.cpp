@@ -31,27 +31,27 @@ bool SolarRadiation::_axisExists = false;
 void SolarRadiation::buildRotationMatrix(double angle_rad) noexcept {
 
 	if (!_axisExists) {//First time setup
-		_earthAxis << -sin(kTiltRad),
-			0,
-			cos(kTiltRad);
+		_earthAxis <<	-sin(kTiltRad),
+				0,
+				cos(kTiltRad);
 
-		_intermediateMatrix << 0, -_earthAxis(2), _earthAxis(1),
-			_earthAxis(2), 0, -_earthAxis(0),
-			-_earthAxis(1), _earthAxis(0), 0;
+		_intermediateMatrix <<	0,		-_earthAxis(2),	_earthAxis(1),
+					_earthAxis(2),	0,		-_earthAxis(0),
+					-_earthAxis(1),	_earthAxis(0),	0;
 
 		_axisExists = true;
 	}
 
-	if (angle_rad == _oldRotation) {
-		return;//this is already the right matrix;
-	}
-
-	//Rotation Matrix calculation
-	_rotationMatrix = Eigen::Matrix3d::Identity() + sin(angle_rad)*_intermediateMatrix + (1.0 - cos(angle_rad))*(_intermediateMatrix*_intermediateMatrix);
+	//check if matrix already calculated
+	if (angle_rad == _oldRotation) { return; }
 	_oldRotation = angle_rad;
 
-	//LOG("ROTATION MATRIX");
-	//LOG(_rotationMatrix);
+	//Rotation Matrix calculation
+	const auto &I3 = Eigen::Matrix3d::Identity();
+	const auto &K = _intermediateMatrix;
+
+	_rotationMatrix = I3 + sin(angle_rad)*K + (1.0 - cos(angle_rad))*(K*K);
+	
 }
 
 double SolarRadiation::_oldRotation = my::kFakeDouble;

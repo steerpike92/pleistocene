@@ -122,14 +122,12 @@ _topElevation(topElevation)
 //MIXING GASSES
 //===================================
 
-void GaseousMixture::airFlow(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion, Eigen::Vector3d flowVector) noexcept
+void GaseousMixture::airFlow(GaseousMixture &receivingGas, GaseousMixture &givingGas, double proportion) noexcept
 {
 	//double flow = proportion*givingGas._totalMols;
 
 	GaseousMixture pushMix = givingGas.copyProportion(proportion);
 	givingGas.resizeBy(1 - proportion);
-
-	//pushMix._inertia += flowVector*proportion;
 
 	receivingGas.push(pushMix);
 

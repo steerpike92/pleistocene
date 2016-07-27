@@ -44,6 +44,8 @@ protected:
 
 	bool _pressureBuilt = false;
 
+	double _netFlux;
+
 public:
 	SharedSurface() noexcept;
 
@@ -69,6 +71,8 @@ public:
 	virtual void buildPressureDifferential() noexcept;
 	
 	virtual void flow() noexcept;
+
+	double getNetFlux() const noexcept;
 };
 
 class SharedAirSurface : public SharedSurface {

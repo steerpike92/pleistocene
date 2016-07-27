@@ -184,7 +184,7 @@ void World::generateTileElevations() noexcept {
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
 			noiseValue = noiseTable[row*Cols + col];
-
+			//noiseValue = 0.1;
 			//shift
 			noiseValue += shiftBias;
 			
