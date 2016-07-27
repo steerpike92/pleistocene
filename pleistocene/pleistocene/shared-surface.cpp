@@ -130,6 +130,12 @@ void SharedAirSurface::buildPressureDifferential() noexcept
 	_tenantPressure = _tenantAirLayer->getPressure(_midpointElevation);
 
 	_pressureDifferential = _ownerPressure - _tenantPressure;
+
+	double pressureConstant = 1e-8;
+
+	_ownerAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant);
+	_tenantAirLayer->getGasPtr()->applyForce(_normalVector*_pressureDifferential*pressureConstant);
+
 	_pressureBuilt = true;
 
 }
@@ -159,36 +165,16 @@ void SharedAirSurface::flow() noexcept
 	using namespace elements;
 	if (!_pressureBuilt) { LOG("NO PRESSURE BUILT"); exit(EXIT_FAILURE); return; }
 
-	double pressureConstant = 3e-14;
-	double flowConstant = 0.2;
+	double ownerFlux = _area * (_ownerAirLayer->getGasPtr()->getVelocity().dot(this->_normalVector));
+	double tenantFlux = _area * (_tenantAirLayer->getGasPtr()->getVelocity().dot(this->_normalVector));
 
-	Eigen::Vector3d ownerInertia = _ownerAirLayer->getGasPtr()->getInertia();
-	Eigen::Vector3d tenantInertia = _tenantAirLayer->getGasPtr()->getInertia();
-
-	ownerInertia += _normalVector*_pressureDifferential*pressureConstant;
-	tenantInertia += _normalVector*_pressureDifferential*pressureConstant;
-
-	Eigen::Vector3d average_inertia = (ownerInertia + tenantInertia)*0.5;
-
-	_ownerAirLayer->getGasPtr()->setInertia(ownerInertia);
-	_tenantAirLayer->getGasPtr()->setInertia(tenantInertia);
-
-	Eigen::Vector3d flowVector = flowConstant*average_inertia + _normalVector*_pressureDifferential*pressureConstant;
-
-	_netFlux = _area * (flowVector.dot(this->_normalVector));
+	_netFlux = (ownerFlux + tenantFlux) / 2;
 	
 	double flowRate = _netFlux;
 	
 	bool backflow = signbit(flowRate);
 	flowRate = abs(flowRate);
 
-	/*double equilibriumExchange = calculateEquilibriumExchange();
-	if (!backflow && equilibriumExchange>0) {
-		flowRate = std::min(flowRate, equilibriumExchange / (_ownerAirLayer->getGasPtr()->getMols()) );
-	}
-	else if (backflow && equilibriumExchange < 0) {
-		flowRate = std::min(flowRate, -equilibriumExchange / (_tenantAirLayer->getGasPtr()->getMols()) );
-	}*/
 	//flowRate = std::min(flowRate, 0.05);
 
 	if (backflow) {

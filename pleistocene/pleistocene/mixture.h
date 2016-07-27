@@ -15,12 +15,20 @@ protected:
 
 
 	double _temperature = 0;//Kelvin
+
+	//m^2 column values
 	double _totalVolume = 0;//m3
 	double _fixedVolume = 0;//m3. Use fixed volume for gas cells
 	bool _volumeIsFixed = false;//for gases
 	double _totalMass = 0;//kg
 	double _totalHeatCapacity = 0;//kJ/(kg K)
 	double _totalMols = 0;
+
+	//values scaled up by incorporating tile surface area
+	double _trueVolume = 0;
+	double _trueMass = 0;
+	double _trueMols = 0;
+	double _trueHeatCapacity = 0;
 
 	double _albedo = 0;//reflective index (proportion reflected passing through this material)
 	double _solarAbsorptionIndex = 0;//proportion absorbed passing through this material
@@ -39,7 +47,7 @@ protected:
 
 	double _equilibriumTemperature = 0;
 	
-	Eigen::Vector3d _inertia { 0,0,0 };
+	Eigen::Vector3d _velocity { 0,0,0 };
 
 	double handleInOutRadiation() noexcept;
 	double calculateEmissions(double temperature) const noexcept;
@@ -107,8 +115,10 @@ public:
 	double getMass() const noexcept;
 	double getMols() const noexcept;
 
-	void setInertia(Eigen::Vector3d inertia) noexcept;//ugh
-	virtual Eigen::Vector3d getInertia() const noexcept;
+	void applyForce(Eigen::Vector3d force) noexcept;
+	
+	virtual void setVelocity(Eigen::Vector3d velocity) noexcept;
+	virtual Eigen::Vector3d getVelocity() const noexcept;
 
 };
 

@@ -117,7 +117,7 @@ public:
 	//SIMULATION
 	//============================
 
-	void hourlyClear() noexcept;
+	virtual void hourlyClear() noexcept;
 
 	//chains downward
 	void filterSolarRadiation(double energyKJ) noexcept;
@@ -158,6 +158,7 @@ protected:
 	std::vector<layers::SharedEarthSurface> _sharedEarthSurfaces;
 
 	std::unique_ptr<elements::SolidMixture> _solidPtr;
+	elements::SolidMixture _tempSolid;
 
 public:
 	EarthLayer() noexcept;
@@ -262,6 +263,7 @@ class SeaLayer : public MaterialLayer {
 	std::vector<layers::SharedSeaSurface> _sharedSeaSurfaces;
 
 	std::unique_ptr<elements::LiquidMixture> _liquidPtr;
+	elements::LiquidMixture _tempLiquid;
 
 
 public:
@@ -291,6 +293,8 @@ class AirLayer : public MaterialLayer {
 	std::vector<layers::SharedAirSurface> _sharedAirSurfaces;
 
 	std::unique_ptr<elements::GaseousMixture> _gasPtr;
+	elements::GaseousMixture _tempGas;
+
 
 	double incidentUpRadiation;
 	double incidentDownRadiation;
@@ -305,6 +309,8 @@ public:
 	void addAirSurface(SharedAirSurface &airSurface) noexcept;
 
 	void computeSurfacePressures() noexcept;
+
+	void applyCoriolisForce(double latitude_rad) noexcept;
 
 	elements::GaseousMixture *getGasPtr() noexcept;
 
@@ -321,6 +327,8 @@ private:
 	double truePressureCalculator(double elevation) const noexcept;
 
 public:
+
+	void hourlyClear() noexcept;
 
 	double getPressure(double elevation) const noexcept;
 

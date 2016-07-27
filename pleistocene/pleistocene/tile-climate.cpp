@@ -24,7 +24,7 @@ TileClimate::TileClimate(my::Address A, double noiseValue) noexcept
 
 	double initialTemperature = calculateLocalInitialtemperature();
 
-	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature);
+	_materialColumn = layers::MaterialColumn(landElevation, initialTemperature, my::degToRad(_latitude_deg));
 }
 
 double TileClimate::calculateLocalInitialtemperature() noexcept
@@ -96,6 +96,7 @@ void TileClimate::simulateClimate() noexcept
 		break;
 
 	case(5) :
+
 		_materialColumn.simulateWaterFlow();
 		_materialColumn.simulatePlants();
 		break;

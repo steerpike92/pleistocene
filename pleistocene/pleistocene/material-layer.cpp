@@ -215,6 +215,7 @@ _solidPtr(new elements::SolidMixture())
 	//unique_ptr setup.
 	std::unique_ptr<SolidMixture> temp(new SolidMixture(elementVector, temperature));
 	_solidPtr = std::move(temp);
+	_tempSolid = SolidMixture(elementVector, temperature);
 	temp.~unique_ptr();
 	_mixture = _solidPtr.get();//raw (non-owning) base class pointer setup
 	_mixture->_emittor = emittor;
@@ -427,6 +428,7 @@ _liquidPtr(new elements::LiquidMixture())
 	//unique_ptr setup.
 	std::unique_ptr<LiquidMixture> temp(new LiquidMixture(elementVector, temperature));
 	_liquidPtr = std::move(temp);
+	_tempLiquid = LiquidMixture(elementVector, temperature);
 	temp.~unique_ptr();
 	_mixture = _liquidPtr.get();//raw (non-owning) base class pointer setup
 	_mixture->_emittor = emittor;
@@ -496,12 +498,14 @@ _gasPtr(new elements::GaseousMixture)
 	//unique_ptr setup.
 	std::unique_ptr<GaseousMixture> temp(new GaseousMixture(air, temperature, _bottomElevation, _topElevation));
 	_gasPtr = std::move(temp);
+	_tempGas= GaseousMixture(air, temperature, _bottomElevation, _topElevation);
 	temp.~unique_ptr();
 	_mixture = _gasPtr.get();//raw (non-owning) base class pointer setup
 	_mixture->_emittor = true;
 
 	_height = _topElevation - _bottomElevation;
 	_topRelativeElevation = _bottomRelativeElevation + _height;
+
 }
 
 std::vector<elements::Element> AirLayer::generateAirElements(double bottomElevation, double topElevation) noexcept
@@ -548,6 +552,40 @@ void AirLayer::simulateFlow() noexcept
 
 double AirLayer::getPressure(double elevation) const noexcept {
 	return truePressureCalculator(elevation);
+}
+
+
+void AirLayer::hourlyClear() noexcept
+{
+	_mixture->hourlyClear();
+
+	/*using namespace elements;
+	std::unique_ptr<GaseousMixture> temp(new GaseousMixture(_tempGas));
+	_gasPtr = std::move(temp);
+	temp.~unique_ptr();*/
+}
+
+void AirLayer::applyCoriolisForce(double latitude_rad) noexcept
+{
+	
+	double sinVal = sin(latitude_rad);
+	double cosVal = cos(latitude_rad);
+
+	Eigen::Vector3d coriolisForce;
+	Eigen::Vector3d velocity=_gasPtr->getVelocity();
+	coriolisForce[0] = -velocity[1] * sinVal - velocity[2] * cosVal;
+	coriolisForce[1] = velocity[0] * sinVal;
+	coriolisForce[2] = velocity[0] * cosVal;
+
+	double anglularVelocity = (2 * M_PI / (kSiderealDay_h*kHour_s));
+
+	double mass = _gasPtr->getMass()*kTileArea;
+
+	double fudge = 0.01;
+
+	coriolisForce = coriolisForce * 2 * anglularVelocity * mass * fudge;
+
+	_gasPtr->applyForce(coriolisForce);
 }
 
 //UTILITY
@@ -659,8 +697,6 @@ double AirLayer::truePressureCalculator(double elevation) const noexcept
 }
 
 
-
-
 //GETTERS
 //=========================
 
@@ -719,8 +755,8 @@ double AirLayer::getStatistic(const StatRequest &statRequest) const noexcept
 
 Eigen::Vector2d AirLayer::getAdvection() const noexcept
 {	
-	Eigen::Vector3d inertia=_gasPtr->getInertia();
-	Eigen::Vector2d advection{ inertia[0],inertia[1] };
+	Eigen::Vector3d velocity=_gasPtr->getVelocity();
+	Eigen::Vector2d advection{ velocity[0],velocity[1] };
 	
 	return advection;
 }

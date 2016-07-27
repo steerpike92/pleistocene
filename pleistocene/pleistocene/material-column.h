@@ -31,6 +31,8 @@ class MaterialColumn {
 	bool _submerged;
 	double _initialTemperature;
 
+	double _latitude_rad;
+
 	double _escapeRadiation;
 	double _backRadiation;
 
@@ -41,7 +43,7 @@ class MaterialColumn {
 	//====================================================
 public:
 	MaterialColumn() noexcept;
-	MaterialColumn(double landElevation, double initialTemperature) noexcept;
+	MaterialColumn(double landElevation, double initialTemperature, double latitude_rad) noexcept;
 
 
 private:

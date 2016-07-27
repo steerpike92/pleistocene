@@ -157,7 +157,9 @@ void GaseousMixture::push(GaseousMixture &addedGas) noexcept
 
 	_temperature = totalHeat / newTotalHeatCapacity;
 
-	_inertia += addedGas._inertia;
+	//momentum conservation
+	Eigen::Vector3d momentum = _velocity * _trueMass + addedGas._velocity* addedGas._trueMass;
+	_velocity = momentum * (1 / (_trueMass + addedGas._trueMass));
 
 	for (ElementPair &elementPair : addedGas._elements) {
 		pushSpecific(elementPair.second);

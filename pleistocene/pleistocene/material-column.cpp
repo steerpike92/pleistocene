@@ -13,10 +13,11 @@ namespace layers {
 
 MaterialColumn::MaterialColumn()  noexcept {}
 
-MaterialColumn::MaterialColumn(double landElevation, double initialTemperature) noexcept :
+MaterialColumn::MaterialColumn(double landElevation, double initialTemperature, double latitude_rad) noexcept :
 _landElevation(landElevation),
 _initialTemperature(initialTemperature),
-_submerged(_landElevation < -2)
+_submerged(_landElevation < -2),
+_latitude_rad(latitude_rad)
 {
 	double baseElevation = buildEarth();
 
@@ -437,23 +438,30 @@ void MaterialColumn::simulateAirFlow()  noexcept
 		air.simulateFlow();
 	}
 
+
+	//apply coriolis force
+	for (AirLayer &air : _air) {
+		air.applyCoriolisForce(_latitude_rad);
+	}
+
+
 	//bottom boundary condition
-	Eigen::Vector3d horizonInertia= _air.begin()->getGasPtr()->getInertia();
-	horizonInertia[2] = std::min(horizonInertia[2], 0.0);
-	_air.front().getGasPtr()->setInertia(horizonInertia);
+	Eigen::Vector3d horizonVelocity= _air.begin()->getGasPtr()->getVelocity();
+	horizonVelocity[2] = std::min(horizonVelocity[2], 0.0);
+	_air.front().getGasPtr()->setVelocity(horizonVelocity);
 
 	//top boundary condition
-	Eigen::Vector3d stratInertia = _air.rbegin()->getGasPtr()->getInertia();
-	stratInertia[2] = std::max(stratInertia[2], 0.0);
-	_air.rbegin()->getGasPtr()->setInertia(stratInertia);
+	Eigen::Vector3d stratVelocity = _air.rbegin()->getGasPtr()->getVelocity();
+	stratVelocity[2] = std::max(stratVelocity[2], 0.0);
+	_air.rbegin()->getGasPtr()->setVelocity(stratVelocity);
 
 	//polar filter?
 	if (_adjacientColumns.count(my::NORTH_EAST) == 0) {
 		for (auto &air : _air) {
-			Eigen::Vector3d inertia = air.getGasPtr()->getInertia();
-			if (inertia[1] < 0) {
-				inertia[1] = 0;
-				air.getGasPtr()->setInertia(inertia);
+			Eigen::Vector3d Velocity = air.getGasPtr()->getVelocity();
+			if (Velocity[1] < 0) {
+				Velocity[1] = 0;
+				air.getGasPtr()->setVelocity(Velocity);
 			}
 		}
 	}
@@ -461,10 +469,10 @@ void MaterialColumn::simulateAirFlow()  noexcept
 	//antipolar filter
 	if (_adjacientColumns.count(my::SOUTH_EAST) == 0) {
 		for (auto &air : _air) {
-			Eigen::Vector3d inertia = air.getGasPtr()->getInertia();
-			if (inertia[1] > 0) {
-				inertia[1] = 0;
-				air.getGasPtr()->setInertia(inertia);
+			Eigen::Vector3d Velocity = air.getGasPtr()->getVelocity();
+			if (Velocity[1] > 0) {
+				Velocity[1] = 0;
+				air.getGasPtr()->setVelocity(Velocity);
 			}
 		}
 	}
