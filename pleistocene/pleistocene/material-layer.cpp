@@ -581,7 +581,7 @@ void AirLayer::applyCoriolisForce(double latitude_rad) noexcept
 
 	double mass = _gasPtr->getMass()*kTileArea;
 
-	double fudge = 0.01;
+	double fudge = 0.05;
 
 	coriolisForce = coriolisForce * 2 * anglularVelocity * mass * fudge;
 

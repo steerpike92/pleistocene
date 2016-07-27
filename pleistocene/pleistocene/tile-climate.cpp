@@ -164,7 +164,7 @@ void TileClimate::advectionDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 {
 	Eigen::Vector2d advectionVector = _materialColumn.getAdvection(statRequest);
 
-	double norm = advectionVector.norm()*1e11;
+	double norm = advectionVector.norm()*1e10;
 
 	bool null_barb = true;
 

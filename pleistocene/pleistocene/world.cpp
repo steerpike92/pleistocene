@@ -161,10 +161,10 @@ void World::generateTileElevations() noexcept {
 
 
 										//noise generator;
-	std::vector<double> noiseTable = buildNoiseTable(Rows, Cols);
+	//std::vector<double> noiseTable = buildNoiseTable(Rows, Cols);
 
 	//noise edge blender
-	noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
+	//noiseTable = blendNoiseTable(noiseTable, Rows, Cols, vBlendDistance, hBlendDistance);
 
 
 	//must be ~0. never outside of (-1, 1)
@@ -183,10 +183,10 @@ void World::generateTileElevations() noexcept {
 	//SET ELEVATION
 	for (int row = 0; row < TileRows; row++) {
 		for (int col = 0; col < TileCols; col++) {
-			noiseValue = noiseTable[row*Cols + col];
-			//noiseValue = 0.1;
+			//noiseValue = noiseTable[row*Cols + col];
+			noiseValue = 0.1;
 			//shift
-			noiseValue += shiftBias;
+			//noiseValue += shiftBias;
 			
 			//stretch back
 			if (noiseValue < 0) {
