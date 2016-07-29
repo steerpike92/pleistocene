@@ -195,11 +195,11 @@ void TileClimate::advectionDraw(graphics::Graphics &graphics, std::vector<SDL_Re
 			rect.y += rect.h / 3;
 		}
 		else {
-			rect.y += rect.h / 2;
+			rect.y += rect.h / 3;
 		}
 
-		rect.h = int(double(rect.h*(_windBarbRects[barbSelected].h))/60.0);
-		rect.w =  int(double(rect.w*(_windBarbRects[barbSelected].w))/60.0);
+		rect.h = int(double(rect.h*(_windBarbRects[barbSelected].h))/70.0);
+		rect.w =  int(double(rect.w*(_windBarbRects[barbSelected].w))/70.0);
 	} 
 
 
