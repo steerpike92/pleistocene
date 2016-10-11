@@ -10,8 +10,6 @@ The project uses:
 
 My main concern right now though is building a simple world climate model.
 
-(Note, I don't actually commit directly to master (as I commit this edit directly to master), it just looks like that because I only have one development branch.)
-
 =============================
 TILE MAP
 =============================
@@ -205,7 +203,7 @@ MATERIAL SURFACES and FLOW
 =============================
 The next main hurdle is to work out mixture flow.
 
-This concerns Air Flow, Ground Water Flow, and Ocean Current Flow. (River flow is different).
+This concerns Air Flow, Ground Water Flow, and Ocean Current Flow and River flow.
 
 Its already easy to call a transferMaterial(Material *recievingMaterial, Material *givingMaterial, double proportion), which transfers proportion of givingMaterial to recieving material, but I havent written the code to implement the transfers along every relevant material surface yet. 
 
